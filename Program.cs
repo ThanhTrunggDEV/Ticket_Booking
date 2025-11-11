@@ -1,3 +1,7 @@
+using Ticket_Booking.Interfaces;
+using Ticket_Booking.Models.DomainModels;
+using Ticket_Booking.Repositories;
+
 namespace Ticket_Booking
 {
     public class Program
@@ -8,6 +12,17 @@ namespace Ticket_Booking
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddTransient<IRepository<User>, UserRepository>();
+            builder.Services.AddTransient<IRepository<Company>, CompanyRepository>();
+            builder.Services.AddTransient<IRepository<TransportType>, TransportTypeRepository>();
+            builder.Services.AddTransient<IRepository<Models.DomainModels.Route>, RouteRepository>();
+            builder.Services.AddTransient<IRepository<Vehicle>, VehicleRepository>();
+            builder.Services.AddTransient<IRepository<Trip>, TripRepository>();
+            builder.Services.AddTransient<IRepository<Ticket>, TicketRepository>();
+            builder.Services.AddTransient<IRepository<Payment>, PaymentRepository>();
+            builder.Services.AddTransient<IRepository<Review>, ReviewRepository>();
+
+
 
             var app = builder.Build();
 
