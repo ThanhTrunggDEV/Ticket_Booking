@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using Ticket_Booking.Data;
 using Ticket_Booking.Interfaces;
 using Ticket_Booking.Models.DomainModels;
 using Ticket_Booking.Repositories;
@@ -12,15 +14,20 @@ namespace Ticket_Booking
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-            builder.Services.AddTransient<IRepository<User>, UserRepository>();
-            builder.Services.AddTransient<IRepository<Company>, CompanyRepository>();
-            builder.Services.AddTransient<IRepository<TransportType>, TransportTypeRepository>();
-            builder.Services.AddTransient<IRepository<Models.DomainModels.Route>, RouteRepository>();
-            builder.Services.AddTransient<IRepository<Vehicle>, VehicleRepository>();
-            builder.Services.AddTransient<IRepository<Trip>, TripRepository>();
-            builder.Services.AddTransient<IRepository<Ticket>, TicketRepository>();
-            builder.Services.AddTransient<IRepository<Payment>, PaymentRepository>();
-            builder.Services.AddTransient<IRepository<Review>, ReviewRepository>();
+
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                   options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
+            builder.Services.AddScoped<IRepository<User>, UserRepository>();
+            builder.Services.AddScoped<IRepository<Company>, CompanyRepository>();
+            builder.Services.AddScoped<IRepository<TransportType>, TransportTypeRepository>();
+            builder.Services.AddScoped<IRepository<Models.DomainModels.Route>, RouteRepository>();
+            builder.Services.AddScoped<IRepository<Vehicle>, VehicleRepository>();
+            builder.Services.AddScoped<IRepository<Trip>, TripRepository>();
+            builder.Services.AddScoped<IRepository<Ticket>, TicketRepository>();
+            builder.Services.AddScoped<IRepository<Payment>, PaymentRepository>();
+            builder.Services.AddScoped<IRepository<Review>, ReviewRepository>();
 
 
 
@@ -43,7 +50,7 @@ namespace Ticket_Booking
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Login}/{action=Index}/{id?}");
 
             app.Run();
         }
