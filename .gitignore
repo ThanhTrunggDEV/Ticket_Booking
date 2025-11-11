@@ -2,3 +2,8 @@
 /bin
 /obj
 /obj
+*.cache
+/obj/Debug
+*.json
+obj/project.nuget.cache
+/obj
