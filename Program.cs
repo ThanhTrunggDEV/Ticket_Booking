@@ -52,6 +52,9 @@ namespace Ticket_Booking
                 name: "default",
                 pattern: "{controller=Login}/{action=Index}/{id?}");
 
+            AppDbContext appDbContext = app.Services.CreateScope().ServiceProvider.GetRequiredService<AppDbContext>();
+            appDbContext.Database.EnsureCreated();
+
             app.Run();
         }
     }
