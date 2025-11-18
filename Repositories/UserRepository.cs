@@ -132,5 +132,9 @@ namespace Ticket_Booking.Repositories
                 .ThenInclude(r => r.Company)
                 .FirstOrDefaultAsync(u => u.Id == userId);
         }
+        public async Task<User?> GetUserByEmail(string email)
+        {
+            return await _dbSet.FirstOrDefaultAsync(u => u.Email == email);
+        }
     }
 }

@@ -6,6 +6,7 @@ namespace Ticket_Booking.Interfaces
     {
         // Get operations
         Task<T?> GetByIdAsync(int id);
+        Task<T?> GetByEmailAsync(string email);
         Task<IEnumerable<T>> GetAllAsync();
         Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
         Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate);

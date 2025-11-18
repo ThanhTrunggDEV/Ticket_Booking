@@ -207,5 +207,10 @@ namespace Ticket_Booking.Repositories
         {
             return await _dbSet.CountAsync(r => r.CompanyId == companyId);
         }
+
+        public Task<Review?> GetByEmailAsync(string email)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

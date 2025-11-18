@@ -216,5 +216,10 @@ namespace Ticket_Booking.Repositories
 
             return await query.CountAsync();
         }
+
+        public Task<Payment?> GetByEmailAsync(string email)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

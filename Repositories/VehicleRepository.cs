@@ -163,5 +163,10 @@ namespace Ticket_Booking.Repositories
                 .Include(v => v.TransportType)
                 .ToListAsync();
         }
+
+        public Task<Vehicle?> GetByEmailAsync(string email)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

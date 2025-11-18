@@ -215,5 +215,10 @@ namespace Ticket_Booking.Repositories
 
             return await query.SumAsync(t => t.TotalPrice);
         }
+
+        public Task<Ticket?> GetByEmailAsync(string email)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

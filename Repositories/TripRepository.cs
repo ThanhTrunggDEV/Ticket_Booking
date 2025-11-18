@@ -207,5 +207,10 @@ namespace Ticket_Booking.Repositories
             await UpdateAsync(trip);
             return true;
         }
+
+        public Task<Trip?> GetByEmailAsync(string email)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

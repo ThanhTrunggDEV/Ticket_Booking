@@ -146,5 +146,10 @@ namespace Ticket_Booking.Repositories
                 .Take(topCount)
                 .ToListAsync();
         }
+
+        public Task<RouteModel?> GetByEmailAsync(string email)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

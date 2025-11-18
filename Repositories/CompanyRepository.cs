@@ -161,5 +161,10 @@ namespace Ticket_Booking.Repositories
 
             return company.Reviews.Average(r => r.Rating);
         }
+
+        public Task<Company?> GetByEmailAsync(string email)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

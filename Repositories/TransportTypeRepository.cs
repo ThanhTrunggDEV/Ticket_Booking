@@ -128,5 +128,10 @@ namespace Ticket_Booking.Repositories
                 .ThenInclude(v => v.Company)
                 .FirstOrDefaultAsync(t => t.Id == id);
         }
+
+        public Task<TransportType?> GetByEmailAsync(string email)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
