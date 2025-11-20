@@ -1,10 +1,15 @@
 ﻿namespace Ticket_Booking.Services
 {
-    public static class MailService
+    public class MailService
     {
-        
-        private static readonly IConfiguration _configuration;
-        public static void SendEmail(string toEmail, string subject, string body)
+        private readonly IConfiguration _configuration;
+
+        public MailService(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
+        public void SendEmail(string toEmail, string subject, string body)
         {
             var smtpClient = new System.Net.Mail.SmtpClient(_configuration["Smtp:Host"])
             {
