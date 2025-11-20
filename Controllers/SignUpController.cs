@@ -119,6 +119,7 @@ namespace Ticket_Booking.Controllers
             };
 
             await _userRepository.AddAsync(user);
+            await _userRepository.SaveChangesAsync();
 
             HttpContext.Session.Remove("UserRegister");
             HttpContext.Session.Remove("OTP");
