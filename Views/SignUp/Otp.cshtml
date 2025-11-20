@@ -1,0 +1,329 @@
+﻿@{
+    ViewData["Title"] = "Verify OTP";
+    Layout = "_Layout";
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#otp-1').focus();
+
+            $('.otp-input').on('input', function (e) {
+                const input = $(this);
+                const value = input.val();
+                
+                // Only allow numbers
+                if (!/^\d*$/.test(value)) {
+                    input.val('');
+                    return;
+                }
+
+                if (value.length === 1) {
+                    const nextInput = input.next('.otp-input');
+                    if (nextInput.length) {
+                        nextInput.focus();
+                    }
+                }
+
+                checkOTPComplete();
+            });
+
+            $('.otp-input').on('keydown', function (e) {
+                if (e.key === 'Backspace' && $(this).val() === '') {
+                    const prevInput = $(this).prev('.otp-input');
+                    if (prevInput.length) {
+                        prevInput.focus();
+                    }
+                }
+            });
+
+            $('#otp-1').on('paste', function (e) {
+                e.preventDefault();
+                const pastedData = e.originalEvent.clipboardData.getData('text');
+                const otpDigits = pastedData.replace(/\D/g, '').slice(0, 6);
+                
+                $('.otp-input').each(function (index) {
+                    if (otpDigits[index]) {
+                        $(this).val(otpDigits[index]);
+                    }
+                });
+
+                const lastFilledIndex = Math.min(otpDigits.length - 1, 5);
+                $(`#otp-${lastFilledIndex + 1}`).focus();
+                
+                checkOTPComplete();
+            });
+
+            function checkOTPComplete() {
+                let otp = '';
+                $('.otp-input').each(function () {
+                    otp += $(this).val();
+                });
+
+                if (otp.length === 6) {
+                    $('#verify-btn').prop('disabled', false).removeClass('opacity-50 cursor-not-allowed');
+                } else {
+                    $('#verify-btn').prop('disabled', true).addClass('opacity-50 cursor-not-allowed');
+                }
+            }
+
+            // Form submission
+            $('#otpForm').submit(function (e) {
+                e.preventDefault();
+                
+                let otp = '';
+                $('.otp-input').each(function () {
+                    otp += $(this).val();
+                });
+
+                $('#verify-btn').html('<svg class="animate-spin h-5 w-5 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>');
+                $('#verify-btn').prop('disabled', true);
+
+                $.ajax({
+                    url: '/SignUp/VerifyOtp',
+                    type: 'POST',
+                    data: { otp: otp },
+                    success: function (response) {
+                        $('#success-message').removeClass('hidden').text('OTP verified successfully! Redirecting...');
+                        $('#error-message').addClass('hidden');
+                        
+                        setTimeout(function () {
+                            window.location.href = '/Login';
+                        }, 1500);
+                    },
+                    error: function (xhr) {
+                        $('#error-message').removeClass('hidden').text('Invalid OTP. Please try again.');
+                        $('#success-message').addClass('hidden');
+                        
+                        // Reset button
+                        $('#verify-btn').html('Verify OTP');
+                        $('#verify-btn').prop('disabled', false).removeClass('opacity-50 cursor-not-allowed');
+                        
+                        // Clear inputs
+                        $('.otp-input').val('');
+                        $('#otp-1').focus();
+                    }
+                });
+            });
+
+            // Resend OTP
+            let resendTimer = 60;
+            const resendInterval = setInterval(function () {
+                resendTimer--;
+                $('#resend-timer').text(resendTimer);
+                
+                if (resendTimer <= 0) {
+                    clearInterval(resendInterval);
+                    $('#resend-btn').prop('disabled', false).removeClass('opacity-50 cursor-not-allowed');
+                    $('#timer-text').addClass('hidden');
+                }
+            }, 1000);
+
+            $('#resend-btn').click(function (e) {
+                e.preventDefault();
+                
+                if (resendTimer > 0) return;
+
+                $(this).prop('disabled', true).addClass('opacity-50 cursor-not-allowed');
+                
+                $.ajax({
+                    url: '/SignUp/ResendOtp',
+                    type: 'POST',
+                    success: function (response) {
+                        $('#success-message').removeClass('hidden').text('OTP sent successfully!');
+                        $('#error-message').addClass('hidden');
+                        
+                        // Reset timer
+                        resendTimer = 60;
+                        $('#timer-text').removeClass('hidden');
+                        $('#resend-timer').text(resendTimer);
+                        
+                        const newInterval = setInterval(function () {
+                            resendTimer--;
+                            $('#resend-timer').text(resendTimer);
+                            
+                            if (resendTimer <= 0) {
+                                clearInterval(newInterval);
+                                $('#resend-btn').prop('disabled', false).removeClass('opacity-50 cursor-not-allowed');
+                                $('#timer-text').addClass('hidden');
+                            }
+                        }, 1000);
+
+                        setTimeout(function () {
+                            $('#success-message').addClass('hidden');
+                        }, 3000);
+                    },
+                    error: function (xhr) {
+                        $('#error-message').removeClass('hidden').text('Failed to resend OTP. Please try again.');
+                        $('#success-message').addClass('hidden');
+                        $('#resend-btn').prop('disabled', false).removeClass('opacity-50 cursor-not-allowed');
+                    }
+                });
+            });
+        });
+    </script>
+}
+
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full">
+        <!-- OTP Card -->
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+            <!-- Header with Gradient -->
+            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-10 text-center">
+                <div class="mx-auto h-20 w-20 bg-white rounded-full flex items-center justify-center shadow-lg mb-4">
+                    <svg class="h-12 w-12 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-bold text-white">
+                    Verify Your Email
+                </h2>
+                <p class="mt-2 text-indigo-100">
+                    We've sent a 6-digit code to your email
+                </p>
+            </div>
+
+            <!-- Form Section -->
+            <div class="px-8 py-10">
+                <form id="otpForm" class="space-y-6">
+                    <!-- Info Text -->
+                    <div class="text-center">
+                        <p class="text-sm text-gray-600">
+                            Please enter the verification code sent to
+                        </p>
+                        <p class="text-sm font-semibold text-gray-800 mt-1">
+                            your email address
+                        </p>
+                    </div>
+
+                    <!-- OTP Input Fields -->
+                    <div class="flex justify-center gap-3">
+                        <input type="text" id="otp-1" maxlength="1" 
+                               class="otp-input w-12 h-14 text-center text-2xl font-bold text-gray-900 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 ease-in-out"
+                               autocomplete="off">
+                        <input type="text" id="otp-2" maxlength="1" 
+                               class="otp-input w-12 h-14 text-center text-2xl font-bold text-gray-900 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 ease-in-out"
+                               autocomplete="off">
+                        <input type="text" id="otp-3" maxlength="1" 
+                               class="otp-input w-12 h-14 text-center text-2xl font-bold text-gray-900 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 ease-in-out"
+                               autocomplete="off">
+                        <input type="text" id="otp-4" maxlength="1" 
+                               class="otp-input w-12 h-14 text-center text-2xl font-bold text-gray-900 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 ease-in-out"
+                               autocomplete="off">
+                        <input type="text" id="otp-5" maxlength="1" 
+                               class="otp-input w-12 h-14 text-center text-2xl font-bold text-gray-900 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 ease-in-out"
+                               autocomplete="off">
+                        <input type="text" id="otp-6" maxlength="1" 
+                               class="otp-input w-12 h-14 text-center text-2xl font-bold text-gray-900 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 ease-in-out"
+                               autocomplete="off">
+                    </div>
+
+                    <!-- Success/Error Messages -->
+                    <div id="success-message" class="hidden text-center text-sm font-medium text-green-600 bg-green-50 rounded-lg py-3 px-4">
+                    </div>
+                    <div id="error-message" class="hidden text-center text-sm font-medium text-red-600 bg-red-50 rounded-lg py-3 px-4">
+                    </div>
+
+                    <!-- Verify Button -->
+                    <div class="pt-2">
+                        <button type="submit" id="verify-btn" disabled
+                                class="group relative w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 ease-in-out transform hover:scale-[1.02] hover:shadow-xl font-semibold text-base opacity-50 cursor-not-allowed">
+                            <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                                <svg class="h-5 w-5 text-indigo-300 group-hover:text-indigo-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </span>
+                            Verify OTP
+                        </button>
+                    </div>
+
+                    <!-- Resend Section -->
+                    <div class="text-center">
+                        <p class="text-sm text-gray-600">
+                            Didn't receive the code?
+                        </p>
+                        <div class="mt-2 flex items-center justify-center gap-2">
+                            <button type="button" id="resend-btn" disabled
+                                    class="font-semibold text-indigo-600 hover:text-indigo-500 transition duration-200 opacity-50 cursor-not-allowed">
+                                Resend OTP
+                            </button>
+                            <span id="timer-text" class="text-sm text-gray-500">
+                                in <span id="resend-timer" class="font-semibold text-indigo-600">60</span>s
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Back to Sign Up Link -->
+            <div class="px-8 py-6 bg-gray-50 border-t border-gray-100 text-center">
+                <p class="text-sm text-gray-600">
+                    Wrong email?
+                    <a href="/SignUp" class="font-semibold text-indigo-600 hover:text-indigo-500 transition duration-200">
+                        Go back to Sign Up
+                    </a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-8 text-center">
+            <p class="text-sm text-gray-600">
+                © 2025 - Ticket_Booking - 
+                <a href="/Privacy" class="text-indigo-600 hover:text-indigo-500 transition duration-200">
+                    Privacy
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Custom Animations -->
+<style>
+    @@keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .max-w-md {
+        animation: slideInUp 0.6s ease-out;
+    }
+
+    /* Pulse animation for OTP inputs */
+    @@keyframes pulse-border {
+        0%, 100% {
+            border-color: rgb(209, 213, 219);
+        }
+        50% {
+            border-color: rgb(99, 102, 241);
+        }
+    }
+
+    .otp-input:focus {
+        animation: none;
+    }
+
+    /* Custom scrollbar for webkit browsers */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(to bottom, #4f46e5, #7c3aed);
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(to bottom, #4338ca, #6d28d9);
+    }
+</style>
