@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Ticket_Booking.Enums;
 using Ticket_Booking.Helpers;
 using Ticket_Booking.Interfaces;
 using Ticket_Booking.Models;
@@ -29,24 +30,32 @@ namespace Ticket_Booking.Controllers
         }
 
         [HttpPost]
-        public IActionResult Index(UserLogin userLogin)
+        public async Task<IActionResult> Index(UserLogin userLogin)
         {
-            var user = _userRepository.GetByEmailAsync(userLogin.Email);
+            var user = await _userRepository.GetByEmailAsync(userLogin.Email);
             if (user == null)
             {
                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                return View();
             }
-            else
+            
+            if (AuthenticationService.VerifyPassword(userLogin.Password, user.PasswordHash) == false)
             {
-                User u = user.Result;
-                if (AuthenticationService.VerifyPassword(userLogin.Password, u.PasswordHash) == false)
-                {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                }
-
+                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                return View();
             }
-            return RedirectToAction("Index", "Home");
 
+            HttpContext.Session.SetInt32("UserId", user.Id);
+            HttpContext.Session.SetString("UserEmail", user.Email);
+            HttpContext.Session.SetString("UserRole", user.Role.ToString());
+            HttpContext.Session.SetString("UserName", user.FullName);
+
+            if (user.Role == Role.User)
+                return RedirectToAction("Index", "User");
+            else if (user.Role == Role.Admin)
+                return RedirectToAction("Index", "Admin");
+            
+            return RedirectToAction("Index", "Partner");
         }
 
         [HttpGet]
@@ -98,7 +107,7 @@ namespace Ticket_Booking.Controllers
                 return BadRequest("Invalid session or email.");
             }
 
-            if (DateTime.Parse(expiryStr) < DateTime.Now)
+            if (string.IsNullOrEmpty(expiryStr) || DateTime.Parse(expiryStr) < DateTime.Now)
             {
                 return BadRequest("OTP expired.");
             }
