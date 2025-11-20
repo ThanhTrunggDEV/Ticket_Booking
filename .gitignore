@@ -1,10 +1,8 @@
-/.vs
-/bin
-/obj
-/obj
+.vs/
+bin/
+obj/
 *.cache
-/obj/Debug
 *.json
-obj/project.nuget.cache
-/obj
-/appsettings.json
+appsettings.json
+ticket_booking.db
+
