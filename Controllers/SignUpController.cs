@@ -6,6 +6,7 @@ using Ticket_Booking.Models.BindingModels;
 using Ticket_Booking.Models.DomainModels;
 using Ticket_Booking.Services;
 using System.Text.Json;
+using SQLitePCL;
 
 namespace Ticket_Booking.Controllers
 {
@@ -54,7 +55,6 @@ namespace Ticket_Booking.Controllers
             }
 
             string otp = OTP.GenerateOTP();
-            
             HttpContext.Session.SetString("UserRegister", JsonSerializer.Serialize(student));
             HttpContext.Session.SetString("OTP", otp);
             HttpContext.Session.SetString("OTP_Expiry", DateTime.Now.AddMinutes(5).ToString());
