@@ -18,8 +18,12 @@
                 data: formData,
                 processData: false,
                 contentType: false,
-                success: function () {
-                    $("#success").text("Register successfully !!!")
+                success: function (response) {
+                    if (response.redirectUrl) {
+                        window.location.href = response.redirectUrl;
+                    } else {
+                        $("#success").text("Register successfully !!!")
+                    }
                 },
                 error: function (xhr) {
                     var errors = xhr.responseJSON;
