@@ -2,7 +2,6 @@
 bin/
 obj/
 *.cache
-*.json
 appsettings.json
 ticket_booking.db
 
