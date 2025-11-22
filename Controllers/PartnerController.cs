@@ -10,15 +10,18 @@ namespace Ticket_Booking.Controllers
         private readonly IRepository<Trip> _tripRepository;
         private readonly IRepository<Ticket> _ticketRepository;
         private readonly IRepository<Company> _companyRepository;
+        private readonly IRepository<TransportType> _transportTypeRepository;
 
         public PartnerController(
             IRepository<Trip> tripRepository,
             IRepository<Ticket> ticketRepository,
-            IRepository<Company> companyRepository)
+            IRepository<Company> companyRepository,
+            IRepository<TransportType> transportTypeRepository)
         {
             _tripRepository = tripRepository;
             _ticketRepository = ticketRepository;
             _companyRepository = companyRepository;
+            _transportTypeRepository = transportTypeRepository;
         }
 
         public async Task<IActionResult> Index()
@@ -41,12 +44,107 @@ namespace Ticket_Booking.Controllers
                 TotalTrips = trips.Count(),
                 TotalBookings = tickets.Count(),
                 TotalRevenue = tickets.Sum(t => t.TotalPrice),
-                AverageRating = 4.5, // Placeholder
+                AverageRating = 0, 
                 RecentTrips = trips.OrderByDescending(t => t.DepartureTime).Take(5).ToList(),
                 RecentBookings = tickets.OrderByDescending(t => t.BookingDate).Take(5).ToList()
             };
 
             return View(viewModel);
+        }
+
+        public async Task<IActionResult> CompaniesManagement()
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Partner")
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null) return RedirectToAction("Index", "Login");
+
+            var companies = await _companyRepository.FindAsync(c => c.OwnerId == userId);
+            return View(companies);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CreateCompany()
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Partner") return RedirectToAction("Index", "Login");
+
+            ViewBag.TransportTypes = await _transportTypeRepository.GetAllAsync();
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateCompany(Company company)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null) return RedirectToAction("Index", "Login");
+
+            company.OwnerId = userId;
+            await _companyRepository.AddAsync(company);
+            await _companyRepository.SaveChangesAsync();
+
+            return RedirectToAction(nameof(CompaniesManagement));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditCompany(int id)
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Partner") return RedirectToAction("Index", "Login");
+
+            var userId = HttpContext.Session.GetInt32("UserId");
+            var company = await _companyRepository.GetByIdAsync(id);
+
+            if (company == null || company.OwnerId != userId)
+            {
+                return NotFound();
+            }
+
+            ViewBag.TransportTypes = await _transportTypeRepository.GetAllAsync();
+            return View(company);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditCompany(Company company)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            var existingCompany = await _companyRepository.GetByIdAsync(company.Id);
+
+            if (existingCompany == null || existingCompany.OwnerId != userId)
+            {
+                return NotFound();
+            }
+
+            existingCompany.Name = company.Name;
+            existingCompany.Contact = company.Contact;
+            existingCompany.TransportTypeId = company.TransportTypeId;
+            existingCompany.LogoUrl = company.LogoUrl;
+
+            await _companyRepository.UpdateAsync(existingCompany);
+            await _companyRepository.SaveChangesAsync();
+
+            return RedirectToAction(nameof(CompaniesManagement));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteCompany(int id)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            var company = await _companyRepository.GetByIdAsync(id);
+
+            if (company == null || company.OwnerId != userId)
+            {
+                return NotFound();
+            }
+
+            await _companyRepository.DeleteAsync(company);
+            await _companyRepository.SaveChangesAsync();
+
+            return RedirectToAction(nameof(CompaniesManagement));
         }
     }
 }

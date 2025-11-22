@@ -47,6 +47,16 @@ namespace Ticket_Booking.Data
                 Users.Add(admin);
             if(Users.Any(u => u.Email == parnter.Email) == false)
                 Users.Add(parnter);
+
+            if (!TransportTypes.Any())
+            {
+                TransportTypes.AddRange(
+                    new TransportType { Name = "Máy bay" },
+                    new TransportType { Name = "Tàu" },
+                    new TransportType { Name = "Xe" }
+                );
+            }
+
             SaveChanges();
         }
 
