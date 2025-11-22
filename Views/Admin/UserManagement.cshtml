@@ -115,9 +115,22 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full @(user.Role == Ticket_Booking.Enums.Role.Admin ? "bg-purple-100 text-purple-800" : "bg-green-100 text-green-800")">
-                                                @user.Role
-                                            </span>
+                                            <form asp-action="ChangeRole" method="post" class="flex items-center space-x-2">
+                                                <input type="hidden" name="id" value="@user.Id" />
+                                                <select name="role" onchange="this.form.submit()" class="text-xs font-semibold rounded-full border-0 px-2 py-1 @(user.Role == Ticket_Booking.Enums.Role.Admin ? "bg-purple-100 text-purple-800" : user.Role == Ticket_Booking.Enums.Role.Partner ? "bg-blue-100 text-blue-800" : "bg-green-100 text-green-800") focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+                                                    @foreach (var role in Enum.GetValues(typeof(Ticket_Booking.Enums.Role)))
+                                                    {
+                                                        if (user.Role.ToString() == role.ToString())
+                                                        {
+                                                            <option value="@role" selected>@role</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@role">@role</option>
+                                                        }
+                                                    }
+                                                </select>
+                                            </form>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm text-gray-900">@user.Email</div>
