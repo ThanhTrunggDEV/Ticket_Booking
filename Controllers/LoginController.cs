@@ -151,12 +151,18 @@ namespace Ticket_Booking.Controllers
             return Ok();
         }
 
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index", "Login");
+        }
+
     }
 }
 
-  
-       
 
-    
-    
+
+
+
+
 
