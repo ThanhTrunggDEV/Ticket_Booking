@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Ticket_Booking.Models.DomainModels;
+using Ticket_Booking.Services;
 using RouteModel = Ticket_Booking.Models.DomainModels.Route;
 
 namespace Ticket_Booking.Data
@@ -23,6 +24,25 @@ namespace Ticket_Booking.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite("Data Source=ticket_booking.db");
+        }
+        public void Seed()
+        {
+            User admin = new User()
+            {
+                FullName = "Admin User",
+                Email = "admin@gmail.com",
+                PasswordHash = AuthenticationService.HashPassword("123"),
+            };
+
+            User parnter = new User()
+            {
+                FullName = "Partner User",
+                Email = "partner@gmail.com",
+                PasswordHash = AuthenticationService.HashPassword("123"),
+            };
+            Users.Add(admin);
+            Users.Add(parnter);
+            SaveChanges();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
