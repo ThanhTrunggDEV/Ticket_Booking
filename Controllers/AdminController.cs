@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Ticket_Booking.Enums;
 using Ticket_Booking.Interfaces;
 using Ticket_Booking.Models.DomainModels;
 using Ticket_Booking.Models.ViewModels;
@@ -56,6 +57,26 @@ namespace Ticket_Booking.Controllers
 
             var users = await _userRepository.GetAllAsync();
             return View(users);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangeRole(int id, Role role)
+        {
+            var currentRole = HttpContext.Session.GetString("UserRole");
+            if (currentRole != "Admin")
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            var user = await _userRepository.GetByIdAsync(id);
+            if (user != null)
+            {
+                user.Role = role;
+                await _userRepository.UpdateAsync(user);
+                await _userRepository.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(UserManagement));
         }
 
         [HttpPost]
