@@ -45,5 +45,32 @@ namespace Ticket_Booking.Controllers
 
             return View(viewModel);
         }
+
+        public async Task<IActionResult> UserManagement()
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Admin")
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            var users = await _userRepository.GetAllAsync();
+            return View(users);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Admin")
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            await _userRepository.DeleteByIdAsync(id);
+            await _userRepository.SaveChangesAsync();
+
+            return RedirectToAction(nameof(UserManagement));
+        }
     }
 }
