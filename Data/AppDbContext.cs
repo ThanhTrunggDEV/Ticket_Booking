@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Ticket_Booking.Enums;
 using Ticket_Booking.Models.DomainModels;
 using Ticket_Booking.Services;
 using RouteModel = Ticket_Booking.Models.DomainModels.Route;
@@ -32,6 +33,7 @@ namespace Ticket_Booking.Data
                 FullName = "Admin User",
                 Email = "admin@gmail.com",
                 PasswordHash = AuthenticationService.HashPassword("123"),
+                Role = Role.Admin
             };
 
             User parnter = new User()
@@ -39,6 +41,7 @@ namespace Ticket_Booking.Data
                 FullName = "Partner User",
                 Email = "partner@gmail.com",
                 PasswordHash = AuthenticationService.HashPassword("123"),
+                Role = Role.Partner
             };
             if(Users.Any(u => u.Email == admin.Email) == false)
                 Users.Add(admin);
