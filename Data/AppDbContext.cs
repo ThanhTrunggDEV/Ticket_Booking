@@ -84,6 +84,11 @@ namespace Ticket_Booking.Data
                     .WithMany(t => t.Companies)
                     .HasForeignKey(e => e.TransportTypeId)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.Owner)
+                    .WithMany(u => u.Companies)
+                    .HasForeignKey(e => e.OwnerId)
+                    .OnDelete(DeleteBehavior.SetNull);
             });
 
            

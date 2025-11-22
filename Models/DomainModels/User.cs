@@ -15,5 +15,6 @@ namespace Ticket_Booking.Models.DomainModels
        
         public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
+        public ICollection<Company> Companies { get; set; } = new List<Company>();
     }
 }
