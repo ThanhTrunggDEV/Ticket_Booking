@@ -40,8 +40,10 @@ namespace Ticket_Booking.Data
                 Email = "partner@gmail.com",
                 PasswordHash = AuthenticationService.HashPassword("123"),
             };
-            Users.Add(admin);
-            Users.Add(parnter);
+            if(Users.Any(u => u.Email == admin.Email) == false)
+                Users.Add(admin);
+            if(Users.Any(u => u.Email == parnter.Email) == false)
+                Users.Add(parnter);
             SaveChanges();
         }
 
