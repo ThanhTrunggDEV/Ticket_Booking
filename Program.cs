@@ -63,6 +63,7 @@ namespace Ticket_Booking
 
             AppDbContext appDbContext = app.Services.CreateScope().ServiceProvider.GetRequiredService<AppDbContext>();
             appDbContext.Database.EnsureCreated();
+            appDbContext.Seed();
 
             app.Run();
         }
