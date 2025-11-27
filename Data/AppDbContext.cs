@@ -43,6 +43,17 @@ namespace Ticket_Booking.Data
                 PasswordHash = AuthenticationService.HashPassword("123"),
                 Role = Role.Partner
             };
+
+            User user = new()
+            {
+                FullName = "Thanh Trung",
+                Email = "user@gmail.com",
+                PasswordHash = AuthenticationService.HashPassword("123"),
+                Role = Role.User
+            };
+
+            if(Users.Any(u => u.Email == user.Email) == false)
+                Users.Add(user);
             if(Users.Any(u => u.Email == admin.Email) == false)
                 Users.Add(admin);
             if(Users.Any(u => u.Email == parnter.Email) == false)
