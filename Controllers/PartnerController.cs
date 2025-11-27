@@ -146,5 +146,29 @@ namespace Ticket_Booking.Controllers
 
             return RedirectToAction(nameof(CompaniesManagement));
         }
+
+        public async Task<IActionResult> TripsManagement()
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Partner") return RedirectToAction("Index", "Login");
+
+            var trips = await _tripRepository.GetAllAsync();
+             var userId = HttpContext.Session.GetInt32("UserId");
+             trips = trips.Where(t => t.Vehicle.Company.OwnerId == userId);
+
+            return View(trips);
+        }
+
+        [HttpGet]
+        public IActionResult CreateTrip()
+        {
+             var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Partner") return RedirectToAction("Index", "Login");
+            
+            // We would need to load Vehicles and Routes here for dropdowns
+            // ViewBag.Vehicles = ...
+            // ViewBag.Routes = ...
+            return View();
+        }
     }
 }
