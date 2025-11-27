@@ -26,7 +26,11 @@ namespace Ticket_Booking.Repositories
 
         public async Task<IEnumerable<Trip>> GetAllAsync()
         {
-            return await _dbSet.ToListAsync();
+            return await _dbSet
+                .Include(t => t.Vehicle)
+                    .ThenInclude(v => v.Company)
+                .Include(t => t.Route)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<Trip>> FindAsync(Expression<Func<Trip, bool>> predicate)
