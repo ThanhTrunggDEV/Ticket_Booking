@@ -1,0 +1,150 @@
+@model IEnumerable<Ticket_Booking.Models.DomainModels.Trip>
+@using Ticket_Booking.Enums
+
+@{
+    ViewData["Title"] = "Trip Management";
+    Layout = "_Layout";
+}
+
+<div class="min-h-screen bg-zinc-100 p-4 md:p-8 font-mono relative overflow-hidden">
+    <!-- Background Texture -->
+    <div class="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
+    
+    <!-- Floating Elements -->
+    <div class="absolute top-20 left-20 w-64 h-64 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
+    <div class="absolute bottom-20 right-20 w-64 h-64 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
+
+    <div class="max-w-7xl mx-auto relative z-10">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row justify-between items-end mb-8 border-b-2 border-indigo-900/10 pb-4">
+            <div>
+                <div class="flex items-center space-x-2 text-indigo-900 mb-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                    <span class="font-bold tracking-widest text-sm uppercase">System Administration</span>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-black text-indigo-900 tracking-tighter">TRIP MANAGEMENT</h1>
+            </div>
+            <div class="text-right mt-4 md:mt-0">
+                <div class="text-xs font-bold text-gray-400 uppercase tracking-widest">Total Trips</div>
+                <div class="text-xl font-bold text-indigo-600">@Model.Count() SCHEDULED</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Left Column: Navigation & Profile -->
+            <div class="lg:col-span-4 space-y-6">
+                <!-- Admin Profile Card -->
+                <div class="bg-white rounded-3xl shadow-xl overflow-hidden relative group transform transition-all hover:scale-[1.01]">
+                    <!-- Decorative Top Bar -->
+                    <div class="h-2 bg-gradient-to-r from-indigo-600 to-purple-600"></div>
+                    
+                    <div class="p-8 relative">
+                        <!-- Watermark -->
+                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-[0.03] pointer-events-none">
+                            <svg class="w-64 h-64" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+                        </div>
+
+                        <div class="text-center relative z-10">
+                            <div class="inline-block p-1 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 mb-6">
+                                <div class="h-32 w-32 rounded-full bg-white border-4 border-white shadow-inner flex items-center justify-center overflow-hidden relative">
+                                    <span class="text-5xl font-black text-indigo-900">A</span>
+                                </div>
+                            </div>
+                            
+                            <h2 class="text-2xl font-black text-indigo-900 mb-1">Administrator</h2>
+                            <div class="inline-flex items-center px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-xs font-bold uppercase tracking-wider">
+                                System Manager
+                            </div>
+                        </div>
+
+                        <nav class="mt-8 space-y-2 relative z-10">
+                            <a href="@Url.Action("Index", "Admin")" class="flex items-center px-4 py-3 text-gray-500 hover:bg-indigo-50 hover:text-indigo-900 rounded-xl font-bold transition-all border-l-4 border-transparent hover:border-indigo-300">
+                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                                Dashboard
+                            </a>
+                            <a href="@Url.Action("UserManagement", "Admin")" class="flex items-center px-4 py-3 text-gray-500 hover:bg-indigo-50 hover:text-indigo-900 rounded-xl font-bold transition-all border-l-4 border-transparent hover:border-indigo-300">
+                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                                User Management
+                            </a>
+                            <a href="@Url.Action("PartnerManagement", "Admin")" class="flex items-center px-4 py-3 text-gray-500 hover:bg-indigo-50 hover:text-indigo-900 rounded-xl font-bold transition-all border-l-4 border-transparent hover:border-indigo-300">
+                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                                Partner Management
+                            </a>
+                            <a href="@Url.Action("TripManagement", "Admin")" class="flex items-center px-4 py-3 bg-indigo-50 text-indigo-900 rounded-xl font-bold border-l-4 border-indigo-600 transition-all">
+                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                                Trip Management
+                            </a>
+                            <a href="@Url.Action("Logout", "Login")" class="flex items-center px-4 py-3 text-red-400 hover:bg-red-50 hover:text-red-600 rounded-xl font-bold transition-all border-l-4 border-transparent mt-4">
+                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                                Logout
+                            </a>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Content -->
+            <div class="lg:col-span-8">
+                <div class="bg-white rounded-3xl shadow-xl overflow-hidden">
+                    <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                        <h3 class="text-lg font-black text-indigo-900 uppercase tracking-tighter">Scheduled Trips</h3>
+                        <div class="flex space-x-2">
+                            <input type="text" placeholder="Search trips..." class="px-4 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm font-mono focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full">
+                            <thead class="bg-zinc-50">
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Route</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Schedule</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-4 text-right text-xs font-bold text-gray-400 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                @foreach (var trip in Model)
+                                {
+                                    <tr class="hover:bg-indigo-50/30 transition-colors group">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold mr-3">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                                                </div>
+                                                <div>
+                                                    <div class="text-sm font-bold text-indigo-900">@trip.FromCity <span class="text-gray-400">→</span> @trip.ToCity</div>
+                                                    <div class="text-xs text-gray-500 font-mono">@trip.PlaneName</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-bold text-gray-600">@trip.DepartureTime.ToString("MMM dd, HH:mm")</div>
+                                            <div class="text-xs text-gray-400 font-mono">Duration: @trip.EstimatedDuration min</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-bold rounded-full 
+                                                @(trip.Status == TripStatus.Active ? "bg-green-100 text-green-800" : 
+                                                  trip.Status == TripStatus.Delayed ? "bg-yellow-100 text-yellow-800" : 
+                                                  trip.Status == TripStatus.Cancelled ? "bg-red-100 text-red-800" : "bg-gray-100 text-gray-800")">
+                                                @trip.Status
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <form asp-action="DeleteTrip" method="post" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this trip?');">
+                                                <input type="hidden" name="id" value="@trip.Id" />
+                                                <button type="submit" class="text-red-400 hover:text-red-600 font-bold uppercase text-xs tracking-wider transition-colors">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
