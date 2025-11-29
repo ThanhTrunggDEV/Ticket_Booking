@@ -5,43 +5,73 @@
     Layout = "_Layout";
 }
 
-<div class="min-h-screen bg-gray-50 py-8">
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="p-6 border-b border-gray-100">
-                <h2 class="text-xl font-bold text-gray-900">Create New Company</h2>
-                <p class="mt-1 text-sm text-gray-500">Add a new transport company to your portfolio</p>
+<div class="min-h-screen bg-zinc-100 p-4 md:p-8 font-mono relative overflow-hidden">
+    <!-- Background Texture -->
+    <div class="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
+    
+    <!-- Floating Elements -->
+    <div class="absolute top-20 left-20 w-64 h-64 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
+    <div class="absolute bottom-20 right-20 w-64 h-64 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
+
+    <div class="max-w-3xl mx-auto relative z-10">
+        <!-- Header -->
+        <div class="mb-8 text-center">
+            <div class="inline-flex items-center justify-center p-2 bg-white rounded-full shadow-lg mb-4">
+                <div class="p-3 bg-indigo-100 rounded-full text-indigo-600">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                </div>
             </div>
-            
-            <form asp-action="CreateCompany" method="post" class="p-6 space-y-6">
-                <div class="grid grid-cols-1 gap-6">
-                    <div>
-                        <label asp-for="Name" class="block text-sm font-medium text-gray-700">Company Name</label>
-                        <input asp-for="Name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required />
-                        <span asp-validation-for="Name" class="text-red-500 text-xs"></span>
+            <h1 class="text-4xl font-black text-indigo-900 tracking-tighter mb-2">NEW AIRLINE</h1>
+            <p class="text-indigo-600 font-bold tracking-widest uppercase text-sm">Register Transport Partner</p>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden relative">
+            <!-- Decorative Top Bar -->
+            <div class="h-2 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600"></div>
+
+            <form asp-action="CreateCompany" method="post" class="p-8 md:p-12 space-y-8">
+                <div class="space-y-6">
+                    <div class="relative group">
+                        <label asp-for="Name" class="block text-xs font-bold text-indigo-900 uppercase tracking-wider mb-1">Company Name</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                            </div>
+                            <input asp-for="Name" class="block w-full pl-10 pr-3 py-3 bg-zinc-50 border-2 border-zinc-100 rounded-xl focus:ring-0 focus:border-indigo-500 transition-colors font-bold text-gray-900 placeholder-gray-300" placeholder="Airline Name" required />
+                        </div>
+                        <span asp-validation-for="Name" class="text-red-500 text-xs font-bold mt-1 block"></span>
                     </div>
 
-                    <div>
-                        <label asp-for="Contact" class="block text-sm font-medium text-gray-700">Contact Information</label>
-                        <input asp-for="Contact" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required />
-                        <span asp-validation-for="Contact" class="text-red-500 text-xs"></span>
+                    <div class="relative group">
+                        <label asp-for="Contact" class="block text-xs font-bold text-indigo-900 uppercase tracking-wider mb-1">Contact Information</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                            </div>
+                            <input asp-for="Contact" class="block w-full pl-10 pr-3 py-3 bg-zinc-50 border-2 border-zinc-100 rounded-xl focus:ring-0 focus:border-indigo-500 transition-colors font-bold text-gray-900 placeholder-gray-300" placeholder="Phone or Email" required />
+                        </div>
+                        <span asp-validation-for="Contact" class="text-red-500 text-xs font-bold mt-1 block"></span>
                     </div>
 
-
-
-                    <div>
-                        <label asp-for="LogoUrl" class="block text-sm font-medium text-gray-700">Logo URL</label>
-                        <input asp-for="LogoUrl" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
-                        <span asp-validation-for="LogoUrl" class="text-red-500 text-xs"></span>
+                    <div class="relative group">
+                        <label asp-for="LogoUrl" class="block text-xs font-bold text-indigo-900 uppercase tracking-wider mb-1">Logo URL</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            </div>
+                            <input asp-for="LogoUrl" class="block w-full pl-10 pr-3 py-3 bg-zinc-50 border-2 border-zinc-100 rounded-xl focus:ring-0 focus:border-indigo-500 transition-colors font-bold text-gray-900 placeholder-gray-300" placeholder="https://..." />
+                        </div>
+                        <span asp-validation-for="LogoUrl" class="text-red-500 text-xs font-bold mt-1 block"></span>
                     </div>
                 </div>
 
-                <div class="flex justify-end space-x-3 pt-6 border-t border-gray-100">
-                    <a href="@Url.Action("CompaniesManagement", "Partner")" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <div class="flex items-center justify-between pt-8 border-t border-gray-100">
+                    <a href="@Url.Action("CompaniesManagement", "Partner")" class="text-gray-400 hover:text-gray-600 font-bold text-sm uppercase tracking-widest transition-colors">
                         Cancel
                     </a>
-                    <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        Create Company
+                    <button type="submit" class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 uppercase tracking-widest text-sm flex items-center">
+                        <span>Register Airline</span>
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                     </button>
                 </div>
             </form>

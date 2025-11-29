@@ -35,9 +35,11 @@ namespace Ticket_Booking.Controllers
 
             var trips = await _tripRepository.GetAllAsync();
             var tickets = await _ticketRepository.GetAllAsync();
+            var companies = await _companyRepository.GetAllAsync();
             
             var viewModel = new PartnerDashboardViewModel
             {
+                TotalCompanies = companies.Count(),
                 TotalTrips = trips.Count(),
                 TotalBookings = tickets.Count(),
                 TotalRevenue = tickets.Sum(t => t.TotalPrice),
