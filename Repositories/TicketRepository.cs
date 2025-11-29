@@ -115,8 +115,7 @@ namespace Ticket_Booking.Repositories
             return await _dbSet
                 .Where(t => t.UserId == userId)
                 .Include(t => t.Trip)
-                .Include(t => t.Trip)
-                .ThenInclude(tr => tr.Vehicle)
+                .ThenInclude(tr => tr.Company)
                 .OrderByDescending(t => t.BookingDate)
                 .ToListAsync();
         }
@@ -143,8 +142,7 @@ namespace Ticket_Booking.Repositories
         {
             return await _dbSet
                 .Include(t => t.Trip)
-                .Include(t => t.Trip)
-                .ThenInclude(tr => tr.Vehicle)
+                .ThenInclude(tr => tr.Company)
                 .Include(t => t.User)
                 .FirstOrDefaultAsync(t => t.QrCode == qrCode);
         }
@@ -153,9 +151,7 @@ namespace Ticket_Booking.Repositories
         {
             return await _dbSet
                 .Include(t => t.Trip)
-                .Include(t => t.Trip)
-                .ThenInclude(tr => tr.Vehicle)
-                .ThenInclude(v => v.Company)
+                .ThenInclude(tr => tr.Company)
                 .Include(t => t.User)
                 .Include(t => t.Payment)
                 .FirstOrDefaultAsync(t => t.Id == id);
@@ -180,8 +176,7 @@ namespace Ticket_Booking.Repositories
             return await _dbSet
                 .Where(t => t.UserId == userId && t.Trip.DepartureTime > now)
                 .Include(t => t.Trip)
-                .Include(t => t.Trip)
-                .ThenInclude(tr => tr.Vehicle)
+                .ThenInclude(tr => tr.Company)
                 .OrderBy(t => t.Trip.DepartureTime)
                 .ToListAsync();
         }
@@ -192,8 +187,7 @@ namespace Ticket_Booking.Repositories
             return await _dbSet
                 .Where(t => t.UserId == userId && t.Trip.DepartureTime <= now)
                 .Include(t => t.Trip)
-                .Include(t => t.Trip)
-                .ThenInclude(tr => tr.Vehicle)
+                .ThenInclude(tr => tr.Company)
                 .OrderByDescending(t => t.Trip.DepartureTime)
                 .ToListAsync();
         }
