@@ -17,18 +17,31 @@
                 <input type="hidden" asp-for="Id" />
                 <div class="grid grid-cols-1 gap-6">
                     <div>
-                        <label asp-for="VehicleId" class="block text-sm font-medium text-gray-700">Vehicle</label>
-                        <select asp-for="VehicleId" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
-                            <option value="">Select a vehicle</option>
-                            @if (ViewBag.Vehicles != null)
+                        <label asp-for="CompanyId" class="block text-sm font-medium text-gray-700">Airline</label>
+                        <select asp-for="CompanyId" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                            <option value="">Select an airline</option>
+                            @if (ViewBag.Companies != null)
                             {
-                                foreach (var vehicle in ViewBag.Vehicles)
+                                foreach (var company in ViewBag.Companies)
                                 {
-                                    <option value="@vehicle.Id">@vehicle.VehicleName (@vehicle.Company.Name)</option>
+                                    <option value="@company.Id">@company.Name</option>
                                 }
                             }
                         </select>
-                        <span asp-validation-for="VehicleId" class="text-red-500 text-xs"></span>
+                        <span asp-validation-for="CompanyId" class="text-red-500 text-xs"></span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label asp-for="PlaneName" class="block text-sm font-medium text-gray-700">Plane Name</label>
+                            <input asp-for="PlaneName" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required />
+                            <span asp-validation-for="PlaneName" class="text-red-500 text-xs"></span>
+                        </div>
+                        <div>
+                            <label asp-for="AvailableSeats" class="block text-sm font-medium text-gray-700">Total Seats</label>
+                            <input asp-for="AvailableSeats" type="number" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required />
+                            <span asp-validation-for="AvailableSeats" class="text-red-500 text-xs"></span>
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -90,7 +103,7 @@
                 </div>
 
                 <div class="flex justify-end space-x-3 pt-6 border-t border-gray-100">
-                    <a href="@Url.Action("TripManagement", "Partner")" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <a href="@Url.Action("TripsManagement", "Partner")" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         Cancel
                     </a>
                     <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
