@@ -27,8 +27,7 @@ namespace Ticket_Booking.Repositories
         public async Task<IEnumerable<Trip>> GetAllAsync()
         {
             return await _dbSet
-                .Include(t => t.Vehicle)
-                    .ThenInclude(v => v.Company)
+                .Include(t => t.Company)
                 .ToListAsync();
         }
 
@@ -113,11 +112,11 @@ namespace Ticket_Booking.Repositories
         }
 
         // Trip-specific methods
-        public async Task<IEnumerable<Trip>> GetByVehicleAsync(int vehicleId)
+        public async Task<IEnumerable<Trip>> GetByCompanyAsync(int companyId)
         {
             return await _dbSet
-                .Where(t => t.VehicleId == vehicleId)
-                .Include(t => t.Vehicle)
+                .Where(t => t.CompanyId == companyId)
+                .Include(t => t.Company)
                 .OrderBy(t => t.DepartureTime)
                 .ToListAsync();
         }
@@ -126,15 +125,14 @@ namespace Ticket_Booking.Repositories
         {
             return await _dbSet
                 .Where(t => t.Status == status)
-                .Include(t => t.Vehicle)
+                .Include(t => t.Company)
                 .ToListAsync();
         }
 
         public async Task<IEnumerable<Trip>> SearchTripsAsync(string fromCity, string toCity, DateTime? date = null)
         {
             var query = _dbSet
-                .Include(t => t.Vehicle)
-                .ThenInclude(v => v.Company)
+                .Include(t => t.Company)
                 .Where(t => t.FromCity.Contains(fromCity) && t.ToCity.Contains(toCity));
 
             if (date.HasValue)
@@ -152,8 +150,7 @@ namespace Ticket_Booking.Repositories
         public async Task<Trip?> GetCompleteAsync(int id)
         {
             return await _dbSet
-                .Include(t => t.Vehicle)
-                .ThenInclude(v => v.Company)
+                .Include(t => t.Company)
                 .Include(t => t.Tickets)
                 .FirstOrDefaultAsync(t => t.Id == id);
         }
@@ -165,8 +162,7 @@ namespace Ticket_Booking.Repositories
                            t.DepartureTime <= toDate && 
                            t.AvailableSeats > 0 &&
                            t.Status == TripStatus.Active)
-                .Include(t => t.Vehicle)
-                .ThenInclude(v => v.Company)
+                .Include(t => t.Company)
                 .OrderBy(t => t.DepartureTime)
                 .ToListAsync();
         }
@@ -178,7 +174,7 @@ namespace Ticket_Booking.Repositories
 
             return await _dbSet
                 .Where(t => t.DepartureTime >= now && t.DepartureTime <= futureTime)
-                .Include(t => t.Vehicle)
+                .Include(t => t.Company)
                 .OrderBy(t => t.DepartureTime)
                 .ToListAsync();
         }
