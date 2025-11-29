@@ -91,7 +91,9 @@ namespace Ticket_Booking.Data
             modelBuilder.Entity<Trip>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Price).HasPrecision(10, 2);
+                entity.Property(e => e.EconomyPrice).HasPrecision(10, 2);
+                entity.Property(e => e.BusinessPrice).HasPrecision(10, 2);
+                entity.Property(e => e.FirstClassPrice).HasPrecision(10, 2);
                 entity.Property(e => e.Status).IsRequired().HasMaxLength(20);
                 
                 entity.HasOne(e => e.Company)
