@@ -115,7 +115,6 @@ namespace Ticket_Booking.Repositories
             return await _dbSet
                 .Where(t => t.UserId == userId)
                 .Include(t => t.Trip)
-                .ThenInclude(tr => tr.Route)
                 .Include(t => t.Trip)
                 .ThenInclude(tr => tr.Vehicle)
                 .OrderByDescending(t => t.BookingDate)
@@ -144,7 +143,6 @@ namespace Ticket_Booking.Repositories
         {
             return await _dbSet
                 .Include(t => t.Trip)
-                .ThenInclude(tr => tr.Route)
                 .Include(t => t.Trip)
                 .ThenInclude(tr => tr.Vehicle)
                 .Include(t => t.User)
@@ -155,7 +153,6 @@ namespace Ticket_Booking.Repositories
         {
             return await _dbSet
                 .Include(t => t.Trip)
-                .ThenInclude(tr => tr.Route)
                 .Include(t => t.Trip)
                 .ThenInclude(tr => tr.Vehicle)
                 .ThenInclude(v => v.Company)
@@ -183,7 +180,6 @@ namespace Ticket_Booking.Repositories
             return await _dbSet
                 .Where(t => t.UserId == userId && t.Trip.DepartureTime > now)
                 .Include(t => t.Trip)
-                .ThenInclude(tr => tr.Route)
                 .Include(t => t.Trip)
                 .ThenInclude(tr => tr.Vehicle)
                 .OrderBy(t => t.Trip.DepartureTime)
@@ -196,7 +192,6 @@ namespace Ticket_Booking.Repositories
             return await _dbSet
                 .Where(t => t.UserId == userId && t.Trip.DepartureTime <= now)
                 .Include(t => t.Trip)
-                .ThenInclude(tr => tr.Route)
                 .Include(t => t.Trip)
                 .ThenInclude(tr => tr.Vehicle)
                 .OrderByDescending(t => t.Trip.DepartureTime)
