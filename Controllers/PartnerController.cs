@@ -10,21 +10,15 @@ namespace Ticket_Booking.Controllers
         private readonly IRepository<Trip> _tripRepository;
         private readonly IRepository<Ticket> _ticketRepository;
         private readonly IRepository<Company> _companyRepository;
-        private readonly IRepository<TransportType> _transportTypeRepository;
-        private readonly IRepository<Vehicle> _vehicleRepository;
 
         public PartnerController(
             IRepository<Trip> tripRepository,
             IRepository<Ticket> ticketRepository,
-            IRepository<Company> companyRepository,
-            IRepository<TransportType> transportTypeRepository,
-            IRepository<Vehicle> vehicleRepository)
+            IRepository<Company> companyRepository)
         {
             _tripRepository = tripRepository;
             _ticketRepository = ticketRepository;
             _companyRepository = companyRepository;
-            _transportTypeRepository = transportTypeRepository;
-            _vehicleRepository = vehicleRepository;
         }
 
         public async Task<IActionResult> Index()
@@ -76,7 +70,6 @@ namespace Ticket_Booking.Controllers
             var role = HttpContext.Session.GetString("UserRole");
             if (role != "Partner") return RedirectToAction("Index", "Login");
 
-            ViewBag.TransportTypes = await _transportTypeRepository.GetAllAsync();
             return View();
         }
 
@@ -107,7 +100,6 @@ namespace Ticket_Booking.Controllers
                 return NotFound();
             }
 
-            ViewBag.TransportTypes = await _transportTypeRepository.GetAllAsync();
             return View(company);
         }
 
@@ -124,7 +116,6 @@ namespace Ticket_Booking.Controllers
 
             existingCompany.Name = company.Name;
             existingCompany.Contact = company.Contact;
-            existingCompany.TransportTypeId = company.TransportTypeId;
             existingCompany.LogoUrl = company.LogoUrl;
 
             await _companyRepository.UpdateAsync(existingCompany);
@@ -157,7 +148,7 @@ namespace Ticket_Booking.Controllers
 
             var trips = await _tripRepository.GetAllAsync();
              var userId = HttpContext.Session.GetInt32("UserId");
-             trips = trips.Where(t => t.Vehicle.Company.OwnerId == userId);
+             trips = trips.Where(t => t.Company.OwnerId == userId);
 
             return View(trips);
         }
@@ -170,10 +161,8 @@ namespace Ticket_Booking.Controllers
 
             var userId = HttpContext.Session.GetInt32("UserId");
             var companies = await _companyRepository.FindAsync(c => c.OwnerId == userId);
-            var companyIds = companies.Select(c => c.Id).ToList();
-            var vehicles = await _vehicleRepository.FindAsync(v => companyIds.Contains(v.CompanyId));
 
-            ViewBag.Vehicles = vehicles;
+            ViewBag.Companies = companies;
             return View();
         }
 
@@ -185,19 +174,94 @@ namespace Ticket_Booking.Controllers
 
             var userId = HttpContext.Session.GetInt32("UserId");
 
-            var vehicle = await _vehicleRepository.GetByIdAsync(trip.VehicleId);
-            if (vehicle == null) return BadRequest("Invalid Vehicle");
-
-            var company = await _companyRepository.GetByIdAsync(vehicle.CompanyId);
+            var company = await _companyRepository.GetByIdAsync(trip.CompanyId);
             if (company == null || company.OwnerId != userId)
             {
                 return Unauthorized();
             }
 
             trip.Status = Ticket_Booking.Enums.TripStatus.Active;
-            trip.AvailableSeats = vehicle.Capacity;
+            // AvailableSeats should be bound from the form
 
             await _tripRepository.AddAsync(trip);
+            await _tripRepository.SaveChangesAsync();
+
+            return RedirectToAction(nameof(TripsManagement));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditTrip(int id)
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Partner") return RedirectToAction("Index", "Login");
+
+            var userId = HttpContext.Session.GetInt32("UserId");
+            var trip = await _tripRepository.GetByIdAsync(id);
+
+            if (trip == null || trip.Company.OwnerId != userId)
+            {
+                return NotFound();
+            }
+
+            var companies = await _companyRepository.FindAsync(c => c.OwnerId == userId);
+            ViewBag.Companies = companies;
+
+            return View(trip);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditTrip(Trip trip)
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Partner") return RedirectToAction("Index", "Login");
+
+            var userId = HttpContext.Session.GetInt32("UserId");
+            var existingTrip = await _tripRepository.GetByIdAsync(trip.Id);
+
+            if (existingTrip == null || existingTrip.Company.OwnerId != userId)
+            {
+                return NotFound();
+            }
+
+            var company = await _companyRepository.GetByIdAsync(trip.CompanyId);
+            if (company == null || company.OwnerId != userId)
+            {
+                return Unauthorized();
+            }
+
+            existingTrip.CompanyId = trip.CompanyId;
+            existingTrip.PlaneName = trip.PlaneName;
+            existingTrip.FromCity = trip.FromCity;
+            existingTrip.ToCity = trip.ToCity;
+            existingTrip.Distance = trip.Distance;
+            existingTrip.EstimatedDuration = trip.EstimatedDuration;
+            existingTrip.DepartureTime = trip.DepartureTime;
+            existingTrip.ArrivalTime = trip.ArrivalTime;
+            existingTrip.Price = trip.Price;
+            existingTrip.AvailableSeats = trip.AvailableSeats;
+            existingTrip.Status = trip.Status;
+
+            await _tripRepository.UpdateAsync(existingTrip);
+            await _tripRepository.SaveChangesAsync();
+
+            return RedirectToAction(nameof(TripsManagement));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteTrip(int id)
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Partner") return RedirectToAction("Index", "Login");
+
+            var userId = HttpContext.Session.GetInt32("UserId");
+            var trip = await _tripRepository.GetByIdAsync(id);
+
+            if (trip == null || trip.Company.OwnerId != userId)
+            {
+                return NotFound();
+            }
+
+            await _tripRepository.DeleteAsync(trip);
             await _tripRepository.SaveChangesAsync();
 
             return RedirectToAction(nameof(TripsManagement));
