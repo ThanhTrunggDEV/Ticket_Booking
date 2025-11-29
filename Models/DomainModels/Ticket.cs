@@ -8,6 +8,9 @@ namespace Ticket_Booking.Models.DomainModels
         public int TripId { get; set; }
         public int UserId { get; set; }
         public string SeatNumber { get; set; } = string.Empty;
+        public SeatClass SeatClass { get; set; }
+        public string PassengerName { get; set; } = string.Empty;
+        public string? PassportNumber { get; set; }
         public DateTime BookingDate { get; set; }
         public PaymentStatus PaymentStatus { get; set; } 
         public string? QrCode { get; set; }
