@@ -108,22 +108,7 @@ namespace Ticket_Booking.Repositories
             return await _context.SaveChangesAsync();
         }
 
-        // Company-specific methods
-        public async Task<IEnumerable<Company>> GetByTransportTypeAsync(int transportTypeId)
-        {
-            return await _dbSet
-                .Where(c => c.TransportTypeId == transportTypeId)
-                .Include(c => c.TransportType)
-                .ToListAsync();
-        }
 
-        public async Task<Company?> GetWithVehiclesAsync(int id)
-        {
-            return await _dbSet
-                .Include(c => c.Vehicles)
-                .Include(c => c.TransportType)
-                .FirstOrDefaultAsync(c => c.Id == id);
-        }
 
         public async Task<Company?> GetWithReviewsAsync(int id)
         {
@@ -136,8 +121,6 @@ namespace Ticket_Booking.Repositories
         public async Task<Company?> GetCompleteAsync(int id)
         {
             return await _dbSet
-                .Include(c => c.TransportType)
-                .Include(c => c.Vehicles)
                 .Include(c => c.Reviews)
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
@@ -146,7 +129,6 @@ namespace Ticket_Booking.Repositories
         {
             return await _dbSet
                 .Where(c => c.Name.Contains(name))
-                .Include(c => c.TransportType)
                 .ToListAsync();
         }
 

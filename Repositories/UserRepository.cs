@@ -20,7 +20,10 @@ namespace Ticket_Booking.Repositories
  
         public async Task<User?> GetByIdAsync(int id)
         {
-            return await _dbSet.FindAsync(id);
+            return await _dbSet
+                .Include(u => u.Tickets)
+                .Include(u => u.Reviews)
+                .FirstOrDefaultAsync(u => u.Id == id);
         }
 
         public async Task<IEnumerable<User>> GetAllAsync()

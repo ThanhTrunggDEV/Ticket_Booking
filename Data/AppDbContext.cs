@@ -2,7 +2,6 @@
 using Ticket_Booking.Enums;
 using Ticket_Booking.Models.DomainModels;
 using Ticket_Booking.Services;
-using RouteModel = Ticket_Booking.Models.DomainModels.Route;
 
 namespace Ticket_Booking.Data
 {
@@ -13,10 +12,7 @@ namespace Ticket_Booking.Data
         {
         }
         public DbSet<User> Users { get; set; }
-        public DbSet<TransportType> TransportTypes { get; set; }
         public DbSet<Company> Companies { get; set; }
-        public DbSet<RouteModel> Routes { get; set; }
-        public DbSet<Vehicle> Vehicles { get; set; }
         public DbSet<Trip> Trips { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<Payment> Payments { get; set; }
@@ -59,15 +55,6 @@ namespace Ticket_Booking.Data
             if(Users.Any(u => u.Email == parnter.Email) == false)
                 Users.Add(parnter);
 
-            if (!TransportTypes.Any())
-            {
-                TransportTypes.AddRange(
-                    new TransportType { Name = "Máy bay" },
-                    new TransportType { Name = "Tàu" },
-                    new TransportType { Name = "Xe" }
-                );
-            }
-
             SaveChanges();
         }
 
@@ -87,13 +74,6 @@ namespace Ticket_Booking.Data
             });
 
            
-            modelBuilder.Entity<TransportType>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
-            });
-
-           
             modelBuilder.Entity<Company>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -101,59 +81,24 @@ namespace Ticket_Booking.Data
                 entity.Property(e => e.Contact).HasMaxLength(100);
                 entity.Property(e => e.LogoUrl).HasMaxLength(255);
                 
-                entity.HasOne(e => e.TransportType)
-                    .WithMany(t => t.Companies)
-                    .HasForeignKey(e => e.TransportTypeId)
-                    .OnDelete(DeleteBehavior.Restrict);
-
                 entity.HasOne(e => e.Owner)
                     .WithMany(u => u.Companies)
                     .HasForeignKey(e => e.OwnerId)
                     .OnDelete(DeleteBehavior.SetNull);
             });
 
-           
-            modelBuilder.Entity<RouteModel>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.FromCity).IsRequired().HasMaxLength(100);
-                entity.Property(e => e.ToCity).IsRequired().HasMaxLength(100);
-                entity.Property(e => e.Distance).HasPrecision(6, 2);
-            });
-
-           
-            modelBuilder.Entity<Vehicle>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.VehicleName).IsRequired().HasMaxLength(100);
-                entity.Property(e => e.Code).IsRequired().HasMaxLength(20);
-                
-                entity.HasOne(e => e.Company)
-                    .WithMany(c => c.Vehicles)
-                    .HasForeignKey(e => e.CompanyId)
-                    .OnDelete(DeleteBehavior.Restrict);
-                
-                entity.HasOne(e => e.TransportType)
-                    .WithMany(t => t.Vehicles)
-                    .HasForeignKey(e => e.TransportTypeId)
-                    .OnDelete(DeleteBehavior.Restrict);
-            });
-
           
             modelBuilder.Entity<Trip>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Price).HasPrecision(10, 2);
+                entity.Property(e => e.EconomyPrice).HasPrecision(10, 2);
+                entity.Property(e => e.BusinessPrice).HasPrecision(10, 2);
+                entity.Property(e => e.FirstClassPrice).HasPrecision(10, 2);
                 entity.Property(e => e.Status).IsRequired().HasMaxLength(20);
                 
-                entity.HasOne(e => e.Vehicle)
-                    .WithMany(v => v.Trips)
-                    .HasForeignKey(e => e.VehicleId)
-                    .OnDelete(DeleteBehavior.Restrict);
-                
-                entity.HasOne(e => e.Route)
-                    .WithMany(r => r.Trips)
-                    .HasForeignKey(e => e.RouteId)
+                entity.HasOne(e => e.Company)
+                    .WithMany(c => c.Trips)
+                    .HasForeignKey(e => e.CompanyId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 

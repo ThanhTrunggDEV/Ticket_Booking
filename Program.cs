@@ -21,9 +21,7 @@ namespace Ticket_Booking
 
             builder.Services.AddScoped<IRepository<User>, UserRepository>();
             builder.Services.AddScoped<IRepository<Company>, CompanyRepository>();
-            builder.Services.AddScoped<IRepository<TransportType>, TransportTypeRepository>();
-            builder.Services.AddScoped<IRepository<Models.DomainModels.Route>, RouteRepository>();
-            builder.Services.AddScoped<IRepository<Vehicle>, VehicleRepository>();
+
             builder.Services.AddScoped<IRepository<Trip>, TripRepository>();
             builder.Services.AddScoped<IRepository<Ticket>, TicketRepository>();
             builder.Services.AddScoped<IRepository<Payment>, PaymentRepository>();

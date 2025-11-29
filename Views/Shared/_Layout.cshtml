@@ -12,6 +12,140 @@
         @RenderBody()
     </div>
 
+    <!-- AI Chat Widget (Jet Engine / Holographic Theme) -->
+    <div id="ai-chat-widget" class="fixed bottom-8 right-8 z-50 flex flex-col items-end space-y-6 font-mono perspective-1000">
+        
+        <!-- Chat Window -->
+        <div id="chat-window" class="hidden w-80 md:w-96 h-[550px] bg-black/90 backdrop-blur-2xl border-2 border-cyan-500/30 flex flex-col transition-all duration-500 transform origin-bottom-right scale-0 opacity-0 shadow-[0_0_50px_rgba(6,182,212,0.2)] relative overflow-hidden group" style="clip-path: polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%);">
+            
+            <!-- Holographic Grid Background -->
+            <div class="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.1)_1px,transparent_1px)] bg-[size:20px_20px] opacity-20 pointer-events-none"></div>
+            <div class="absolute inset-0 bg-gradient-to-b from-cyan-500/10 to-transparent pointer-events-none"></div>
+
+            <!-- Header -->
+            <div class="p-4 border-b border-cyan-500/30 flex justify-between items-center relative z-10 bg-cyan-950/30">
+                <div class="flex items-center gap-3">
+                    <div class="w-2 h-2 bg-cyan-400 rounded-full animate-ping"></div>
+                    <div>
+                        <h3 class="text-cyan-400 font-black tracking-[0.2em] text-xs uppercase">Flight Deck AI</h3>
+                        <div class="text-[10px] text-cyan-600 font-bold">V.2.0.4 // ONLINE</div>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="toggleChat()" class="text-cyan-500 hover:text-cyan-300 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Messages Area -->
+            <div class="flex-1 p-5 overflow-y-auto space-y-6 relative z-10 scrollbar-hide" id="chat-messages">
+                <!-- AI Message -->
+                <div class="flex gap-4">
+                    <div class="w-8 h-8 rounded-none border border-cyan-500/50 bg-cyan-900/20 flex items-center justify-center flex-shrink-0 relative">
+                        <div class="absolute -top-1 -left-1 w-2 h-2 border-t border-l border-cyan-500"></div>
+                        <div class="absolute -bottom-1 -right-1 w-2 h-2 border-b border-r border-cyan-500"></div>
+                        <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    </div>
+                    <div class="flex-1">
+                        <div class="text-[10px] text-cyan-600 mb-1 uppercase tracking-wider">System // 10:42 AM</div>
+                        <div class="bg-cyan-950/40 border-l-2 border-cyan-500 p-3 text-xs text-cyan-100 leading-relaxed shadow-[0_0_15px_rgba(6,182,212,0.1)]">
+                            <p>Captain, I am ready to assist with flight schedules, bookings, and navigation. Awaiting your command.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="p-4 border-t border-cyan-500/30 bg-cyan-950/30 relative z-10">
+                <div class="relative flex items-center">
+                    <span class="absolute left-3 text-cyan-500 text-xs">></span>
+                    <input type="text" placeholder="TRANSMIT MESSAGE..." class="w-full bg-black/50 border border-cyan-500/30 text-cyan-100 text-xs py-3 pl-8 pr-10 focus:outline-none focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all placeholder-cyan-800 font-bold tracking-wider">
+                    <button class="absolute right-2 p-1 text-cyan-500 hover:text-cyan-300 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Decorative HUD Elements -->
+            <div class="absolute bottom-2 right-2 text-[8px] text-cyan-800 font-bold tracking-widest pointer-events-none">SYS.OP.READY</div>
+            <div class="absolute bottom-2 left-2 w-16 h-0.5 bg-cyan-900/50 pointer-events-none">
+                <div class="h-full w-1/2 bg-cyan-500/50 animate-pulse"></div>
+            </div>
+        </div>
+
+        <!-- Floating Button (Jet Engine Turbine) -->
+        <button onclick="toggleChat()" class="group relative w-20 h-20 flex items-center justify-center focus:outline-none">
+            <!-- Outer Glow Ring -->
+            <div class="absolute inset-0 rounded-full border-2 border-cyan-500/30 shadow-[0_0_30px_rgba(6,182,212,0.4)] group-hover:shadow-[0_0_50px_rgba(6,182,212,0.6)] transition-all duration-500 bg-black/80 backdrop-blur-sm"></div>
+            
+            <!-- Rotating Turbine -->
+            <div class="absolute inset-1 rounded-full overflow-hidden">
+                <svg class="w-full h-full text-cyan-900/80 animate-[spin_4s_linear_infinite] group-hover:animate-[spin_0.5s_ease-in_infinite] transition-all duration-1000" viewBox="0 0 100 100" fill="currentColor">
+                    <path d="M50 50 L50 0 A50 50 0 0 1 67 3 Z" />
+                    <path d="M50 50 L67 3 A50 50 0 0 1 85 15 Z" opacity="0.9"/>
+                    <path d="M50 50 L85 15 A50 50 0 0 1 97 33 Z" opacity="0.8"/>
+                    <path d="M50 50 L97 33 A50 50 0 0 1 100 50 Z" opacity="0.7"/>
+                    <path d="M50 50 L100 50 A50 50 0 0 1 97 67 Z" opacity="0.6"/>
+                    <path d="M50 50 L97 67 A50 50 0 0 1 85 85 Z" opacity="0.5"/>
+                    <path d="M50 50 L85 85 A50 50 0 0 1 67 97 Z" opacity="0.4"/>
+                    <path d="M50 50 L67 97 A50 50 0 0 1 50 100 Z" opacity="0.3"/>
+                    <path d="M50 50 L50 100 A50 50 0 0 1 33 97 Z" opacity="0.3"/>
+                    <path d="M50 50 L33 97 A50 50 0 0 1 15 85 Z" opacity="0.4"/>
+                    <path d="M50 50 L15 85 A50 50 0 0 1 3 67 Z" opacity="0.5"/>
+                    <path d="M50 50 L3 67 A50 50 0 0 1 0 50 Z" opacity="0.6"/>
+                    <path d="M50 50 L0 50 A50 50 0 0 1 3 33 Z" opacity="0.7"/>
+                    <path d="M50 50 L3 33 A50 50 0 0 1 15 15 Z" opacity="0.8"/>
+                    <path d="M50 50 L15 15 A50 50 0 0 1 33 3 Z" opacity="0.9"/>
+                    <path d="M50 50 L33 3 A50 50 0 0 1 50 0 Z" />
+                </svg>
+            </div>
+
+            <!-- Center Core -->
+            <div class="absolute w-6 h-6 bg-cyan-500 rounded-full shadow-[0_0_20px_#22d3ee] animate-pulse z-10 flex items-center justify-center">
+                <div class="w-2 h-2 bg-white rounded-full"></div>
+            </div>
+
+            <!-- Hover Tooltip -->
+            <div class="absolute right-full mr-4 bg-cyan-950/80 text-cyan-400 text-[10px] font-bold py-1 px-3 rounded border border-cyan-500/30 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap backdrop-blur-sm tracking-widest">
+                ENGAGE ASSISTANT
+            </div>
+        </button>
+    </div>
+
+    <style>
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+
+    <script>
+        function toggleChat() {
+            const chatWindow = document.getElementById('chat-window');
+            if (chatWindow.classList.contains('hidden')) {
+                chatWindow.classList.remove('hidden');
+                // Small delay to allow display:block to apply before opacity transition
+                setTimeout(() => {
+                    chatWindow.classList.remove('scale-95', 'opacity-0');
+                    chatWindow.classList.add('scale-100', 'opacity-100');
+                }, 10);
+            } else {
+                chatWindow.classList.remove('scale-100', 'opacity-100');
+                chatWindow.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    chatWindow.classList.add('hidden');
+                }, 300);
+            }
+        }
+    </script>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)

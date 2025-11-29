@@ -142,7 +142,6 @@ namespace Ticket_Booking.Repositories
             return await _dbSet
                 .Include(r => r.User)
                 .Include(r => r.Company)
-                .ThenInclude(c => c.TransportType)
                 .FirstOrDefaultAsync(r => r.Id == id);
         }
 

@@ -4,6 +4,7 @@ namespace Ticket_Booking.Models.ViewModels
 {
     public class PartnerDashboardViewModel
     {
+        public int TotalCompanies { get; set; }
         public int TotalTrips { get; set; }
         public int TotalBookings { get; set; }
         public decimal TotalRevenue { get; set; }

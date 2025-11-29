@@ -7,6 +7,7 @@ namespace Ticket_Booking.Models.DomainModels
         public int Id { get; set; }
         public int TripId { get; set; }
         public int UserId { get; set; }
+        public SeatClass SeatClass { get; set; }
         public string SeatNumber { get; set; } = string.Empty;
         public DateTime BookingDate { get; set; }
         public PaymentStatus PaymentStatus { get; set; } 
