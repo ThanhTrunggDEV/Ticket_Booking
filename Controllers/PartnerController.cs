@@ -237,8 +237,14 @@ namespace Ticket_Booking.Controllers
             existingTrip.EstimatedDuration = trip.EstimatedDuration;
             existingTrip.DepartureTime = trip.DepartureTime;
             existingTrip.ArrivalTime = trip.ArrivalTime;
-            existingTrip.Price = trip.Price;
-            existingTrip.AvailableSeats = trip.AvailableSeats;
+            
+            existingTrip.EconomyPrice = trip.EconomyPrice;
+            existingTrip.EconomySeats = trip.EconomySeats;
+            existingTrip.BusinessPrice = trip.BusinessPrice;
+            existingTrip.BusinessSeats = trip.BusinessSeats;
+            existingTrip.FirstClassPrice = trip.FirstClassPrice;
+            existingTrip.FirstClassSeats = trip.FirstClassSeats;
+
             existingTrip.Status = trip.Status;
 
             await _tripRepository.UpdateAsync(existingTrip);
