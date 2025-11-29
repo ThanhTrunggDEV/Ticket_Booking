@@ -13,8 +13,16 @@ namespace Ticket_Booking.Models.DomainModels
         public int EstimatedDuration { get; set; }
         public DateTime DepartureTime { get; set; }
         public DateTime ArrivalTime { get; set; }
-        public decimal Price { get; set; }
-        public int AvailableSeats { get; set; }
+        
+        public decimal EconomyPrice { get; set; }
+        public int EconomySeats { get; set; }
+        
+        public decimal BusinessPrice { get; set; }
+        public int BusinessSeats { get; set; }
+
+        public decimal FirstClassPrice { get; set; }
+        public int FirstClassSeats { get; set; }
+
         public TripStatus Status { get; set; } 
 
     
