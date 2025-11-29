@@ -2,7 +2,6 @@
 using Ticket_Booking.Enums;
 using Ticket_Booking.Models.DomainModels;
 using Ticket_Booking.Services;
-using RouteModel = Ticket_Booking.Models.DomainModels.Route;
 
 namespace Ticket_Booking.Data
 {
@@ -15,7 +14,6 @@ namespace Ticket_Booking.Data
         public DbSet<User> Users { get; set; }
         public DbSet<TransportType> TransportTypes { get; set; }
         public DbSet<Company> Companies { get; set; }
-        public DbSet<RouteModel> Routes { get; set; }
         public DbSet<Vehicle> Vehicles { get; set; }
         public DbSet<Trip> Trips { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
@@ -113,15 +111,6 @@ namespace Ticket_Booking.Data
             });
 
            
-            modelBuilder.Entity<RouteModel>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.FromCity).IsRequired().HasMaxLength(100);
-                entity.Property(e => e.ToCity).IsRequired().HasMaxLength(100);
-                entity.Property(e => e.Distance).HasPrecision(6, 2);
-            });
-
-           
             modelBuilder.Entity<Vehicle>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -149,11 +138,6 @@ namespace Ticket_Booking.Data
                 entity.HasOne(e => e.Vehicle)
                     .WithMany(v => v.Trips)
                     .HasForeignKey(e => e.VehicleId)
-                    .OnDelete(DeleteBehavior.Restrict);
-                
-                entity.HasOne(e => e.Route)
-                    .WithMany(r => r.Trips)
-                    .HasForeignKey(e => e.RouteId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
