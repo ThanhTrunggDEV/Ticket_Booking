@@ -5,12 +5,15 @@ namespace Ticket_Booking.Models.DomainModels
     public class Trip
     {
         public int Id { get; set; }
+        public string FlightNumber { get; set; } = string.Empty; 
         public int VehicleId { get; set; }
         public int RouteId { get; set; }
         public DateTime DepartureTime { get; set; }
         public DateTime ArrivalTime { get; set; }
         public decimal Price { get; set; }
         public int AvailableSeats { get; set; }
+        public string? Gate { get; set; }
+        public string? Terminal { get; set; }
         public TripStatus Status { get; set; } 
 
     
