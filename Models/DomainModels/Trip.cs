@@ -5,7 +5,8 @@ namespace Ticket_Booking.Models.DomainModels
     public class Trip
     {
         public int Id { get; set; }
-        public int VehicleId { get; set; }
+        public int CompanyId { get; set; }
+        public string PlaneName { get; set; } = string.Empty;
         public string FromCity { get; set; } = string.Empty;
         public string ToCity { get; set; } = string.Empty;
         public decimal Distance { get; set; }
@@ -17,7 +18,7 @@ namespace Ticket_Booking.Models.DomainModels
         public TripStatus Status { get; set; } 
 
     
-        public Vehicle Vehicle { get; set; } = null!;
+        public Company Company { get; set; } = null!;
         public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
     }
 }
