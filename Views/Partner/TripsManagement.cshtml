@@ -126,8 +126,21 @@
                                             <div class="text-sm text-gray-500">Arrives: @item.ArrivalTime.ToString("MMM dd, HH:mm")</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm font-medium text-gray-900">$@item.Price</div>
-                                            <div class="text-sm text-gray-500">@item.AvailableSeats seats left</div>
+                                            <div class="text-xs text-gray-900">
+                                                <span class="font-bold">Eco:</span> $@item.EconomyPrice (@item.EconomySeats)
+                                            </div>
+                                            @if (item.BusinessSeats > 0)
+                                            {
+                                                <div class="text-xs text-gray-900">
+                                                    <span class="font-bold">Bus:</span> $@item.BusinessPrice (@item.BusinessSeats)
+                                                </div>
+                                            }
+                                            @if (item.FirstClassSeats > 0)
+                                            {
+                                                <div class="text-xs text-gray-900">
+                                                    <span class="font-bold">1st:</span> $@item.FirstClassPrice (@item.FirstClassSeats)
+                                                </div>
+                                            }
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full @(item.Status == Ticket_Booking.Enums.TripStatus.Active ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800")">

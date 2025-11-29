@@ -37,11 +37,6 @@
                             <input asp-for="PlaneName" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required />
                             <span asp-validation-for="PlaneName" class="text-red-500 text-xs"></span>
                         </div>
-                        <div>
-                            <label asp-for="AvailableSeats" class="block text-sm font-medium text-gray-700">Total Seats</label>
-                            <input asp-for="AvailableSeats" type="number" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required />
-                            <span asp-validation-for="AvailableSeats" class="text-red-500 text-xs"></span>
-                        </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -83,15 +78,66 @@
                         </div>
                     </div>
 
-                    <div>
-                        <label asp-for="Price" class="block text-sm font-medium text-gray-700">Price</label>
-                        <div class="mt-1 relative rounded-md shadow-sm">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <span class="text-gray-500 sm:text-sm">$</span>
+                    <!-- Seat Classes Configuration -->
+                    <div class="border-t border-gray-200 pt-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Seat Classes & Pricing</h3>
+                        
+                        <!-- Economy Class -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 bg-gray-50 p-4 rounded-lg">
+                            <div>
+                                <label asp-for="EconomySeats" class="block text-sm font-medium text-gray-700">Economy Seats</label>
+                                <input asp-for="EconomySeats" type="number" min="0" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required />
+                                <span asp-validation-for="EconomySeats" class="text-red-500 text-xs"></span>
                             </div>
-                            <input asp-for="Price" type="number" step="0.01" class="focus:ring-blue-500 focus:border-blue-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md" placeholder="0.00" required />
+                            <div>
+                                <label asp-for="EconomyPrice" class="block text-sm font-medium text-gray-700">Economy Price</label>
+                                <div class="mt-1 relative rounded-md shadow-sm">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-500 sm:text-sm">$</span>
+                                    </div>
+                                    <input asp-for="EconomyPrice" type="number" step="0.01" min="0" class="focus:ring-blue-500 focus:border-blue-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md" placeholder="0.00" required />
+                                </div>
+                                <span asp-validation-for="EconomyPrice" class="text-red-500 text-xs"></span>
+                            </div>
                         </div>
-                        <span asp-validation-for="Price" class="text-red-500 text-xs"></span>
+
+                        <!-- Business Class -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 bg-blue-50 p-4 rounded-lg">
+                            <div>
+                                <label asp-for="BusinessSeats" class="block text-sm font-medium text-gray-700">Business Seats</label>
+                                <input asp-for="BusinessSeats" type="number" min="0" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+                                <span asp-validation-for="BusinessSeats" class="text-red-500 text-xs"></span>
+                            </div>
+                            <div>
+                                <label asp-for="BusinessPrice" class="block text-sm font-medium text-gray-700">Business Price</label>
+                                <div class="mt-1 relative rounded-md shadow-sm">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-500 sm:text-sm">$</span>
+                                    </div>
+                                    <input asp-for="BusinessPrice" type="number" step="0.01" min="0" class="focus:ring-blue-500 focus:border-blue-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md" placeholder="0.00" />
+                                </div>
+                                <span asp-validation-for="BusinessPrice" class="text-red-500 text-xs"></span>
+                            </div>
+                        </div>
+
+                        <!-- First Class -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-purple-50 p-4 rounded-lg">
+                            <div>
+                                <label asp-for="FirstClassSeats" class="block text-sm font-medium text-gray-700">First Class Seats</label>
+                                <input asp-for="FirstClassSeats" type="number" min="0" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+                                <span asp-validation-for="FirstClassSeats" class="text-red-500 text-xs"></span>
+                            </div>
+                            <div>
+                                <label asp-for="FirstClassPrice" class="block text-sm font-medium text-gray-700">First Class Price</label>
+                                <div class="mt-1 relative rounded-md shadow-sm">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-500 sm:text-sm">$</span>
+                                    </div>
+                                    <input asp-for="FirstClassPrice" type="number" step="0.01" min="0" class="focus:ring-blue-500 focus:border-blue-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md" placeholder="0.00" />
+                                </div>
+                                <span asp-validation-for="FirstClassPrice" class="text-red-500 text-xs"></span>
+                            </div>
+                        </div>
                     </div>
                     
                     <div>
