@@ -93,5 +93,59 @@ namespace Ticket_Booking.Controllers
 
             return RedirectToAction(nameof(UserManagement));
         }
+
+        public async Task<IActionResult> PartnerManagement()
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Admin")
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            var companies = await _companyRepository.GetAllAsync();
+            return View(companies);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeletePartner(int id)
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Admin")
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            await _companyRepository.DeleteByIdAsync(id);
+            await _companyRepository.SaveChangesAsync();
+
+            return RedirectToAction(nameof(PartnerManagement));
+        }
+
+        public async Task<IActionResult> TripManagement()
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Admin")
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            var trips = await _tripRepository.GetAllAsync();
+            return View(trips);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteTrip(int id)
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Admin")
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            await _tripRepository.DeleteByIdAsync(id);
+            await _tripRepository.SaveChangesAsync();
+
+            return RedirectToAction(nameof(TripManagement));
+        }
     }
 }
