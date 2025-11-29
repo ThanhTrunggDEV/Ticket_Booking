@@ -12,22 +12,19 @@ namespace Ticket_Booking.Controllers
         private readonly IRepository<Company> _companyRepository;
         private readonly IRepository<TransportType> _transportTypeRepository;
         private readonly IRepository<Vehicle> _vehicleRepository;
-        private readonly IRepository<Ticket_Booking.Models.DomainModels.Route> _routeRepository;
 
         public PartnerController(
             IRepository<Trip> tripRepository,
             IRepository<Ticket> ticketRepository,
             IRepository<Company> companyRepository,
             IRepository<TransportType> transportTypeRepository,
-            IRepository<Vehicle> vehicleRepository,
-            IRepository<Ticket_Booking.Models.DomainModels.Route> routeRepository)
+            IRepository<Vehicle> vehicleRepository)
         {
             _tripRepository = tripRepository;
             _ticketRepository = ticketRepository;
             _companyRepository = companyRepository;
             _transportTypeRepository = transportTypeRepository;
             _vehicleRepository = vehicleRepository;
-            _routeRepository = routeRepository;
         }
 
         public async Task<IActionResult> Index()
@@ -177,7 +174,6 @@ namespace Ticket_Booking.Controllers
             var vehicles = await _vehicleRepository.FindAsync(v => companyIds.Contains(v.CompanyId));
 
             ViewBag.Vehicles = vehicles;
-            ViewBag.Routes = await _routeRepository.GetAllAsync();
             return View();
         }
 
