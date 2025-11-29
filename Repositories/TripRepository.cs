@@ -29,7 +29,6 @@ namespace Ticket_Booking.Repositories
             return await _dbSet
                 .Include(t => t.Vehicle)
                     .ThenInclude(v => v.Company)
-                .Include(t => t.Route)
                 .ToListAsync();
         }
 
@@ -114,22 +113,10 @@ namespace Ticket_Booking.Repositories
         }
 
         // Trip-specific methods
-        public async Task<IEnumerable<Trip>> GetByRouteAsync(int routeId)
-        {
-            return await _dbSet
-                .Where(t => t.RouteId == routeId)
-                .Include(t => t.Route)
-                .Include(t => t.Vehicle)
-                .ThenInclude(v => v.Company)
-                .OrderBy(t => t.DepartureTime)
-                .ToListAsync();
-        }
-
         public async Task<IEnumerable<Trip>> GetByVehicleAsync(int vehicleId)
         {
             return await _dbSet
                 .Where(t => t.VehicleId == vehicleId)
-                .Include(t => t.Route)
                 .Include(t => t.Vehicle)
                 .OrderBy(t => t.DepartureTime)
                 .ToListAsync();
@@ -139,7 +126,6 @@ namespace Ticket_Booking.Repositories
         {
             return await _dbSet
                 .Where(t => t.Status == status)
-                .Include(t => t.Route)
                 .Include(t => t.Vehicle)
                 .ToListAsync();
         }
@@ -147,10 +133,9 @@ namespace Ticket_Booking.Repositories
         public async Task<IEnumerable<Trip>> SearchTripsAsync(string fromCity, string toCity, DateTime? date = null)
         {
             var query = _dbSet
-                .Include(t => t.Route)
                 .Include(t => t.Vehicle)
                 .ThenInclude(v => v.Company)
-                .Where(t => t.Route.FromCity.Contains(fromCity) && t.Route.ToCity.Contains(toCity));
+                .Where(t => t.FromCity.Contains(fromCity) && t.ToCity.Contains(toCity));
 
             if (date.HasValue)
             {
@@ -167,7 +152,6 @@ namespace Ticket_Booking.Repositories
         public async Task<Trip?> GetCompleteAsync(int id)
         {
             return await _dbSet
-                .Include(t => t.Route)
                 .Include(t => t.Vehicle)
                 .ThenInclude(v => v.Company)
                 .Include(t => t.Tickets)
@@ -181,7 +165,6 @@ namespace Ticket_Booking.Repositories
                            t.DepartureTime <= toDate && 
                            t.AvailableSeats > 0 &&
                            t.Status == TripStatus.Active)
-                .Include(t => t.Route)
                 .Include(t => t.Vehicle)
                 .ThenInclude(v => v.Company)
                 .OrderBy(t => t.DepartureTime)
@@ -195,7 +178,6 @@ namespace Ticket_Booking.Repositories
 
             return await _dbSet
                 .Where(t => t.DepartureTime >= now && t.DepartureTime <= futureTime)
-                .Include(t => t.Route)
                 .Include(t => t.Vehicle)
                 .OrderBy(t => t.DepartureTime)
                 .ToListAsync();
