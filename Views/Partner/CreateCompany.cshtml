@@ -27,20 +27,7 @@
                         <span asp-validation-for="Contact" class="text-red-500 text-xs"></span>
                     </div>
 
-                    <div>
-                        <label asp-for="TransportTypeId" class="block text-sm font-medium text-gray-700">Transport Type</label>
-                        <select asp-for="TransportTypeId" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
-                            <option value="">Select a type</option>
-                            @if (ViewBag.TransportTypes != null)
-                            {
-                                foreach (var type in ViewBag.TransportTypes)
-                                {
-                                    <option value="@type.Id">@type.Name</option>
-                                }
-                            }
-                        </select>
-                        <span asp-validation-for="TransportTypeId" class="text-red-500 text-xs"></span>
-                    </div>
+
 
                     <div>
                         <label asp-for="LogoUrl" class="block text-sm font-medium text-gray-700">Logo URL</label>
