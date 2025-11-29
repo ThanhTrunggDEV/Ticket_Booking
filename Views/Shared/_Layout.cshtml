@@ -12,6 +12,85 @@
         @RenderBody()
     </div>
 
+    <!-- AI Chat Widget -->
+    <div id="ai-chat-widget" class="fixed bottom-8 right-8 z-50 flex flex-col items-end space-y-4 font-sans">
+        
+        <!-- Chat Window (Hidden by default) -->
+        <div id="chat-window" class="hidden w-80 md:w-96 h-[500px] bg-white rounded-2xl shadow-2xl border border-indigo-100 overflow-hidden flex flex-col transition-all duration-300 transform origin-bottom-right scale-95 opacity-0">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-white font-bold text-sm">Flight Assistant</h3>
+                        <p class="text-indigo-100 text-xs flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span> Online
+                        </p>
+                    </div>
+                </div>
+                <button onclick="toggleChat()" class="text-white/80 hover:text-white transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <!-- Messages Area -->
+            <div class="flex-1 bg-gray-50 p-4 overflow-y-auto space-y-4" id="chat-messages">
+                <!-- Welcome Message -->
+                <div class="flex items-start space-x-2">
+                    <div class="w-8 h-8 bg-indigo-100 rounded-full flex-shrink-0 flex items-center justify-center">
+                        <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    </div>
+                    <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 text-sm text-gray-600">
+                        Hello! I'm your AI flight assistant. How can I help you with your booking today?
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="p-4 bg-white border-t border-gray-100">
+                <div class="flex items-center space-x-2">
+                    <input type="text" placeholder="Type your message..." class="flex-1 bg-gray-50 border border-gray-200 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all">
+                    <button class="p-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition-colors shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Button -->
+        <button onclick="toggleChat()" class="group relative flex items-center justify-center w-14 h-14 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full shadow-lg hover:shadow-indigo-500/30 transition-all duration-300 hover:scale-110 z-50">
+            <!-- Ping Animation -->
+            <span class="absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75 animate-ping group-hover:animate-none"></span>
+            
+            <!-- Icon -->
+            <svg class="w-6 h-6 text-white relative z-10 transform transition-transform group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+            </svg>
+        </button>
+    </div>
+
+    <script>
+        function toggleChat() {
+            const chatWindow = document.getElementById('chat-window');
+            if (chatWindow.classList.contains('hidden')) {
+                chatWindow.classList.remove('hidden');
+                // Small delay to allow display:block to apply before opacity transition
+                setTimeout(() => {
+                    chatWindow.classList.remove('scale-95', 'opacity-0');
+                    chatWindow.classList.add('scale-100', 'opacity-100');
+                }, 10);
+            } else {
+                chatWindow.classList.remove('scale-100', 'opacity-100');
+                chatWindow.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    chatWindow.classList.add('hidden');
+                }, 300);
+            }
+        }
+    </script>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
