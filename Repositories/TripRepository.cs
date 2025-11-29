@@ -160,7 +160,7 @@ namespace Ticket_Booking.Repositories
             return await _dbSet
                 .Where(t => t.DepartureTime >= fromDate && 
                            t.DepartureTime <= toDate && 
-                           t.AvailableSeats > 0 &&
+                           (t.EconomySeats > 0 || t.BusinessSeats > 0 || t.FirstClassSeats > 0) &&
                            t.Status == TripStatus.Active)
                 .Include(t => t.Company)
                 .OrderBy(t => t.DepartureTime)
@@ -179,13 +179,29 @@ namespace Ticket_Booking.Repositories
                 .ToListAsync();
         }
 
-        public async Task<bool> UpdateAvailableSeatsAsync(int tripId, int seatsToBook)
+        public async Task<bool> UpdateAvailableSeatsAsync(int tripId, int seatsToBook, SeatClass seatClass)
         {
             var trip = await GetByIdAsync(tripId);
-            if (trip == null || trip.AvailableSeats < seatsToBook)
-                return false;
+            if (trip == null) return false;
 
-            trip.AvailableSeats -= seatsToBook;
+            switch (seatClass)
+            {
+                case SeatClass.Economy:
+                    if (trip.EconomySeats < seatsToBook) return false;
+                    trip.EconomySeats -= seatsToBook;
+                    break;
+                case SeatClass.Business:
+                    if (trip.BusinessSeats < seatsToBook) return false;
+                    trip.BusinessSeats -= seatsToBook;
+                    break;
+                case SeatClass.FirstClass:
+                    if (trip.FirstClassSeats < seatsToBook) return false;
+                    trip.FirstClassSeats -= seatsToBook;
+                    break;
+                default:
+                    return false;
+            }
+
             await UpdateAsync(trip);
             return true;
         }
