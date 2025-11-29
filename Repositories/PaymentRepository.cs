@@ -161,7 +161,6 @@ namespace Ticket_Booking.Repositories
                 .ThenInclude(t => t.User)
                 .Include(p => p.Ticket)
                 .ThenInclude(t => t.Trip)
-                .ThenInclude(tr => tr.Route)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
