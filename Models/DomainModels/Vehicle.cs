@@ -4,12 +4,10 @@ namespace Ticket_Booking.Models.DomainModels
     {
         public int Id { get; set; }
         public int CompanyId { get; set; }
-        public string VehicleName { get; set; } = string.Empty; 
-        public string Manufacturer { get; set; } = string.Empty; 
-        public string Code { get; set; } = string.Empty; 
+        public string VehicleName { get; set; } = string.Empty;
+        public string Code { get; set; } = string.Empty;
         public int Capacity { get; set; }
         public int TransportTypeId { get; set; }
-        public string? ImageUrl { get; set; }
 
       
         public Company Company { get; set; } = null!;
