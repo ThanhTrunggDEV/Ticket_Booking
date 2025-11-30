@@ -10,15 +10,21 @@ namespace Ticket_Booking.Controllers
         private readonly IRepository<Trip> _tripRepository;
         private readonly IRepository<Ticket> _ticketRepository;
         private readonly IRepository<Company> _companyRepository;
+        private readonly IRepository<Review> _reviewRepository;
+        private readonly IRepository<Payment> _paymentRepository;
 
         public PartnerController(
+            IRepository<Review> reviewRepository,
             IRepository<Trip> tripRepository,
             IRepository<Ticket> ticketRepository,
-            IRepository<Company> companyRepository)
+            IRepository<Company> companyRepository,
+            IRepository<Payment> paymentRepository)
         {
             _tripRepository = tripRepository;
             _ticketRepository = ticketRepository;
             _companyRepository = companyRepository;
+            _reviewRepository = reviewRepository;
+            _paymentRepository = paymentRepository;
         }
 
         public async Task<IActionResult> Index()
@@ -29,21 +35,27 @@ namespace Ticket_Booking.Controllers
                 return RedirectToAction("Index", "Login");
             }
 
-            // TODO: Filter data by the logged-in Partner's ID.
-            // Currently, there is no link between User (Partner) and Company/Trips in the database schema.
-            // Displaying all data for demonstration purposes.
+            var userId = HttpContext.Session.GetInt32("UserId");
 
             var trips = await _tripRepository.GetAllAsync();
+                trips = trips.Where(t => t.Company.OwnerId == userId);
+
             var tickets = await _ticketRepository.GetAllAsync();
+                tickets = tickets.Where(t => t.Trip.Company.OwnerId == userId);
+
             var companies = await _companyRepository.GetAllAsync();
+            var companiesCount = companies.Count(c => c.OwnerId == userId);
+
+            var reviews = await _reviewRepository.GetAllAsync();
+                reviews = reviews.Where(r => r.Company.OwnerId == userId);
             
             var viewModel = new PartnerDashboardViewModel
             {
-                TotalCompanies = companies.Count(),
+                TotalCompanies = companiesCount,
                 TotalTrips = trips.Count(),
-                TotalBookings = tickets.Count(),
+                TotalBookings = tickets.Count(), 
                 TotalRevenue = tickets.Sum(t => t.TotalPrice),
-                AverageRating = 0, 
+                AverageRating = reviews.Any() ? reviews.Average(r => r.Rating) : 0.0,
                 RecentTrips = trips.OrderByDescending(t => t.DepartureTime).Take(5).ToList(),
                 RecentBookings = tickets.OrderByDescending(t => t.BookingDate).Take(5).ToList()
             };
@@ -137,10 +149,44 @@ namespace Ticket_Booking.Controllers
                 return NotFound();
             }
 
+            // 1. Delete Reviews
+            var reviews = await _reviewRepository.FindAsync(r => r.CompanyId == id);
+            foreach (var review in reviews)
+            {
+                await _reviewRepository.DeleteAsync(review);
+            }
+
+            // 2. Delete Trips (and their Tickets/Payments)
+            var trips = await _tripRepository.FindAsync(t => t.CompanyId == id);
+            foreach (var trip in trips)
+            {
+                await DeleteTripInternal(trip.Id);
+            }
+
             await _companyRepository.DeleteAsync(company);
             await _companyRepository.SaveChangesAsync();
 
             return RedirectToAction(nameof(CompaniesManagement));
+        }
+
+        private async Task DeleteTripInternal(int tripId)
+        {
+            var tickets = await _ticketRepository.FindAsync(t => t.TripId == tripId);
+            foreach (var ticket in tickets)
+            {
+                var payment = await _paymentRepository.FirstOrDefaultAsync(p => p.TicketId == ticket.Id);
+                if (payment != null)
+                {
+                    await _paymentRepository.DeleteAsync(payment);
+                }
+                await _ticketRepository.DeleteAsync(ticket);
+            }
+
+            var trip = await _tripRepository.GetByIdAsync(tripId);
+            if (trip != null)
+            {
+                await _tripRepository.DeleteAsync(trip);
+            }
         }
 
         public async Task<IActionResult> TripsManagement()
@@ -183,7 +229,6 @@ namespace Ticket_Booking.Controllers
             }
 
             trip.Status = Ticket_Booking.Enums.TripStatus.Active;
-            // AvailableSeats should be bound from the form
 
             await _tripRepository.AddAsync(trip);
             await _tripRepository.SaveChangesAsync();
@@ -269,7 +314,7 @@ namespace Ticket_Booking.Controllers
                 return NotFound();
             }
 
-            await _tripRepository.DeleteAsync(trip);
+            await DeleteTripInternal(id);
             await _tripRepository.SaveChangesAsync();
 
             return RedirectToAction(nameof(TripsManagement));
