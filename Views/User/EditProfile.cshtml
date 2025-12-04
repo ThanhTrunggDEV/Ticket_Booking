@@ -1,0 +1,103 @@
+@model Ticket_Booking.Models.BindingModels.UserEditProfile
+
+@{
+    ViewData["Title"] = "Edit Profile";
+    Layout = "_Layout";
+}
+
+<div class="min-h-screen bg-zinc-100 p-4 md:p-8 font-mono relative overflow-hidden">
+    <!-- Background Texture -->
+    <div class="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
+    
+    <!-- Floating Elements -->
+    <div class="absolute top-20 left-20 w-64 h-64 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
+    <div class="absolute bottom-20 right-20 w-64 h-64 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
+
+    <div class="max-w-7xl mx-auto relative z-10">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row justify-between items-end mb-8 border-b-2 border-indigo-900/10 pb-4">
+            <div>
+                <div class="flex items-center space-x-2 text-indigo-900 mb-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    <span class="font-bold tracking-widest text-sm uppercase">Update Information</span>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-black text-indigo-900 tracking-tighter">EDIT PROFILE</h1>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Sidebar -->
+            <div class="lg:col-span-3">
+                <partial name="_UserSidebar" />
+            </div>
+
+            <!-- Main Content -->
+            <div class="lg:col-span-9">
+                <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100 relative">
+                    <div class="h-2 bg-gradient-to-r from-indigo-600 to-purple-600"></div>
+                    
+                    <div class="p-8">
+                        <form asp-action="EditProfile" method="post" class="space-y-6 max-w-2xl">
+                            <div asp-validation-summary="ModelOnly" class="text-red-500 text-sm font-bold"></div>
+
+                            <div class="grid grid-cols-1 gap-6">
+                                <!-- Email (Read Only) -->
+                                <div>
+                                    <label asp-for="Email" class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Email Address</label>
+                                    <div class="relative">
+                                        <input asp-for="Email" class="w-full bg-gray-50 text-gray-500 border border-gray-200 rounded-xl px-4 py-3 font-bold focus:outline-none cursor-not-allowed" readonly />
+                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                                        </div>
+                                    </div>
+                                    <p class="mt-1 text-[10px] text-gray-400">Email address cannot be changed directly.</p>
+                                </div>
+
+                                <!-- Full Name -->
+                                <div>
+                                    <label asp-for="FullName" class="block text-xs font-bold text-indigo-900 uppercase tracking-widest mb-2">Full Name</label>
+                                    <input asp-for="FullName" class="w-full bg-white text-gray-900 border-2 border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all placeholder-gray-300" placeholder="Enter your full name" />
+                                    <span asp-validation-for="FullName" class="text-red-500 text-xs font-bold mt-1 block"></span>
+                                </div>
+
+                                <!-- Phone Number -->
+                                <div>
+                                    <label asp-for="Phone" class="block text-xs font-bold text-indigo-900 uppercase tracking-widest mb-2">Phone Number</label>
+                                    <input asp-for="Phone" class="w-full bg-white text-gray-900 border-2 border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all placeholder-gray-300" placeholder="Enter your phone number" />
+                                    <span asp-validation-for="Phone" class="text-red-500 text-xs font-bold mt-1 block"></span>
+                                </div>
+                            </div>
+
+                            <div class="pt-6 flex items-center gap-4 border-t border-gray-100 mt-8">
+                                <button type="submit" class="bg-indigo-900 text-white px-8 py-3 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-indigo-800 transition-all shadow-lg flex items-center gap-2 transform hover:scale-105">
+                                    <span>Save Changes</span>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                </button>
+                                <a asp-action="Profile" class="text-gray-500 font-bold text-xs uppercase tracking-widest hover:text-gray-800 px-4 py-3">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @@keyframes blob {
+        0% { transform: translate(0px, 0px) scale(1); }
+        33% { transform: translate(30px, -50px) scale(1.1); }
+        66% { transform: translate(-20px, 20px) scale(0.9); }
+        100% { transform: translate(0px, 0px) scale(1); }
+    }
+    .animate-blob {
+        animation: blob 7s infinite;
+    }
+    .animation-delay-2000 {
+        animation-delay: 2s;
+    }
+</style>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
