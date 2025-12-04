@@ -2,6 +2,7 @@
 using Ticket_Booking.Interfaces;
 using Ticket_Booking.Models.BindingModels;
 using Ticket_Booking.Models.DomainModels;
+using Ticket_Booking.Models.ViewModels;
 
 namespace Ticket_Booking.Controllers
 {
@@ -9,16 +10,52 @@ namespace Ticket_Booking.Controllers
     {
         private readonly IRepository<User> _userRepository;
         private readonly IRepository<Ticket> _ticketRepository;
+        private readonly IRepository<Trip> _tripRepository;
 
-        public UserController(IRepository<User> userRepository, IRepository<Ticket> ticketRepository)
+        public UserController(IRepository<User> userRepository, IRepository<Ticket> ticketRepository, IRepository<Trip> tripRepository)
         {
             _userRepository = userRepository;
             _ticketRepository = ticketRepository;
+            _tripRepository = tripRepository;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? fromCity, string? toCity, DateTime? date)
         {
-            return RedirectToAction("Profile");
+            var trips = await _tripRepository.GetAllAsync();
+            
+            var cities = trips.Select(t => t.FromCity)
+                .Union(trips.Select(t => t.ToCity))
+                .Distinct()
+                .OrderBy(c => c)
+                .ToList();
+
+            if (!string.IsNullOrEmpty(fromCity))
+            {
+                trips = trips.Where(t => t.FromCity == fromCity);
+            }
+
+            if (!string.IsNullOrEmpty(toCity))
+            {
+                trips = trips.Where(t => t.ToCity == toCity);
+            }
+
+            if (date.HasValue)
+            {
+                trips = trips.Where(t => t.DepartureTime.Date == date.Value.Date);
+            }
+
+            trips = trips.Where(t => t.DepartureTime > DateTime.Now);
+
+            var viewModel = new SearchTripViewModel
+            {
+                FromCity = fromCity,
+                ToCity = toCity,
+                Date = date,
+                Trips = trips,
+                AvailableCities = cities
+            };
+
+            return View(viewModel);
         }
 
         public async Task<IActionResult> Profile()
