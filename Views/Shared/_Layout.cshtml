@@ -9,6 +9,82 @@
 </head>
 <body>
     <div class="min-h-screen flex flex-col">
+        <!-- Navigation Bar -->
+        <nav class="bg-indigo-900 text-white shadow-lg z-50 relative border-b border-indigo-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <!-- Logo -->
+                    <a asp-controller="User" asp-action="Index" class="flex-shrink-0 flex items-center gap-2 group">
+                        <div class="bg-indigo-800 p-1.5 rounded-lg group-hover:bg-indigo-700 transition-colors">
+                            <svg class="w-6 h-6 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                        </div>
+                        <span class="font-black tracking-tighter text-xl">SKY<span class="text-indigo-400">BOOKING</span></span>
+                    </a>
+                    
+                    <!-- Desktop Menu -->
+                    @if (Context.Session.GetInt32("UserId") != null)
+                    {
+                        var userRole = Context.Session.GetString("UserRole");
+
+                        <div class="hidden md:block">
+                            <div class="ml-10 flex items-baseline space-x-1">
+                                @if (userRole == "Admin")
+                                {
+                                    <a asp-controller="Admin" asp-action="Index" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "bg-indigo-800 text-white" : "text-indigo-200")">
+                                        Dashboard
+                                    </a>
+                                    <a asp-controller="Admin" asp-action="UserManagement" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Action"]?.ToString() == "UserManagement" ? "bg-indigo-800 text-white" : "text-indigo-200")">
+                                        Users
+                                    </a>
+                                    <a asp-controller="Admin" asp-action="PartnerManagement" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Action"]?.ToString() == "PartnerManagement" ? "bg-indigo-800 text-white" : "text-indigo-200")">
+                                        Partners
+                                    </a>
+                                    <a asp-controller="Admin" asp-action="TripManagement" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Action"]?.ToString() == "TripManagement" ? "bg-indigo-800 text-white" : "text-indigo-200")">
+                                        Trips
+                                    </a>
+                                }
+                                else if (userRole == "Partner")
+                                {
+                                    <a asp-controller="Partner" asp-action="Index" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Partner" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "bg-indigo-800 text-white" : "text-indigo-200")">
+                                        Dashboard
+                                    </a>
+                                    <a asp-controller="Partner" asp-action="CompaniesManagement" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Action"]?.ToString() == "CompaniesManagement" ? "bg-indigo-800 text-white" : "text-indigo-200")">
+                                        My Companies
+                                    </a>
+                                    <a asp-controller="Partner" asp-action="TripsManagement" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Action"]?.ToString() == "TripsManagement" ? "bg-indigo-800 text-white" : "text-indigo-200")">
+                                        My Trips
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a asp-controller="User" asp-action="Index" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "bg-indigo-800 text-white" : "text-indigo-200")">
+                                        Find Flights
+                                    </a>
+                                    <a asp-controller="User" asp-action="Profile" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Action"]?.ToString() == "Profile" ? "bg-indigo-800 text-white" : "text-indigo-200")">
+                                        My Profile
+                                    </a>
+                                    <a asp-controller="User" asp-action="MyBooking" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Action"]?.ToString() == "MyBooking" ? "bg-indigo-800 text-white" : "text-indigo-200")">
+                                        My Bookings
+                                    </a>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- User Menu / Logout -->
+                        <div class="hidden md:block">
+                            <div class="ml-4 flex items-center md:ml-6 gap-4">
+                                <div class="h-6 w-px bg-indigo-800"></div>
+                                <a asp-controller="Login" asp-action="Logout" class="flex items-center gap-2 text-indigo-300 hover:text-white text-xs font-bold uppercase tracking-widest transition-colors group">
+                                    <span>Logout</span>
+                                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </nav>
+
         @RenderBody()
     </div>
 
