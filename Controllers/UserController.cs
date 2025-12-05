@@ -3,6 +3,8 @@ using Ticket_Booking.Interfaces;
 using Ticket_Booking.Models.BindingModels;
 using Ticket_Booking.Models.DomainModels;
 using Ticket_Booking.Models.ViewModels;
+using Ticket_Booking.Repositories;
+using Ticket_Booking.Enums;
 
 namespace Ticket_Booking.Controllers
 {
@@ -83,14 +85,13 @@ namespace Ticket_Booking.Controllers
                 return RedirectToAction("Index", "Login");
             }
 
-            var ticketRepo = _ticketRepository as Ticket_Booking.Repositories.TicketRepository;
+            var ticketRepo = _ticketRepository as TicketRepository;
             if (ticketRepo != null)
             {
                 var tickets = await ticketRepo.GetByUserAsync(userId.Value);
                 return View(tickets);
             }
             
-            // Fallback if casting fails (should not happen)
             var allTickets = await _ticketRepository.FindAsync(t => t.UserId == userId.Value);
             return View(allTickets);
         }
@@ -147,6 +148,96 @@ namespace Ticket_Booking.Controllers
             await _userRepository.SaveChangesAsync();
 
             return RedirectToAction("Profile");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> BookTrip(int tripId)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            var trip = await _tripRepository.GetByIdAsync(tripId);
+            if (trip == null)
+            {
+                return NotFound();
+            }
+
+            return View(trip);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ConfirmBooking(int tripId, SeatClass seatClass)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            var trip = await _tripRepository.GetByIdAsync(tripId);
+            if (trip == null)
+            {
+                return NotFound();
+            }
+
+            // Check availability and calculate price
+            decimal price = 0;
+            bool isAvailable = false;
+
+            switch (seatClass)
+            {
+                case SeatClass.Economy:
+                    if (trip.EconomySeats > 0)
+                    {
+                        price = trip.EconomyPrice;
+                        isAvailable = true;
+                        trip.EconomySeats--;
+                    }
+                    break;
+                case SeatClass.Business:
+                    if (trip.BusinessSeats > 0)
+                    {
+                        price = trip.BusinessPrice;
+                        isAvailable = true;
+                        trip.BusinessSeats--;
+                    }
+                    break;
+                case SeatClass.FirstClass:
+                    if (trip.FirstClassSeats > 0)
+                    {
+                        price = trip.FirstClassPrice;
+                        isAvailable = true;
+                        trip.FirstClassSeats--;
+                    }
+                    break;
+            }
+
+            if (!isAvailable)
+            {
+                TempData["Error"] = "Selected seat class is not available.";
+                return RedirectToAction("BookTrip", new { tripId });
+            }
+
+            var ticket = new Ticket
+            {
+                TripId = tripId,
+                UserId = userId.Value,
+                SeatClass = seatClass,
+                SeatNumber = "A1", // Placeholder
+                BookingDate = DateTime.Now,
+                PaymentStatus = PaymentStatus.Pending,
+                TotalPrice = price,
+                QrCode = Guid.NewGuid().ToString()
+            };
+
+            await _ticketRepository.AddAsync(ticket);
+            await _tripRepository.UpdateAsync(trip);
+            await _ticketRepository.SaveChangesAsync();
+
+            return RedirectToAction("MyBooking");
         }
     }
 }

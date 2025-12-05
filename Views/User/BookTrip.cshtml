@@ -1,0 +1,139 @@
+@model Ticket_Booking.Models.DomainModels.Trip
+@using Ticket_Booking.Enums
+
+@{
+    ViewData["Title"] = "Book Flight";
+    Layout = "_Layout";
+
+    var defaultClass = SeatClass.Economy;
+    decimal defaultPrice = Model.EconomyPrice;
+    
+    if (Model.EconomySeats == 0)
+    {
+        if (Model.BusinessSeats > 0)
+        {
+            defaultClass = SeatClass.Business;
+            defaultPrice = Model.BusinessPrice;
+        }
+        else if (Model.FirstClassSeats > 0)
+        {
+            defaultClass = SeatClass.FirstClass;
+            defaultPrice = Model.FirstClassPrice;
+        }
+    }
+}
+
+<div class="min-h-screen bg-zinc-100 font-mono relative overflow-hidden py-12">
+    <!-- Background Texture -->
+    <div class="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
+    
+    <div class="max-w-4xl mx-auto px-4 relative z-10">
+        <div class="mb-8">
+            <a href="@Url.Action("Index", "User")" class="inline-flex items-center text-indigo-600 font-bold hover:text-indigo-800 transition-colors">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                Back to Search
+            </a>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+            <div class="bg-indigo-900 p-8 text-white relative overflow-hidden">
+                <div class="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-white opacity-10 rounded-full blur-2xl"></div>
+                <h1 class="text-3xl font-black tracking-tighter mb-2">COMPLETE YOUR BOOKING</h1>
+                <p class="text-indigo-200 font-bold uppercase tracking-widest text-xs">Flight Confirmation</p>
+            </div>
+
+            <div class="p-8 md:p-12">
+                <!-- Flight Details -->
+                <div class="bg-zinc-50 rounded-2xl p-6 mb-8 border border-zinc-100">
+                    <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                        <div class="text-center md:text-left">
+                            <div class="text-4xl font-black text-indigo-900">@Model.FromCity</div>
+                            <div class="text-sm font-bold text-gray-400 uppercase tracking-wider">@Model.DepartureTime.ToString("HH:mm, dd MMM")</div>
+                        </div>
+
+                        <div class="flex-1 flex flex-col items-center px-8 w-full">
+                            <div class="text-xs font-bold text-indigo-500 mb-2">@Model.EstimatedDuration mins</div>
+                            <div class="w-full h-0.5 bg-gray-300 relative">
+                                <div class="absolute left-0 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-indigo-900 rounded-full"></div>
+                                <div class="absolute right-0 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-indigo-900 rounded-full"></div>
+                                <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-zinc-50 px-2">
+                                    <svg class="w-6 h-6 text-indigo-900 transform rotate-90" fill="currentColor" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+                                </div>
+                            </div>
+                            <div class="text-xs font-bold text-gray-400 mt-2">@Model.PlaneName</div>
+                        </div>
+
+                        <div class="text-center md:text-right">
+                            <div class="text-4xl font-black text-indigo-900">@Model.ToCity</div>
+                            <div class="text-sm font-bold text-gray-400 uppercase tracking-wider">@Model.ArrivalTime.ToString("HH:mm, dd MMM")</div>
+                        </div>
+                    </div>
+                </div>
+
+                @if (TempData["Error"] != null)
+                {
+                    <div class="bg-red-50 text-red-600 p-4 rounded-xl mb-6 font-bold text-sm border border-red-100">
+                        @TempData["Error"]
+                    </div>
+                }
+
+                <form asp-action="ConfirmBooking" method="post">
+                    <input type="hidden" name="tripId" value="@Model.Id" />
+                    
+                    <div class="mb-8">
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Select Class</label>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- Economy -->
+                            <label class="cursor-pointer relative">
+                                <input type="radio" name="seatClass" value="@SeatClass.Economy" class="peer sr-only" onchange="updatePrice(@Model.EconomyPrice)" @(Model.EconomySeats == 0 ? "disabled" : "") @(defaultClass == SeatClass.Economy ? "checked" : "")>
+                                <div class="p-6 rounded-xl border-2 border-gray-100 hover:border-indigo-200 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all h-full @(Model.EconomySeats == 0 ? "opacity-50 cursor-not-allowed" : "")">
+                                    <div class="text-sm font-bold text-gray-900 mb-1">Economy</div>
+                                    <div class="text-2xl font-black text-indigo-900 mb-2">$@Model.EconomyPrice.ToString("N0")</div>
+                                    <div class="text-xs font-mono text-gray-500">@Model.EconomySeats seats left</div>
+                                </div>
+                            </label>
+
+                            <!-- Business -->
+                            <label class="cursor-pointer relative">
+                                <input type="radio" name="seatClass" value="@SeatClass.Business" class="peer sr-only" onchange="updatePrice(@Model.BusinessPrice)" @(Model.BusinessSeats == 0 ? "disabled" : "") @(defaultClass == SeatClass.Business ? "checked" : "")>
+                                <div class="p-6 rounded-xl border-2 border-gray-100 hover:border-indigo-200 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all h-full @(Model.BusinessSeats == 0 ? "opacity-50 cursor-not-allowed" : "")">
+                                    <div class="text-sm font-bold text-indigo-600 mb-1">Business</div>
+                                    <div class="text-2xl font-black text-indigo-900 mb-2">$@Model.BusinessPrice.ToString("N0")</div>
+                                    <div class="text-xs font-mono text-gray-500">@Model.BusinessSeats seats left</div>
+                                </div>
+                            </label>
+
+                            <!-- First Class -->
+                            <label class="cursor-pointer relative">
+                                <input type="radio" name="seatClass" value="@SeatClass.FirstClass" class="peer sr-only" onchange="updatePrice(@Model.FirstClassPrice)" @(Model.FirstClassSeats == 0 ? "disabled" : "") @(defaultClass == SeatClass.FirstClass ? "checked" : "")>
+                                <div class="p-6 rounded-xl border-2 border-gray-100 hover:border-indigo-200 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all h-full @(Model.FirstClassSeats == 0 ? "opacity-50 cursor-not-allowed" : "")">
+                                    <div class="text-sm font-bold text-purple-600 mb-1">First Class</div>
+                                    <div class="text-2xl font-black text-indigo-900 mb-2">$@Model.FirstClassPrice.ToString("N0")</div>
+                                    <div class="text-xs font-mono text-gray-500">@Model.FirstClassSeats seats left</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-gray-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                        <div>
+                            <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Total Price</div>
+                            <div class="text-4xl font-black text-indigo-900" id="totalPrice">$@defaultPrice.ToString("N0")</div>
+                        </div>
+                        <button type="submit" class="w-full md:w-auto px-8 py-4 bg-indigo-600 text-white rounded-xl font-bold uppercase tracking-widest text-sm hover:bg-indigo-700 transition-all shadow-lg hover:shadow-indigo-500/30 transform hover:-translate-y-1">
+                            Confirm Booking
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updatePrice(price) {
+        // Format price with commas
+        const formattedPrice = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(price);
+        document.getElementById('totalPrice').innerText = formattedPrice;
+    }
+</script>

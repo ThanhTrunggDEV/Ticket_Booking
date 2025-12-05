@@ -145,7 +145,7 @@
                                 <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Starting From</div>
                                 <div class="text-3xl font-black text-indigo-600 mb-4">$@trip.EconomyPrice.ToString("N0")</div>
                                 
-                                <a href="#" class="w-full bg-indigo-900 text-white py-3 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-indigo-800 transition-all shadow-lg text-center group-hover:scale-105 transform">
+                                <a href="@Url.Action("BookTrip", "User", new { tripId = trip.Id })" class="w-full bg-indigo-900 text-white py-3 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-indigo-800 transition-all shadow-lg text-center group-hover:scale-105 transform">
                                     Select Flight
                                 </a>
                                 <div class="mt-4 text-[10px] text-gray-400 font-bold">
