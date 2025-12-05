@@ -248,32 +248,21 @@ namespace Ticket_Booking.Controllers
                 return RedirectToAction("Index", "Login");
             }
 
-            var ticket = await _ticketRepository.GetByIdAsync(id);
+            Ticket? ticket = null;
+            var ticketRepo = _ticketRepository as TicketRepository;
+            
+            if (ticketRepo != null)
+            {
+                ticket = await ticketRepo.GetCompleteAsync(id);
+            }
+            else
+            {
+                ticket = await _ticketRepository.GetByIdAsync(id);
+            }
+
             if (ticket == null || ticket.UserId != userId.Value)
             {
                 return NotFound();
-            }
-
-            // Ensure related data is loaded if not already (depending on repository implementation)
-            // Assuming GetByIdAsync might not load relations, we might need to fetch them or rely on lazy loading if enabled/configured
-            // For now, let's assume the repository handles it or we might need a specific method.
-            // Given the previous code, it seems we might need to ensure Trip and Company are loaded.
-            // If the generic repository doesn't support Include, we might need to cast to TicketRepository or use a specific method.
-            
-            // Re-fetching with relations if needed. 
-            // Checking if TicketRepository has a specific method for single ticket with details.
-            var ticketRepo = _ticketRepository as TicketRepository;
-            if (ticketRepo != null)
-            {
-                // We might need to add a method to TicketRepository or just use what we have.
-                // Let's try to use FindAsync which might be more flexible if we can't use Include directly here.
-                // Or better, let's assume for now that the view will handle nulls or the repo does its job.
-                // Actually, looking at MyBooking, it uses GetByUserAsync.
-                // Let's try to get the ticket from the list of user tickets to ensure relations are loaded if GetById doesn't.
-                var userTickets = await ticketRepo.GetByUserAsync(userId.Value);
-                ticket = userTickets.FirstOrDefault(t => t.Id == id);
-                
-                if (ticket == null) return NotFound();
             }
 
             return View(ticket);
