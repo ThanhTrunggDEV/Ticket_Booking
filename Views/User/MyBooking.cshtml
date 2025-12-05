@@ -91,9 +91,9 @@
                                                 $@ticket.TotalPrice.ToString("N2")
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-right">
-                                                <button class="text-indigo-600 hover:text-indigo-900 font-bold text-xs uppercase tracking-wider hover:underline">
+                                                <a href="@Url.Action("Ticket", "User", new { id = ticket.Id })" class="text-indigo-600 hover:text-indigo-900 font-bold text-xs uppercase tracking-wider hover:underline">
                                                     View Ticket
-                                                </button>
+                                                </a>
                                             </td>
                                         </tr>
                                     }

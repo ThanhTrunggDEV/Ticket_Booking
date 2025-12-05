@@ -1,0 +1,129 @@
+@model Ticket_Booking.Models.DomainModels.Ticket
+@using Ticket_Booking.Enums
+
+@{
+    ViewData["Title"] = "Boarding Pass";
+    Layout = "_Layout";
+}
+
+<div class="min-h-screen bg-zinc-100 font-mono relative overflow-hidden py-12 flex items-center justify-center">
+    <!-- Background Texture -->
+    <div class="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
+    
+    <div class="max-w-3xl w-full mx-auto px-4 relative z-10">
+        <div class="mb-8 text-center md:text-left">
+            <a href="@Url.Action("MyBooking", "User")" class="inline-flex items-center text-indigo-600 font-bold hover:text-indigo-800 transition-colors">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                Back to My Bookings
+            </a>
+        </div>
+
+        <!-- Boarding Pass Container -->
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden relative">
+            <!-- Top Section: Airline & Class -->
+            <div class="bg-indigo-900 p-8 text-white relative overflow-hidden">
+                <div class="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-white opacity-10 rounded-full blur-2xl"></div>
+                <div class="flex justify-between items-center relative z-10">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+                        </div>
+                        <div>
+                            <h1 class="text-xl font-black tracking-tight">@Model.Trip.Company.Name</h1>
+                            <p class="text-indigo-200 text-xs font-bold uppercase tracking-widest">Boarding Pass</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-2xl font-black tracking-tighter">@Model.SeatClass</div>
+                        <div class="text-indigo-200 text-xs font-bold uppercase tracking-widest">Class</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="p-8 md:p-12 relative">
+                <!-- Perforated Line Visual -->
+                <div class="absolute left-0 right-0 top-0 -mt-3 flex justify-between px-2">
+                    @for(int i=0; i<40; i++) { <div class="w-2 h-2 bg-zinc-100 rounded-full"></div> }
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                    <!-- Flight Details -->
+                    <div class="md:col-span-2 space-y-8">
+                        <div class="flex justify-between items-center">
+                            <div class="text-center md:text-left">
+                                <div class="text-5xl font-black text-indigo-900">@Model.Trip.FromCity.Substring(0, 3).ToUpper()</div>
+                                <div class="text-sm font-bold text-gray-400 uppercase tracking-wider mt-1">@Model.Trip.FromCity</div>
+                            </div>
+
+                            <div class="flex-1 flex flex-col items-center px-8">
+                                <svg class="w-8 h-8 text-indigo-300 transform rotate-90" fill="currentColor" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+                                <div class="text-xs font-bold text-indigo-300 mt-1">@Model.Trip.EstimatedDuration mins</div>
+                            </div>
+
+                            <div class="text-center md:text-right">
+                                <div class="text-5xl font-black text-indigo-900">@Model.Trip.ToCity.Substring(0, 3).ToUpper()</div>
+                                <div class="text-sm font-bold text-gray-400 uppercase tracking-wider mt-1">@Model.Trip.ToCity</div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-6">
+                            <div>
+                                <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Date</div>
+                                <div class="text-lg font-black text-gray-900">@Model.Trip.DepartureTime.ToString("dd MMM")</div>
+                            </div>
+                            <div>
+                                <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Time</div>
+                                <div class="text-lg font-black text-gray-900">@Model.Trip.DepartureTime.ToString("HH:mm")</div>
+                            </div>
+                            <div>
+                                <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Flight</div>
+                                <div class="text-lg font-black text-gray-900">@Model.Trip.PlaneName</div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-6">
+                            <div>
+                                <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Passenger</div>
+                                <div class="text-lg font-black text-gray-900">@Model.User.FullName</div>
+                            </div>
+                            <div>
+                                <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Seat</div>
+                                <div class="text-lg font-black text-indigo-600">@Model.SeatNumber</div>
+                            </div>
+                            <div>
+                                <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Gate</div>
+                                <div class="text-lg font-black text-gray-900">TBD</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- QR Code Section -->
+                    <div class="md:col-span-1 border-t md:border-t-0 md:border-l border-dashed border-gray-200 pt-8 md:pt-0 md:pl-12 flex flex-col justify-center items-center text-center">
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-4">
+                            <!-- Placeholder for QR Code -->
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=@Model.QrCode" alt="QR Code" class="w-32 h-32" />
+                        </div>
+                        <div class="text-xs font-mono text-gray-400 break-all">
+                            @Model.QrCode
+                        </div>
+                        <div class="mt-6">
+                            <div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Status</div>
+                            @{
+                                var statusColor = Model.PaymentStatus == Ticket_Booking.Enums.PaymentStatus.Success ? "text-green-600 bg-green-50" : 
+                                                  Model.PaymentStatus == Ticket_Booking.Enums.PaymentStatus.Pending ? "text-yellow-600 bg-yellow-50" : 
+                                                  "text-red-600 bg-red-50";
+                            }
+                            <span class="px-3 py-1 inline-flex text-xs font-black rounded-full @statusColor uppercase tracking-wider">
+                                @Model.PaymentStatus
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Decorative Bar -->
+            <div class="h-2 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600"></div>
+        </div>
+    </div>
+</div>
