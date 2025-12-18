@@ -11,6 +11,7 @@ namespace Ticket_Booking.Data
         : base(options)
         {
         }
+        public AppDbContext() { }
         public DbSet<User> Users { get; set; }
         public DbSet<Company> Companies { get; set; }
         public DbSet<Trip> Trips { get; set; }
