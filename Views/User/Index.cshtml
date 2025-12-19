@@ -15,10 +15,10 @@
         <div class="max-w-7xl mx-auto px-4 py-16 relative z-10">
             <div class="text-center mb-10">
                 <h1 class="text-4xl md:text-6xl font-black tracking-tighter mb-4">
-                    WHERE TO NEXT?
+                    @Localizer["User.WhereToNext"]
                 </h1>
                 <p class="text-indigo-200 text-sm md:text-base uppercase tracking-widest font-bold">
-                    Discover your next adventure with premium comfort
+                    @Localizer["User.DiscoverAdventure"]
                 </p>
             </div>
 
@@ -27,10 +27,10 @@
                 <form asp-action="Index" method="get" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
                     <!-- From -->
                     <div class="md:col-span-3">
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">From</label>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">@Localizer["User.From"]</label>
                         <div class="relative">
                             <select name="fromCity" class="w-full bg-gray-50 text-gray-900 border-2 border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 appearance-none">
-                                <option value="">Select Origin</option>
+                                <option value="">@Localizer["User.SelectOrigin"]</option>
                                 @foreach (var city in Model.AvailableCities)
                                 {
                                     <option value="@city" selected="@(Model.FromCity == city)">@city</option>
@@ -51,10 +51,10 @@
 
                     <!-- To -->
                     <div class="md:col-span-3">
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">To</label>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">@Localizer["User.To"]</label>
                         <div class="relative">
                             <select name="toCity" class="w-full bg-gray-50 text-gray-900 border-2 border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 appearance-none">
-                                <option value="">Select Destination</option>
+                                <option value="">@Localizer["User.SelectDestination"]</option>
                                 @foreach (var city in Model.AvailableCities)
                                 {
                                     <option value="@city" selected="@(Model.ToCity == city)">@city</option>
@@ -68,7 +68,7 @@
 
                     <!-- Date -->
                     <div class="md:col-span-3">
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Departure</label>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">@Localizer["User.Departure"]</label>
                         <input type="date" name="date" value="@(Model.Date?.ToString("yyyy-MM-dd"))" class="w-full bg-gray-50 text-gray-900 border-2 border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
                     </div>
 
@@ -76,7 +76,7 @@
                     <div class="md:col-span-2">
                         <button type="submit" class="w-full bg-indigo-600 text-white py-3.5 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-indigo-700 transition-all shadow-lg hover:shadow-indigo-500/30 flex items-center justify-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                            Search
+                            @Localizer["User.Search"]
                         </button>
                     </div>
                 </form>
@@ -89,8 +89,8 @@
         @if (Model.Trips != null && Model.Trips.Any())
         {
             <div class="flex items-center justify-between mb-8">
-                <h2 class="text-2xl font-black text-indigo-900 tracking-tight">AVAILABLE FLIGHTS</h2>
-                <span class="bg-indigo-100 text-indigo-800 text-xs font-bold px-3 py-1 rounded-full">@Model.Trips.Count() Found</span>
+                <h2 class="text-2xl font-black text-indigo-900 tracking-tight">@Localizer["User.AvailableFlights"]</h2>
+                <span class="bg-indigo-100 text-indigo-800 text-xs font-bold px-3 py-1 rounded-full">@Model.Trips.Count() @Localizer["User.Found"]</span>
             </div>
 
             <div class="grid grid-cols-1 gap-6">
@@ -142,14 +142,14 @@
 
                             <!-- Price & Action -->
                             <div class="md:col-span-4 bg-gray-50 p-6 md:p-8 flex flex-col justify-center items-center border-t md:border-t-0 md:border-l border-gray-100">
-                                <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Starting From</div>
+                                <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">@Localizer["User.StartingFrom"]</div>
                                 <div class="text-3xl font-black text-indigo-600 mb-4">$@trip.EconomyPrice.ToString("N0")</div>
                                 
                                 <a href="@Url.Action("BookTrip", "User", new { tripId = trip.Id })" class="w-full bg-indigo-900 text-white py-3 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-indigo-800 transition-all shadow-lg text-center group-hover:scale-105 transform">
-                                    Select Flight
+                                    @Localizer["User.SelectFlight"]
                                 </a>
                                 <div class="mt-4 text-[10px] text-gray-400 font-bold">
-                                    @trip.EconomySeats Seats Left
+                                    @trip.EconomySeats @Localizer["User.SeatsLeft"]
                                 </div>
                             </div>
                         </div>
@@ -163,8 +163,8 @@
                 <div class="inline-block p-6 rounded-full bg-indigo-50 mb-6">
                     <svg class="w-16 h-16 text-indigo-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </div>
-                <h3 class="text-xl font-black text-indigo-900 mb-2">Ready for Takeoff?</h3>
-                <p class="text-gray-500 max-w-md mx-auto">Select your destination and dates above to find the perfect flight for your journey.</p>
+                <h3 class="text-xl font-black text-indigo-900 mb-2">@Localizer["User.ReadyForTakeoff"]</h3>
+                <p class="text-gray-500 max-w-md mx-auto">@Localizer["User.SelectDestinationDates"]</p>
             </div>
         }
     </div>
