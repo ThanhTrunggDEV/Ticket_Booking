@@ -76,6 +76,9 @@
                                 <!-- Language Switcher -->
                                 @await Html.PartialAsync("_LanguageSwitcher")
                                 <div class="h-6 w-px bg-indigo-800"></div>
+                                <!-- Currency Switcher -->
+                                @await Html.PartialAsync("_CurrencySwitcher")
+                                <div class="h-6 w-px bg-indigo-800"></div>
                                 <a asp-controller="Login" asp-action="Logout" class="flex items-center gap-2 text-indigo-300 hover:text-white text-xs font-bold uppercase tracking-widest transition-colors group">
                                     <span>@Localizer["Nav.Logout"]</span>
                                     <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
@@ -85,9 +88,13 @@
                     }
                     else
                     {
-                        <!-- Language Switcher for non-logged in users -->
+                        <!-- Language and Currency Switchers for non-logged in users -->
                         <div class="hidden md:block">
-                            @await Html.PartialAsync("_LanguageSwitcher")
+                            <div class="flex items-center gap-4">
+                                @await Html.PartialAsync("_LanguageSwitcher")
+                                <div class="h-6 w-px bg-indigo-800"></div>
+                                @await Html.PartialAsync("_CurrencySwitcher")
+                            </div>
                         </div>
                     }
                 </div>
