@@ -17,14 +17,16 @@ namespace Ticket_Booking.Controllers
         private readonly IRepository<Ticket> _ticketRepository;
         private readonly IRepository<Trip> _tripRepository;
         private readonly IVnpayClient _vnPayClient;
+        private readonly IRepository<Payment> _paymentRepository;
 
         private static int _currentTripId;
 
-        public UserController(IRepository<User> userRepository, IRepository<Ticket> ticketRepository, IRepository<Trip> tripRepository, IVnpayClient vnpayClient)
+        public UserController(IRepository<Payment> paymentRepository,IRepository<User> userRepository, IRepository<Ticket> ticketRepository, IRepository<Trip> tripRepository, IVnpayClient vnpayClient)
         {
             _userRepository = userRepository;
             _ticketRepository = ticketRepository;
             _tripRepository = tripRepository;
+            _paymentRepository = paymentRepository;
             _vnPayClient = vnpayClient;
         }
 
@@ -248,11 +250,12 @@ namespace Ticket_Booking.Controllers
             
             try
             {
-                var moneyToPay = (long)(price * 100); 
+                if(price < 5000) price *= 26000;
+                var moneyToPay = price; 
                 var description = $"Thanh toan ve so {ticket.Id} - {trip.FromCity} to {trip.ToCity}";
                 
                 var paymentUrlInfo = _vnPayClient.CreatePaymentUrl(
-                    moneyToPay,
+                    (double)moneyToPay,
                     description,
                     BankCode.ANY
                 );
@@ -286,7 +289,17 @@ namespace Ticket_Booking.Controllers
 
         public async Task<IActionResult> PaySuccess()
         {
-
+            var paymentResult = _vnPayClient.GetPaymentResult(this.Request);
+            
+          //   var payment = new Payment
+          //  {
+            //    TicketId = _currentTripId,
+              //  PaymentDate = DateTime.Now,
+               // Status = PaymentStatus.Success,
+               // Amount = paymentResult.Amount,
+               // Method = PaymentMethod.VNPAY,
+               // TransactionCode = paymentResult.VnpayTransactionId.ToString(),
+            //};
 
             var ticket = await _ticketRepository.GetByIdAsync(_currentTripId);
             if (ticket == null)
