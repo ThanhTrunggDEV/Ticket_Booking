@@ -20,13 +20,13 @@
             <div>
                 <div class="flex items-center space-x-2 text-indigo-900 mb-2">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    <span class="font-bold tracking-widest text-sm uppercase">System Administration</span>
+                    <span class="font-bold tracking-widest text-sm uppercase">@Localizer["Admin.SystemAdministration"]</span>
                 </div>
-                <h1 class="text-4xl md:text-5xl font-black text-indigo-900 tracking-tighter">USER MANAGEMENT</h1>
+                <h1 class="text-4xl md:text-5xl font-black text-indigo-900 tracking-tighter">@Localizer["Admin.UserManagement"]</h1>
             </div>
             <div class="text-right mt-4 md:mt-0">
-                <div class="text-xs font-bold text-gray-400 uppercase tracking-widest">Total Users</div>
-                <div class="text-xl font-bold text-indigo-600">@Model.Count() REGISTERED</div>
+                <div class="text-xs font-bold text-gray-400 uppercase tracking-widest">@Localizer["Admin.TotalUsersCount"]</div>
+                <div class="text-xl font-bold text-indigo-600">@Model.Count() @Localizer["Admin.Registered"]</div>
             </div>
         </div>
 
@@ -35,9 +35,9 @@
             <div class="lg:col-span-12">
                 <div class="bg-white rounded-3xl shadow-xl overflow-hidden">
                     <div class="p-6 border-b border-gray-100 flex justify-between items-center">
-                        <h3 class="text-lg font-black text-indigo-900 uppercase tracking-tighter">Registered Users</h3>
+                        <h3 class="text-lg font-black text-indigo-900 uppercase tracking-tighter">@Localizer["Admin.RegisteredUsers"]</h3>
                         <div class="flex space-x-2">
-                            <input type="text" placeholder="Search users..." class="px-4 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm font-mono focus:ring-indigo-500 focus:border-indigo-500">
+                            <input type="text" placeholder="@Localizer["Admin.SearchUsers"]" class="px-4 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm font-mono focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
                     </div>
                     
@@ -45,10 +45,10 @@
                         <table class="min-w-full">
                             <thead class="bg-zinc-50">
                                 <tr>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">User Info</th>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Role</th>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Joined Date</th>
-                                    <th class="px-6 py-4 text-right text-xs font-bold text-gray-400 uppercase tracking-wider">Actions</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">@Localizer["Admin.UserInfo"]</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">@Localizer["Admin.Role"]</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">@Localizer["Admin.JoinedDate"]</th>
+                                    <th class="px-6 py-4 text-right text-xs font-bold text-gray-400 uppercase tracking-wider">@Localizer["Admin.Actions"]</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
@@ -88,10 +88,10 @@
                                             <div class="text-sm font-bold text-gray-600">@user.CreatedAt.ToString("MMM dd, yyyy")</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <form asp-action="DeleteUser" method="post" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                                            <form asp-action="DeleteUser" method="post" class="inline-block" onsubmit="return confirm('@Localizer["Admin.DeleteUserConfirm"]');">
                                                 <input type="hidden" name="id" value="@user.Id" />
                                                 <button type="submit" class="text-red-400 hover:text-red-600 font-bold uppercase text-xs tracking-wider transition-colors">
-                                                    Delete
+                                                    @Localizer["Admin.Delete"]
                                                 </button>
                                             </form>
                                         </td>
