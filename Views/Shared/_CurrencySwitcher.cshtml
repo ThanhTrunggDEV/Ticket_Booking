@@ -1,0 +1,25 @@
+@using Ticket_Booking.Services
+@inject ICurrencyService CurrencyService
+@{
+    var currentCurrency = CurrencyService.GetCurrentCurrency();
+    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+}
+
+<div class="flex items-center gap-2">
+    <a asp-controller="Currency" 
+       asp-action="SetCurrency" 
+       asp-route-currency="USD" 
+       asp-route-returnUrl="@returnUrl"
+       class="px-3 py-1.5 rounded-lg text-sm font-medium transition-all @(currentCurrency == "USD" ? "bg-indigo-800 text-white" : "text-indigo-200 hover:bg-indigo-800 hover:text-white")">
+        USD
+    </a>
+    <span class="text-indigo-400">|</span>
+    <a asp-controller="Currency" 
+       asp-action="SetCurrency" 
+       asp-route-currency="VND" 
+       asp-route-returnUrl="@returnUrl"
+       class="px-3 py-1.5 rounded-lg text-sm font-medium transition-all @(currentCurrency == "VND" ? "bg-indigo-800 text-white" : "text-indigo-200 hover:bg-indigo-800 hover:text-white")">
+        VND
+    </a>
+</div>
+
