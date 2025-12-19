@@ -19,7 +19,7 @@
                     if (response.redirectUrl) {
                         window.location.href = response.redirectUrl;
                     } else {
-                        $("#success").text("Register successfully !!!")
+                        $("#success").text("@Localizer["SignUp.RegisterSuccess"]")
                     }
                 },
                 error: function (xhr) {
@@ -116,16 +116,16 @@
                 <div class="mb-8">
                     <h2 class="text-2xl font-bold text-gray-900 uppercase tracking-wide flex items-center">
                         <span class="w-2 h-8 bg-indigo-600 mr-3 rounded-sm"></span>
-                        Passenger Registration
+                        @Localizer["SignUp.PassengerRegistration"]
                     </h2>
-                    <p class="text-gray-400 text-xs uppercase tracking-widest mt-2 ml-5">Please fill in your details</p>
+                    <p class="text-gray-400 text-xs uppercase tracking-widest mt-2 ml-5">@Localizer["SignUp.FillDetails"]</p>
                 </div>
 
                 <form id="registerForm" class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Full Name -->
                         <div class="relative group md:col-span-2">
-                            <label class="block text-[10px] uppercase text-gray-400 tracking-[0.2em] mb-2 group-focus-within:text-indigo-600 transition-colors">Full Name</label>
+                            <label class="block text-[10px] uppercase text-gray-400 tracking-[0.2em] mb-2 group-focus-within:text-indigo-600 transition-colors">@Localizer["SignUp.FullName"]</label>
                             <input id="fullname" name="fullname" type="text" required 
                                    class="w-full border-b-2 border-gray-200 py-2 text-lg text-gray-900 font-bold placeholder-gray-200 focus:outline-none focus:border-indigo-600 transition-all bg-transparent font-mono tracking-tight"
                                    placeholder="YOUR FULL NAME">
@@ -134,7 +134,7 @@
 
                         <!-- Email -->
                         <div class="relative group">
-                            <label class="block text-[10px] uppercase text-gray-400 tracking-[0.2em] mb-2 group-focus-within:text-indigo-600 transition-colors">Email Address</label>
+                            <label class="block text-[10px] uppercase text-gray-400 tracking-[0.2em] mb-2 group-focus-within:text-indigo-600 transition-colors">@Localizer["Login.EmailAddress"]</label>
                             <input id="email" name="email" type="email" required 
                                    class="w-full border-b-2 border-gray-200 py-2 text-lg text-gray-900 font-bold placeholder-gray-200 focus:outline-none focus:border-indigo-600 transition-all bg-transparent font-mono tracking-tight"
                                    placeholder="NAME@EXAMPLE.COM">
@@ -143,7 +143,7 @@
 
                         <!-- Phone -->
                         <div class="relative group">
-                            <label class="block text-[10px] uppercase text-gray-400 tracking-[0.2em] mb-2 group-focus-within:text-indigo-600 transition-colors">Phone (Optional)</label>
+                            <label class="block text-[10px] uppercase text-gray-400 tracking-[0.2em] mb-2 group-focus-within:text-indigo-600 transition-colors">@Localizer["SignUp.Phone"]</label>
                             <input id="phone" name="phone" type="tel" 
                                    class="w-full border-b-2 border-gray-200 py-2 text-lg text-gray-900 font-bold placeholder-gray-200 focus:outline-none focus:border-indigo-600 transition-all bg-transparent font-mono tracking-tight"
                                    placeholder="+1 234 567 890">
@@ -151,7 +151,7 @@
                         
                         <!-- Password -->
                         <div class="relative group">
-                            <label class="block text-[10px] uppercase text-gray-400 tracking-[0.2em] mb-2 group-focus-within:text-indigo-600 transition-colors">Password</label>
+                            <label class="block text-[10px] uppercase text-gray-400 tracking-[0.2em] mb-2 group-focus-within:text-indigo-600 transition-colors">@Localizer["Login.Password"]</label>
                             <input id="password" name="password" type="password" required 
                                    class="w-full border-b-2 border-gray-200 py-2 text-lg text-gray-900 font-bold placeholder-gray-200 focus:outline-none focus:border-indigo-600 transition-all bg-transparent font-mono tracking-tight"
                                    placeholder="••••••••">
@@ -160,7 +160,7 @@
 
                         <!-- Confirm Password -->
                         <div class="relative group">
-                            <label class="block text-[10px] uppercase text-gray-400 tracking-[0.2em] mb-2 group-focus-within:text-indigo-600 transition-colors">Confirm Password</label>
+                            <label class="block text-[10px] uppercase text-gray-400 tracking-[0.2em] mb-2 group-focus-within:text-indigo-600 transition-colors">@Localizer["SignUp.ConfirmPassword"]</label>
                             <input id="confirm-password" name="confirmpassword" type="password" required 
                                    class="w-full border-b-2 border-gray-200 py-2 text-lg text-gray-900 font-bold placeholder-gray-200 focus:outline-none focus:border-indigo-600 transition-all bg-transparent font-mono tracking-tight"
                                    placeholder="••••••••">
@@ -181,7 +181,7 @@
                         <div class="flex flex-col items-end w-full sm:w-auto">
                             <button type="submit" 
                                     class="w-full sm:w-auto bg-indigo-900 text-white px-10 py-4 rounded-xl font-bold uppercase tracking-widest hover:bg-indigo-800 transition-all transform hover:translate-x-1 hover:shadow-xl flex items-center justify-center space-x-2 group">
-                                <span>Create Account</span>
+                                <span>@Localizer["SignUp.CreateAccount"]</span>
                                 <svg class="w-5 h-5 transform transition-transform duration-300 group-hover:translate-x-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                             </button>
                             <span id="success" class="text-green-600 font-bold mt-2 text-sm"></span>
@@ -191,8 +191,8 @@
                 
                 <div class="mt-6 text-center sm:text-right">
                     <p class="text-gray-400 text-xs uppercase tracking-widest">
-                        Already a member? 
-                        <a href="/Login" class="text-indigo-600 font-bold hover:text-indigo-800 ml-1">Sign In</a>
+                        @Localizer["SignUp.AlreadyMember"] 
+                        <a href="/Login" class="text-indigo-600 font-bold hover:text-indigo-800 ml-1">@Localizer["SignUp.SignIn"]</a>
                     </p>
                 </div>
             </div>
@@ -200,7 +200,7 @@
     </div>
     
     <div class="absolute bottom-4 text-center w-full text-[10px] uppercase tracking-[0.3em] text-gray-400 opacity-50">
-        Ticket Booking System &copy; @DateTime.Now.Year
+        @Localizer["Common.Copyright"] &copy; @DateTime.Now.Year
     </div>
 </div>
 
