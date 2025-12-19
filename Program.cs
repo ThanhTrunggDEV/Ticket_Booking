@@ -3,6 +3,7 @@ using Ticket_Booking.Data;
 using Ticket_Booking.Interfaces;
 using Ticket_Booking.Models.DomainModels;
 using Ticket_Booking.Repositories;
+using VNPAY.Extensions;
 
 namespace Ticket_Booking
 {
@@ -14,6 +15,15 @@ namespace Ticket_Booking
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            var vnpayConfig = builder.Configuration.GetSection("VNPAY");
+
+            builder.Services.AddVnpayClient(config =>
+            {
+                config.TmnCode = vnpayConfig["TmnCode"]!;
+                config.HashSecret = vnpayConfig["HashSecret"]!;
+                config.CallbackUrl = vnpayConfig["CallbackUrl"]!;
+            });
 
             builder.Services.AddDbContext<AppDbContext>(options =>
                    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
