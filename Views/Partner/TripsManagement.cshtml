@@ -82,20 +82,20 @@
                                             <div class="space-y-1">
                                                 <div class="text-xs text-gray-900 flex justify-between w-32">
                                                     <span class="font-bold text-gray-500">@Localizer["Partner.ECO"]</span> 
-                                                    <span>$@item.EconomyPrice.ToString("N0") <span class="text-gray-400">(@item.EconomySeats)</span></span>
+                                                    <span>@Html.DisplayPrice(item.EconomyPrice) <span class="text-gray-400">(@item.EconomySeats)</span></span>
                                                 </div>
                                                 @if (item.BusinessSeats > 0)
                                                 {
                                                     <div class="text-xs text-indigo-900 flex justify-between w-32">
                                                         <span class="font-bold text-indigo-500">@Localizer["Partner.BUS"]</span> 
-                                                        <span>$@item.BusinessPrice.ToString("N0") <span class="text-gray-400">(@item.BusinessSeats)</span></span>
+                                                        <span>@Html.DisplayPrice(item.BusinessPrice) <span class="text-gray-400">(@item.BusinessSeats)</span></span>
                                                     </div>
                                                 }
                                                 @if (item.FirstClassSeats > 0)
                                                 {
                                                     <div class="text-xs text-purple-900 flex justify-between w-32">
                                                         <span class="font-bold text-purple-500">@Localizer["Partner.FirstClassShort"]</span> 
-                                                        <span>$@item.FirstClassPrice.ToString("N0") <span class="text-gray-400">(@item.FirstClassSeats)</span></span>
+                                                        <span>@Html.DisplayPrice(item.FirstClassPrice) <span class="text-gray-400">(@item.FirstClassSeats)</span></span>
                                                     </div>
                                                 }
                                             </div>
