@@ -1,8 +1,11 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
 using Ticket_Booking.Data;
 using Ticket_Booking.Interfaces;
 using Ticket_Booking.Models.DomainModels;
 using Ticket_Booking.Repositories;
+using Ticket_Booking.Resources;
 using VNPAY.Extensions;
 
 namespace Ticket_Booking
@@ -14,7 +17,17 @@ namespace Ticket_Booking
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddLocalization(options => 
+            {
+                options.ResourcesPath = "Resources";
+            });
+            builder.Services.AddControllersWithViews()
+                .AddViewLocalization(Microsoft.AspNetCore.Mvc.Razor.LanguageViewLocationExpanderFormat.Suffix)
+                .AddDataAnnotationsLocalization(options =>
+                {
+                    options.DataAnnotationLocalizerProvider = (type, factory) =>
+                        factory.Create(typeof(SharedResource));
+                });
 
             var vnpayConfig = builder.Configuration.GetSection("VNPAY");
 
@@ -45,6 +58,18 @@ namespace Ticket_Booking
                 options.Cookie.IsEssential = true;
             });
 
+            // Configure localization
+            var supportedCultures = new[] { "vi", "en" };
+            builder.Services.Configure<RequestLocalizationOptions>(options =>
+            {
+                options.DefaultRequestCulture = new RequestCulture("vi");
+                options.SupportedCultures = supportedCultures.Select(c => new CultureInfo(c)).ToList();
+                options.SupportedUICultures = supportedCultures.Select(c => new CultureInfo(c)).ToList();
+                
+                // Add cookie provider to read culture from cookie
+                options.RequestCultureProviders.Insert(0, new CookieRequestCultureProvider());
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -56,6 +81,9 @@ namespace Ticket_Booking
             }
             
             app.UseSession();
+
+            // Add localization middleware
+            app.UseRequestLocalization();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
