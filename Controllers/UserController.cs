@@ -5,6 +5,9 @@ using Ticket_Booking.Models.DomainModels;
 using Ticket_Booking.Models.ViewModels;
 using Ticket_Booking.Repositories;
 using Ticket_Booking.Enums;
+using VNPAY;
+using VNPAY.Models.Enums;
+using System.Threading.Tasks;
 
 namespace Ticket_Booking.Controllers
 {
@@ -13,12 +16,16 @@ namespace Ticket_Booking.Controllers
         private readonly IRepository<User> _userRepository;
         private readonly IRepository<Ticket> _ticketRepository;
         private readonly IRepository<Trip> _tripRepository;
+        private readonly IVnpayClient _vnPayClient;
 
-        public UserController(IRepository<User> userRepository, IRepository<Ticket> ticketRepository, IRepository<Trip> tripRepository)
+        private static int _currentTripId;
+
+        public UserController(IRepository<User> userRepository, IRepository<Ticket> ticketRepository, IRepository<Trip> tripRepository, IVnpayClient vnpayClient)
         {
             _userRepository = userRepository;
             _ticketRepository = ticketRepository;
             _tripRepository = tripRepository;
+            _vnPayClient = vnpayClient;
         }
 
         public async Task<IActionResult> Index(string? fromCity, string? toCity, DateTime? date)
@@ -178,11 +185,12 @@ namespace Ticket_Booking.Controllers
             }
 
             var trip = await _tripRepository.GetByIdAsync(tripId);
+
             if (trip == null)
             {
                 return NotFound();
             }
-
+            _currentTripId = tripId;
             // Check availability and calculate price
             decimal price = 0;
             bool isAvailable = false;
@@ -228,7 +236,7 @@ namespace Ticket_Booking.Controllers
                 SeatClass = seatClass,
                 SeatNumber = "A1", 
                 BookingDate = DateTime.Now,
-                PaymentStatus = PaymentStatus.Success,
+                PaymentStatus = PaymentStatus.Pending, // Chờ thanh toán
                 TotalPrice = price,
                 QrCode = Guid.NewGuid().ToString(),
             };
@@ -237,8 +245,60 @@ namespace Ticket_Booking.Controllers
             await _tripRepository.UpdateAsync(trip);
             await _ticketRepository.SaveChangesAsync();
 
+            
+            try
+            {
+                var moneyToPay = (long)(price * 100); 
+                var description = $"Thanh toan ve so {ticket.Id} - {trip.FromCity} to {trip.ToCity}";
+                
+                var paymentUrlInfo = _vnPayClient.CreatePaymentUrl(
+                    moneyToPay,
+                    description,
+                    BankCode.ANY
+                );
+
+                return Redirect(paymentUrlInfo.Url);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error creating payment: {ex.Message}";
+                // Nếu lỗi, xóa ticket đã tạo
+                await _ticketRepository.DeleteAsync(ticket);
+                await _ticketRepository.SaveChangesAsync();
+                // Hoàn lại số ghế
+                switch (seatClass)
+                {
+                    case SeatClass.Economy:
+                        trip.EconomySeats++;
+                        break;
+                    case SeatClass.Business:
+                        trip.BusinessSeats++;
+                        break;
+                    case SeatClass.FirstClass:
+                        trip.FirstClassSeats++;
+                        break;
+                }
+                await _tripRepository.UpdateAsync(trip);
+                await _tripRepository.SaveChangesAsync();
+                return RedirectToAction("BookTrip", new { tripId });
+            }
+        }
+
+        public async Task<IActionResult> PaySuccess()
+        {
+
+
+            var ticket = await _ticketRepository.GetByIdAsync(_currentTripId);
+            if (ticket == null)
+            {
+                return NotFound();
+            }
+            ticket.PaymentStatus = PaymentStatus.Success;
+            await _ticketRepository.UpdateAsync(ticket);
+            await _ticketRepository.SaveChangesAsync();
             return RedirectToAction("MyBooking");
         }
+
 
         public async Task<IActionResult> Ticket(int id)
         {

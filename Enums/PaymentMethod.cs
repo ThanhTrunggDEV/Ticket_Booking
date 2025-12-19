@@ -3,6 +3,7 @@
     public enum PaymentMethod
     {
         CreditCard,
-        BankTransfer
+        BankTransfer,
+        VNPAY
     }
 }
