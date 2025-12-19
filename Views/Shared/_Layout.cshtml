@@ -31,40 +31,40 @@
                                 @if (userRole == "Admin")
                                 {
                                     <a asp-controller="Admin" asp-action="Index" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "bg-indigo-800 text-white" : "text-indigo-200")">
-                                        Dashboard
+                                        @Localizer["Nav.Dashboard"]
                                     </a>
                                     <a asp-controller="Admin" asp-action="UserManagement" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Action"]?.ToString() == "UserManagement" ? "bg-indigo-800 text-white" : "text-indigo-200")">
-                                        Users
+                                        @Localizer["Nav.Users"]
                                     </a>
                                     <a asp-controller="Admin" asp-action="PartnerManagement" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Action"]?.ToString() == "PartnerManagement" ? "bg-indigo-800 text-white" : "text-indigo-200")">
-                                        Partners
+                                        @Localizer["Nav.Partners"]
                                     </a>
                                     <a asp-controller="Admin" asp-action="TripManagement" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Action"]?.ToString() == "TripManagement" ? "bg-indigo-800 text-white" : "text-indigo-200")">
-                                        Trips
+                                        @Localizer["Nav.Trips"]
                                     </a>
                                 }
                                 else if (userRole == "Partner")
                                 {
                                     <a asp-controller="Partner" asp-action="Index" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Partner" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "bg-indigo-800 text-white" : "text-indigo-200")">
-                                        Dashboard
+                                        @Localizer["Nav.Dashboard"]
                                     </a>
                                     <a asp-controller="Partner" asp-action="CompaniesManagement" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Action"]?.ToString() == "CompaniesManagement" ? "bg-indigo-800 text-white" : "text-indigo-200")">
-                                        My Companies
+                                        @Localizer["Nav.MyCompanies"]
                                     </a>
                                     <a asp-controller="Partner" asp-action="TripsManagement" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Action"]?.ToString() == "TripsManagement" ? "bg-indigo-800 text-white" : "text-indigo-200")">
-                                        My Trips
+                                        @Localizer["Nav.MyTrips"]
                                     </a>
                                 }
                                 else
                                 {
                                     <a asp-controller="User" asp-action="Index" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "bg-indigo-800 text-white" : "text-indigo-200")">
-                                        Find Flights
+                                        @Localizer["Nav.FindFlights"]
                                     </a>
                                     <a asp-controller="User" asp-action="Profile" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Action"]?.ToString() == "Profile" ? "bg-indigo-800 text-white" : "text-indigo-200")">
-                                        My Profile
+                                        @Localizer["Nav.MyProfile"]
                                     </a>
                                     <a asp-controller="User" asp-action="MyBooking" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Action"]?.ToString() == "MyBooking" ? "bg-indigo-800 text-white" : "text-indigo-200")">
-                                        My Bookings
+                                        @Localizer["Nav.MyBookings"]
                                     </a>
                                 }
                             </div>
@@ -73,12 +73,21 @@
                         <!-- User Menu / Logout -->
                         <div class="hidden md:block">
                             <div class="ml-4 flex items-center md:ml-6 gap-4">
+                                <!-- Language Switcher -->
+                                @await Html.PartialAsync("_LanguageSwitcher")
                                 <div class="h-6 w-px bg-indigo-800"></div>
                                 <a asp-controller="Login" asp-action="Logout" class="flex items-center gap-2 text-indigo-300 hover:text-white text-xs font-bold uppercase tracking-widest transition-colors group">
-                                    <span>Logout</span>
+                                    <span>@Localizer["Nav.Logout"]</span>
                                     <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
                                 </a>
                             </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- Language Switcher for non-logged in users -->
+                        <div class="hidden md:block">
+                            @await Html.PartialAsync("_LanguageSwitcher")
                         </div>
                     }
                 </div>
