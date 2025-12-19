@@ -1,5 +1,7 @@
 @model Ticket_Booking.Models.DomainModels.Trip
 @using Ticket_Booking.Enums
+@using Ticket_Booking.Services
+@inject ICurrencyService CurrencyService
 
 @{
     ViewData["Title"] = "Book Flight";
@@ -21,6 +23,11 @@
             defaultPrice = Model.FirstClassPrice;
         }
     }
+
+    // Get current currency and exchange rate for JavaScript
+    var currentCurrency = CurrencyService.GetCurrentCurrency();
+    var exchangeRateInfo = await CurrencyService.GetExchangeRateInfoAsync("USD", currentCurrency);
+    var exchangeRate = exchangeRateInfo.ExchangeRate;
 }
 
 <div class="min-h-screen bg-zinc-100 font-mono relative overflow-hidden py-12">
@@ -88,7 +95,7 @@
                                 <input type="radio" name="seatClass" value="@SeatClass.Economy" class="peer sr-only" onchange="updatePrice(@Model.EconomyPrice)" @(Model.EconomySeats == 0 ? "disabled" : "") @(defaultClass == SeatClass.Economy ? "checked" : "")>
                                 <div class="p-6 rounded-xl border-2 border-gray-100 hover:border-indigo-200 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all h-full @(Model.EconomySeats == 0 ? "opacity-50 cursor-not-allowed" : "")">
                                     <div class="text-sm font-bold text-gray-900 mb-1">@Localizer["BookTrip.Economy"]</div>
-                                    <div class="text-2xl font-black text-indigo-900 mb-2">$@Model.EconomyPrice.ToString("N0")</div>
+                                    <div class="text-2xl font-black text-indigo-900 mb-2">@Html.DisplayPrice(Model.EconomyPrice)</div>
                                     <div class="text-xs font-mono text-gray-500">@Model.EconomySeats @Localizer["BookTrip.SeatsLeft"]</div>
                                 </div>
                             </label>
@@ -98,7 +105,7 @@
                                 <input type="radio" name="seatClass" value="@SeatClass.Business" class="peer sr-only" onchange="updatePrice(@Model.BusinessPrice)" @(Model.BusinessSeats == 0 ? "disabled" : "") @(defaultClass == SeatClass.Business ? "checked" : "")>
                                 <div class="p-6 rounded-xl border-2 border-gray-100 hover:border-indigo-200 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all h-full @(Model.BusinessSeats == 0 ? "opacity-50 cursor-not-allowed" : "")">
                                     <div class="text-sm font-bold text-indigo-600 mb-1">@Localizer["BookTrip.Business"]</div>
-                                    <div class="text-2xl font-black text-indigo-900 mb-2">$@Model.BusinessPrice.ToString("N0")</div>
+                                    <div class="text-2xl font-black text-indigo-900 mb-2">@Html.DisplayPrice(Model.BusinessPrice)</div>
                                     <div class="text-xs font-mono text-gray-500">@Model.BusinessSeats @Localizer["BookTrip.SeatsLeft"]</div>
                                 </div>
                             </label>
@@ -108,7 +115,7 @@
                                 <input type="radio" name="seatClass" value="@SeatClass.FirstClass" class="peer sr-only" onchange="updatePrice(@Model.FirstClassPrice)" @(Model.FirstClassSeats == 0 ? "disabled" : "") @(defaultClass == SeatClass.FirstClass ? "checked" : "")>
                                 <div class="p-6 rounded-xl border-2 border-gray-100 hover:border-indigo-200 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all h-full @(Model.FirstClassSeats == 0 ? "opacity-50 cursor-not-allowed" : "")">
                                     <div class="text-sm font-bold text-purple-600 mb-1">@Localizer["BookTrip.FirstClass"]</div>
-                                    <div class="text-2xl font-black text-indigo-900 mb-2">$@Model.FirstClassPrice.ToString("N0")</div>
+                                    <div class="text-2xl font-black text-indigo-900 mb-2">@Html.DisplayPrice(Model.FirstClassPrice)</div>
                                     <div class="text-xs font-mono text-gray-500">@Model.FirstClassSeats @Localizer["BookTrip.SeatsLeft"]</div>
                                 </div>
                             </label>
@@ -118,7 +125,7 @@
                     <div class="border-t border-gray-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
                         <div>
                             <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">@Localizer["BookTrip.TotalPrice"]</div>
-                            <div class="text-4xl font-black text-indigo-900" id="totalPrice">$@defaultPrice.ToString("N0")</div>
+                            <div class="text-4xl font-black text-indigo-900" id="totalPrice">@Html.DisplayPrice(defaultPrice)</div>
                         </div>
                         <button type="submit" class="w-full md:w-auto px-8 py-4 bg-indigo-600 text-white rounded-xl font-bold uppercase tracking-widest text-sm hover:bg-indigo-700 transition-all shadow-lg hover:shadow-indigo-500/30 transform hover:-translate-y-1">
                             @Localizer["BookTrip.ConfirmBooking"]
@@ -131,9 +138,29 @@
 </div>
 
 <script>
-    function updatePrice(price) {
-        // Format price with commas
-        const formattedPrice = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(price);
+    // Currency configuration from server
+    const currentCurrency = '@currentCurrency';
+    const exchangeRate = @exchangeRate;
+    
+    function updatePrice(usdPrice) {
+        let convertedPrice = usdPrice;
+        let formattedPrice;
+        
+        if (currentCurrency === 'VND') {
+            // Convert to VND
+            convertedPrice = usdPrice * exchangeRate;
+            // Format VND: no decimals, use ₫ symbol
+            formattedPrice = '₫' + Math.round(convertedPrice).toLocaleString('en-US');
+        } else {
+            // USD: 2 decimals, use $ symbol
+            formattedPrice = new Intl.NumberFormat('en-US', { 
+                style: 'currency', 
+                currency: 'USD', 
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(usdPrice);
+        }
+        
         document.getElementById('totalPrice').innerText = formattedPrice;
     }
 </script>
