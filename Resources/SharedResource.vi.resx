@@ -1,0 +1,676 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Common.Welcome" xml:space="preserve">
+    <value>Chào mừng</value>
+  </data>
+  <data name="Login.Title" xml:space="preserve">
+    <value>Đăng nhập</value>
+  </data>
+  <data name="Login.PassengerLogin" xml:space="preserve">
+    <value>Đăng nhập hành khách</value>
+  </data>
+  <data name="Login.EmailAddress" xml:space="preserve">
+    <value>Địa chỉ email</value>
+  </data>
+  <data name="Login.Password" xml:space="preserve">
+    <value>Mật khẩu</value>
+  </data>
+  <data name="Login.RememberMe" xml:space="preserve">
+    <value>Ghi nhớ đăng nhập</value>
+  </data>
+  <data name="Login.BoardNow" xml:space="preserve">
+    <value>Đăng nhập ngay</value>
+  </data>
+  <data name="Login.PresentCredentials" xml:space="preserve">
+    <value>Vui lòng cung cấp thông tin đăng nhập</value>
+  </data>
+  <data name="Login.LostTicket" xml:space="preserve">
+    <value>Mất vé?</value>
+  </data>
+  <data name="Login.NewPassenger" xml:space="preserve">
+    <value>Hành khách mới?</value>
+  </data>
+  <data name="Login.Register" xml:space="preserve">
+    <value>Đăng ký</value>
+  </data>
+  <data name="Nav.Dashboard" xml:space="preserve">
+    <value>Bảng điều khiển</value>
+  </data>
+  <data name="Nav.Users" xml:space="preserve">
+    <value>Người dùng</value>
+  </data>
+  <data name="Nav.Partners" xml:space="preserve">
+    <value>Đối tác</value>
+  </data>
+  <data name="Nav.Trips" xml:space="preserve">
+    <value>Chuyến bay</value>
+  </data>
+  <data name="Nav.MyCompanies" xml:space="preserve">
+    <value>Công ty của tôi</value>
+  </data>
+  <data name="Nav.MyTrips" xml:space="preserve">
+    <value>Chuyến bay của tôi</value>
+  </data>
+  <data name="Nav.FindFlights" xml:space="preserve">
+    <value>Tìm chuyến bay</value>
+  </data>
+  <data name="Nav.MyProfile" xml:space="preserve">
+    <value>Hồ sơ của tôi</value>
+  </data>
+  <data name="Nav.MyBookings" xml:space="preserve">
+    <value>Đặt chỗ của tôi</value>
+  </data>
+  <data name="Nav.Logout" xml:space="preserve">
+    <value>Đăng xuất</value>
+  </data>
+  <data name="SignUp.Title" xml:space="preserve">
+    <value>Đăng ký</value>
+  </data>
+  <data name="SignUp.PassengerRegistration" xml:space="preserve">
+    <value>Đăng ký hành khách</value>
+  </data>
+  <data name="SignUp.FillDetails" xml:space="preserve">
+    <value>Vui lòng điền thông tin của bạn</value>
+  </data>
+  <data name="SignUp.FullName" xml:space="preserve">
+    <value>Họ và tên</value>
+  </data>
+  <data name="SignUp.Phone" xml:space="preserve">
+    <value>Số điện thoại (Tùy chọn)</value>
+  </data>
+  <data name="SignUp.ConfirmPassword" xml:space="preserve">
+    <value>Xác nhận mật khẩu</value>
+  </data>
+  <data name="SignUp.CreateAccount" xml:space="preserve">
+    <value>Tạo tài khoản</value>
+  </data>
+  <data name="SignUp.AlreadyMember" xml:space="preserve">
+    <value>Đã là thành viên?</value>
+  </data>
+  <data name="SignUp.SignIn" xml:space="preserve">
+    <value>Đăng nhập</value>
+  </data>
+  <data name="SignUp.RegisterSuccess" xml:space="preserve">
+    <value>Đăng ký thành công !!!</value>
+  </data>
+  <data name="User.WhereToNext" xml:space="preserve">
+    <value>ĐI ĐÂU TIẾP THEO?</value>
+  </data>
+  <data name="User.DiscoverAdventure" xml:space="preserve">
+    <value>Khám phá cuộc phiêu lưu tiếp theo của bạn với sự thoải mái cao cấp</value>
+  </data>
+  <data name="User.From" xml:space="preserve">
+    <value>Từ</value>
+  </data>
+  <data name="User.To" xml:space="preserve">
+    <value>Đến</value>
+  </data>
+  <data name="User.SelectOrigin" xml:space="preserve">
+    <value>Chọn điểm đi</value>
+  </data>
+  <data name="User.SelectDestination" xml:space="preserve">
+    <value>Chọn điểm đến</value>
+  </data>
+  <data name="User.Departure" xml:space="preserve">
+    <value>Ngày khởi hành</value>
+  </data>
+  <data name="User.Search" xml:space="preserve">
+    <value>Tìm kiếm</value>
+  </data>
+  <data name="User.AvailableFlights" xml:space="preserve">
+    <value>CHUYẾN BAY CÓ SẴN</value>
+  </data>
+  <data name="User.Found" xml:space="preserve">
+    <value>Tìm thấy</value>
+  </data>
+  <data name="User.StartingFrom" xml:space="preserve">
+    <value>Giá từ</value>
+  </data>
+  <data name="User.SelectFlight" xml:space="preserve">
+    <value>Chọn chuyến bay</value>
+  </data>
+  <data name="User.SeatsLeft" xml:space="preserve">
+    <value>Ghế còn lại</value>
+  </data>
+  <data name="User.ReadyForTakeoff" xml:space="preserve">
+    <value>Sẵn sàng cất cánh?</value>
+  </data>
+  <data name="User.SelectDestinationDates" xml:space="preserve">
+    <value>Chọn điểm đến và ngày ở trên để tìm chuyến bay hoàn hảo cho hành trình của bạn.</value>
+  </data>
+  <data name="Common.Copyright" xml:space="preserve">
+    <value>Hệ thống đặt vé</value>
+  </data>
+  <data name="Admin.SystemAdministration" xml:space="preserve">
+    <value>Quản trị hệ thống</value>
+  </data>
+  <data name="Admin.CommandCenter" xml:space="preserve">
+    <value>TRUNG TÂM ĐIỀU KHIỂN</value>
+  </data>
+  <data name="Admin.SystemStatus" xml:space="preserve">
+    <value>Trạng thái hệ thống</value>
+  </data>
+  <data name="Admin.Operational" xml:space="preserve">
+    <value>HOẠT ĐỘNG</value>
+  </data>
+  <data name="Admin.TotalUsers" xml:space="preserve">
+    <value>Tổng người dùng</value>
+  </data>
+  <data name="Admin.Registered" xml:space="preserve">
+    <value>Đã đăng ký</value>
+  </data>
+  <data name="Admin.Companies" xml:space="preserve">
+    <value>Công ty</value>
+  </data>
+  <data name="Admin.ActivePartners" xml:space="preserve">
+    <value>Đối tác hoạt động</value>
+  </data>
+  <data name="Admin.TotalTrips" xml:space="preserve">
+    <value>Tổng chuyến bay</value>
+  </data>
+  <data name="Admin.Scheduled" xml:space="preserve">
+    <value>Đã lên lịch</value>
+  </data>
+  <data name="Admin.Revenue" xml:space="preserve">
+    <value>Doanh thu</value>
+  </data>
+  <data name="Admin.TotalSales" xml:space="preserve">
+    <value>Tổng bán hàng</value>
+  </data>
+  <data name="Admin.SystemActivity" xml:space="preserve">
+    <value>Hoạt động hệ thống</value>
+  </data>
+  <data name="Admin.Weekly" xml:space="preserve">
+    <value>Hàng tuần</value>
+  </data>
+  <data name="Admin.Monthly" xml:space="preserve">
+    <value>Hàng tháng</value>
+  </data>
+  <data name="Admin.UserManagement" xml:space="preserve">
+    <value>QUẢN LÝ NGƯỜI DÙNG</value>
+  </data>
+  <data name="Admin.TotalUsersCount" xml:space="preserve">
+    <value>Tổng người dùng</value>
+  </data>
+  <data name="Admin.RegisteredUsers" xml:space="preserve">
+    <value>Người dùng đã đăng ký</value>
+  </data>
+  <data name="Admin.SearchUsers" xml:space="preserve">
+    <value>Tìm kiếm người dùng...</value>
+  </data>
+  <data name="Admin.UserInfo" xml:space="preserve">
+    <value>Thông tin người dùng</value>
+  </data>
+  <data name="Admin.Role" xml:space="preserve">
+    <value>Vai trò</value>
+  </data>
+  <data name="Admin.JoinedDate" xml:space="preserve">
+    <value>Ngày tham gia</value>
+  </data>
+  <data name="Admin.Actions" xml:space="preserve">
+    <value>Thao tác</value>
+  </data>
+  <data name="Admin.Delete" xml:space="preserve">
+    <value>Xóa</value>
+  </data>
+  <data name="Admin.DeleteUserConfirm" xml:space="preserve">
+    <value>Bạn có chắc chắn muốn xóa người dùng này?</value>
+  </data>
+  <data name="Admin.PartnerManagement" xml:space="preserve">
+    <value>QUẢN LÝ ĐỐI TÁC</value>
+  </data>
+  <data name="Admin.TotalPartners" xml:space="preserve">
+    <value>Tổng đối tác</value>
+  </data>
+  <data name="Admin.CompaniesCount" xml:space="preserve">
+    <value>CÔNG TY</value>
+  </data>
+  <data name="Admin.RegisteredPartners" xml:space="preserve">
+    <value>Đối tác đã đăng ký</value>
+  </data>
+  <data name="Admin.SearchPartners" xml:space="preserve">
+    <value>Tìm kiếm đối tác...</value>
+  </data>
+  <data name="Admin.Company" xml:space="preserve">
+    <value>Công ty</value>
+  </data>
+  <data name="Admin.Contact" xml:space="preserve">
+    <value>Liên hệ</value>
+  </data>
+  <data name="Admin.Stats" xml:space="preserve">
+    <value>Thống kê</value>
+  </data>
+  <data name="Admin.Trips" xml:space="preserve">
+    <value>Chuyến bay</value>
+  </data>
+  <data name="Admin.Reviews" xml:space="preserve">
+    <value>Đánh giá</value>
+  </data>
+  <data name="Admin.DeletePartnerConfirm" xml:space="preserve">
+    <value>Bạn có chắc chắn muốn xóa đối tác này?</value>
+  </data>
+  <data name="Admin.TripManagement" xml:space="preserve">
+    <value>QUẢN LÝ CHUYẾN BAY</value>
+  </data>
+  <data name="Admin.ScheduledTrips" xml:space="preserve">
+    <value>Chuyến bay đã lên lịch</value>
+  </data>
+  <data name="Admin.ScheduledCount" xml:space="preserve">
+    <value>ĐÃ LÊN LỊCH</value>
+  </data>
+  <data name="Admin.SearchTrips" xml:space="preserve">
+    <value>Tìm kiếm chuyến bay...</value>
+  </data>
+  <data name="Admin.Route" xml:space="preserve">
+    <value>Tuyến đường</value>
+  </data>
+  <data name="Admin.Schedule" xml:space="preserve">
+    <value>Lịch trình</value>
+  </data>
+  <data name="Admin.Status" xml:space="preserve">
+    <value>Trạng thái</value>
+  </data>
+  <data name="Admin.Duration" xml:space="preserve">
+    <value>Thời lượng</value>
+  </data>
+  <data name="Admin.DeleteTripConfirm" xml:space="preserve">
+    <value>Bạn có chắc chắn muốn xóa chuyến bay này?</value>
+  </data>
+  <data name="Partner.PartnerPortal" xml:space="preserve">
+    <value>Cổng đối tác</value>
+  </data>
+  <data name="Partner.Dashboard" xml:space="preserve">
+    <value>BẢNG ĐIỀU KHIỂN</value>
+  </data>
+  <data name="Partner.PartnerStatus" xml:space="preserve">
+    <value>Trạng thái đối tác</value>
+  </data>
+  <data name="Partner.Active" xml:space="preserve">
+    <value>HOẠT ĐỘNG</value>
+  </data>
+  <data name="Partner.TotalCompanies" xml:space="preserve">
+    <value>Tổng công ty</value>
+  </data>
+  <data name="Partner.ActiveFleet" xml:space="preserve">
+    <value>Đội bay hoạt động</value>
+  </data>
+  <data name="Partner.TotalBookings" xml:space="preserve">
+    <value>Tổng đặt chỗ</value>
+  </data>
+  <data name="Partner.Confirmed" xml:space="preserve">
+    <value>Đã xác nhận</value>
+  </data>
+  <data name="Partner.TotalRevenue" xml:space="preserve">
+    <value>Tổng doanh thu</value>
+  </data>
+  <data name="Partner.Gross" xml:space="preserve">
+    <value>Tổng</value>
+  </data>
+  <data name="Partner.AvgRating" xml:space="preserve">
+    <value>Đánh giá trung bình</value>
+  </data>
+  <data name="Partner.Stars" xml:space="preserve">
+    <value>Sao</value>
+  </data>
+  <data name="Partner.RecentBookings" xml:space="preserve">
+    <value>Đặt chỗ gần đây</value>
+  </data>
+  <data name="Partner.ViewAll" xml:space="preserve">
+    <value>Xem tất cả</value>
+  </data>
+  <data name="Partner.BookingID" xml:space="preserve">
+    <value>Mã đặt chỗ</value>
+  </data>
+  <data name="Partner.Trip" xml:space="preserve">
+    <value>Chuyến bay</value>
+  </data>
+  <data name="Partner.Date" xml:space="preserve">
+    <value>Ngày</value>
+  </data>
+  <data name="Partner.Amount" xml:space="preserve">
+    <value>Số tiền</value>
+  </data>
+  <data name="Partner.NoRecentBookings" xml:space="preserve">
+    <value>Không tìm thấy đặt chỗ gần đây.</value>
+  </data>
+  <data name="Partner.FleetManagement" xml:space="preserve">
+    <value>QUẢN LÝ ĐỘI BAY</value>
+  </data>
+  <data name="Partner.RegisterAirline" xml:space="preserve">
+    <value>ĐĂNG KÝ HÃNG HÀNG KHÔNG</value>
+  </data>
+  <data name="Partner.RegisteredAirlines" xml:space="preserve">
+    <value>Hãng hàng không đã đăng ký</value>
+  </data>
+  <data name="Partner.SearchAirlines" xml:space="preserve">
+    <value>Tìm kiếm hãng hàng không...</value>
+  </data>
+  <data name="Partner.Airline" xml:space="preserve">
+    <value>Hãng hàng không</value>
+  </data>
+  <data name="Partner.ContactInfo" xml:space="preserve">
+    <value>Thông tin liên hệ</value>
+  </data>
+  <data name="Partner.TripsManagement" xml:space="preserve">
+    <value>QUẢN LÝ CHUYẾN BAY</value>
+  </data>
+  <data name="Partner.ScheduleFlight" xml:space="preserve">
+    <value>LÊN LỊCH CHUYẾN BAY</value>
+  </data>
+  <data name="Partner.ScheduledFlights" xml:space="preserve">
+    <value>Chuyến bay đã lên lịch</value>
+  </data>
+  <data name="Partner.SearchFlights" xml:space="preserve">
+    <value>Tìm kiếm chuyến bay...</value>
+  </data>
+  <data name="Partner.AirlinePlane" xml:space="preserve">
+    <value>Hãng hàng không / Máy bay</value>
+  </data>
+  <data name="User.PassengerManifest" xml:space="preserve">
+    <value>Danh sách hành khách</value>
+  </data>
+  <data name="User.MyProfile" xml:space="preserve">
+    <value>HỒ SƠ CỦA TÔI</value>
+  </data>
+  <data name="User.MemberStatus" xml:space="preserve">
+    <value>Trạng thái thành viên</value>
+  </data>
+  <data name="User.Class" xml:space="preserve">
+    <value>HẠNG</value>
+  </data>
+  <data name="User.EmailContact" xml:space="preserve">
+    <value>Liên hệ email</value>
+  </data>
+  <data name="User.MobileContact" xml:space="preserve">
+    <value>Liên hệ di động</value>
+  </data>
+  <data name="User.NotRegistered" xml:space="preserve">
+    <value>CHƯA ĐĂNG KÝ</value>
+  </data>
+  <data name="User.RegistrationDate" xml:space="preserve">
+    <value>Ngày đăng ký</value>
+  </data>
+  <data name="User.AccountStatus" xml:space="preserve">
+    <value>Trạng thái tài khoản</value>
+  </data>
+  <data name="User.Active" xml:space="preserve">
+    <value>HOẠT ĐỘNG</value>
+  </data>
+  <data name="User.EditProfile" xml:space="preserve">
+    <value>Chỉnh sửa hồ sơ</value>
+  </data>
+  <data name="User.TotalFlights" xml:space="preserve">
+    <value>Tổng chuyến bay</value>
+  </data>
+  <data name="User.Reviews" xml:space="preserve">
+    <value>Đánh giá</value>
+  </data>
+  <data name="User.MilesPoints" xml:space="preserve">
+    <value>Dặm/Điểm</value>
+  </data>
+  <data name="User.TravelLog" xml:space="preserve">
+    <value>Nhật ký du lịch</value>
+  </data>
+  <data name="User.MyBookings" xml:space="preserve">
+    <value>ĐẶT CHỖ CỦA TÔI</value>
+  </data>
+  <data name="User.AllTickets" xml:space="preserve">
+    <value>Tất cả vé</value>
+  </data>
+  <data name="User.Total" xml:space="preserve">
+    <value>Tổng</value>
+  </data>
+  <data name="User.TripInfo" xml:space="preserve">
+    <value>Thông tin chuyến bay</value>
+  </data>
+  <data name="User.DateTime" xml:space="preserve">
+    <value>Ngày &amp; Giờ</value>
+  </data>
+  <data name="User.Seat" xml:space="preserve">
+    <value>Ghế</value>
+  </data>
+  <data name="User.Amount" xml:space="preserve">
+    <value>Số tiền</value>
+  </data>
+  <data name="User.Action" xml:space="preserve">
+    <value>Thao tác</value>
+  </data>
+  <data name="User.ViewTicket" xml:space="preserve">
+    <value>Xem vé</value>
+  </data>
+  <data name="User.NoBookingsFound" xml:space="preserve">
+    <value>Không tìm thấy đặt chỗ</value>
+  </data>
+  <data name="User.NoBookingsYet" xml:space="preserve">
+    <value>Bạn chưa có đặt chỗ nào.</value>
+  </data>
+  <data name="User.BookNow" xml:space="preserve">
+    <value>Đặt ngay</value>
+  </data>
+  <data name="User.BackToSearch" xml:space="preserve">
+    <value>Quay lại tìm kiếm</value>
+  </data>
+  <data name="User.CompleteBooking" xml:space="preserve">
+    <value>HOÀN TẤT ĐẶT CHỖ</value>
+  </data>
+  <data name="User.FlightConfirmation" xml:space="preserve">
+    <value>Xác nhận chuyến bay</value>
+  </data>
+  <data name="ForgotPassword.AccountRecovery" xml:space="preserve">
+    <value>Khôi phục tài khoản</value>
+  </data>
+  <data name="ForgotPassword.AccountRecoveryAccess" xml:space="preserve">
+    <value>KHÔI PHỤC<br/>TRUY CẬP<br/>TÀI KHOẢN</value>
+  </data>
+  <data name="ForgotPassword.Lost" xml:space="preserve">
+    <value>MẤT</value>
+  </data>
+  <data name="ForgotPassword.Status" xml:space="preserve">
+    <value>Trạng thái</value>
+  </data>
+  <data name="ForgotPassword.Found" xml:space="preserve">
+    <value>TÌM THẤY</value>
+  </data>
+  <data name="ForgotPassword.Target" xml:space="preserve">
+    <value>Mục tiêu</value>
+  </data>
+  <data name="ForgotPassword.Priority" xml:space="preserve">
+    <value>ƯU TIÊN</value>
+  </data>
+  <data name="ForgotPassword.RestoreAccess" xml:space="preserve">
+    <value>KHÔI PHỤC TRUY CẬP</value>
+  </data>
+  <data name="ForgotPassword.CompleteVerification" xml:space="preserve">
+    <value>Vui lòng hoàn tất quá trình xác minh bên dưới.</value>
+  </data>
+  <data name="ForgotPassword.SendVerificationCode" xml:space="preserve">
+    <value>GỬI MÃ XÁC MINH</value>
+  </data>
+  <data name="ForgotPassword.VerificationCodeSent" xml:space="preserve">
+    <value>MÃ XÁC MINH ĐÃ GỬI ĐẾN</value>
+  </data>
+  <data name="ForgotPassword.VerifyIdentity" xml:space="preserve">
+    <value>XÁC MINH DANH TÍNH</value>
+  </data>
+  <data name="ForgotPassword.ResendCode" xml:space="preserve">
+    <value>Gửi lại mã</value>
+  </data>
+  <data name="ForgotPassword.Wait" xml:space="preserve">
+    <value>CHỜ</value>
+  </data>
+  <data name="ForgotPassword.NewPassword" xml:space="preserve">
+    <value>Mật khẩu mới</value>
+  </data>
+  <data name="ForgotPassword.UpdateCredentials" xml:space="preserve">
+    <value>CẬP NHẬT THÔNG TIN ĐĂNG NHẬP</value>
+  </data>
+  <data name="ForgotPassword.AccessRestored" xml:space="preserve">
+    <value>ĐÃ KHÔI PHỤC TRUY CẬP</value>
+  </data>
+  <data name="ForgotPassword.RedirectingToLogin" xml:space="preserve">
+    <value>ĐANG CHUYỂN HƯỚNG ĐẾN TRANG ĐĂNG NHẬP...</value>
+  </data>
+  <data name="ForgotPassword.ReturnToLogin" xml:space="preserve">
+    <value>← Quay lại đăng nhập</value>
+  </data>
+  <data name="ForgotPassword.InvalidOTP" xml:space="preserve">
+    <value>Mã OTP không hợp lệ. Vui lòng thử lại.</value>
+  </data>
+  <data name="ForgotPassword.PasswordsNotMatch" xml:space="preserve">
+    <value>Mật khẩu không khớp.</value>
+  </data>
+  <data name="ForgotPassword.FailedToSendOTP" xml:space="preserve">
+    <value>Gửi OTP thất bại. Vui lòng kiểm tra email của bạn.</value>
+  </data>
+  <data name="ForgotPassword.FailedToReset" xml:space="preserve">
+    <value>Khôi phục mật khẩu thất bại.</value>
+  </data>
+  <data name="Common.Unknown" xml:space="preserve">
+    <value>Không xác định</value>
+  </data>
+  <data name="Common.UnknownPassenger" xml:space="preserve">
+    <value>HÀNH KHÁCH KHÔNG XÁC ĐỊNH</value>
+  </data>
+  <data name="Partner.NoFlightsScheduled" xml:space="preserve">
+    <value>Chưa có chuyến bay nào được lên lịch</value>
+  </data>
+  <data name="Partner.GetStartedScheduling" xml:space="preserve">
+    <value>Bắt đầu bằng cách lên lịch chuyến bay đầu tiên của bạn.</value>
+  </data>
+  <data name="BookTrip.SelectClass" xml:space="preserve">
+    <value>Chọn hạng ghế</value>
+  </data>
+  <data name="BookTrip.Economy" xml:space="preserve">
+    <value>Phổ thông</value>
+  </data>
+  <data name="BookTrip.Business" xml:space="preserve">
+    <value>Thương gia</value>
+  </data>
+  <data name="BookTrip.FirstClass" xml:space="preserve">
+    <value>Hạng nhất</value>
+  </data>
+  <data name="BookTrip.SeatsLeft" xml:space="preserve">
+    <value>ghế còn lại</value>
+  </data>
+  <data name="BookTrip.TotalPrice" xml:space="preserve">
+    <value>Tổng giá</value>
+  </data>
+  <data name="BookTrip.ConfirmBooking" xml:space="preserve">
+    <value>Xác nhận đặt chỗ</value>
+  </data>
+  <data name="BookTrip.Mins" xml:space="preserve">
+    <value>phút</value>
+  </data>
+  <data name="Common.Edit" xml:space="preserve">
+    <value>Chỉnh sửa</value>
+  </data>
+  <data name="Common.Delete" xml:space="preserve">
+    <value>Xóa</value>
+  </data>
+  <data name="Partner.DeleteCompanyConfirm" xml:space="preserve">
+    <value>Bạn có chắc chắn muốn xóa công ty này?</value>
+  </data>
+  <data name="Partner.NoAirlinesRegistered" xml:space="preserve">
+    <value>Chưa có hãng hàng không nào được đăng ký.</value>
+  </data>
+  <data name="Common.ID" xml:space="preserve">
+    <value>ID</value>
+  </data>
+  <data name="Partner.Fares" xml:space="preserve">
+    <value>Giá vé</value>
+  </data>
+  <data name="Partner.Arr" xml:space="preserve">
+    <value>Đến</value>
+  </data>
+  <data name="Partner.ECO" xml:space="preserve">
+    <value>PT</value>
+  </data>
+  <data name="Partner.BUS" xml:space="preserve">
+    <value>TG</value>
+  </data>
+  <data name="Partner.FirstClassShort" xml:space="preserve">
+    <value>H1</value>
+  </data>
+  <data name="Partner.DeleteTripConfirm" xml:space="preserve">
+    <value>Bạn có chắc chắn muốn xóa chuyến bay này?</value>
+  </data>
+  <data name="Common.Km" xml:space="preserve">
+    <value>km</value>
+  </data>
+  <data name="Common.NA" xml:space="preserve">
+    <value>N/A</value>
+  </data>
+  <data name="ForgotPassword.OTPResentSuccess" xml:space="preserve">
+    <value>Đã gửi lại mã OTP thành công!</value>
+  </data>
+  <data name="Common.Date" xml:space="preserve">
+    <value>Ngày</value>
+  </data>
+  <data name="Common.Gate" xml:space="preserve">
+    <value>Cổng</value>
+  </data>
+  <data name="Common.TicketBooking" xml:space="preserve">
+    <value>TICKET_BOOKING</value>
+  </data>
+  <data name="Login.EmailPlaceholder" xml:space="preserve">
+    <value>passenger@example.com</value>
+  </data>
+</root>

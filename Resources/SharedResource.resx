@@ -1,0 +1,676 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Common.Welcome" xml:space="preserve">
+    <value>Welcome</value>
+  </data>
+  <data name="Login.Title" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="Login.PassengerLogin" xml:space="preserve">
+    <value>Passenger Login</value>
+  </data>
+  <data name="Login.EmailAddress" xml:space="preserve">
+    <value>Email Address</value>
+  </data>
+  <data name="Login.Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="Login.RememberMe" xml:space="preserve">
+    <value>Remember Me</value>
+  </data>
+  <data name="Login.BoardNow" xml:space="preserve">
+    <value>Board Now</value>
+  </data>
+  <data name="Login.PresentCredentials" xml:space="preserve">
+    <value>Please present your credentials</value>
+  </data>
+  <data name="Login.LostTicket" xml:space="preserve">
+    <value>Lost Ticket?</value>
+  </data>
+  <data name="Login.NewPassenger" xml:space="preserve">
+    <value>New Passenger?</value>
+  </data>
+  <data name="Login.Register" xml:space="preserve">
+    <value>Register</value>
+  </data>
+  <data name="Nav.Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Nav.Users" xml:space="preserve">
+    <value>Users</value>
+  </data>
+  <data name="Nav.Partners" xml:space="preserve">
+    <value>Partners</value>
+  </data>
+  <data name="Nav.Trips" xml:space="preserve">
+    <value>Trips</value>
+  </data>
+  <data name="Nav.MyCompanies" xml:space="preserve">
+    <value>My Companies</value>
+  </data>
+  <data name="Nav.MyTrips" xml:space="preserve">
+    <value>My Trips</value>
+  </data>
+  <data name="Nav.FindFlights" xml:space="preserve">
+    <value>Find Flights</value>
+  </data>
+  <data name="Nav.MyProfile" xml:space="preserve">
+    <value>My Profile</value>
+  </data>
+  <data name="Nav.MyBookings" xml:space="preserve">
+    <value>My Bookings</value>
+  </data>
+  <data name="Nav.Logout" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+  <data name="SignUp.Title" xml:space="preserve">
+    <value>Sign Up</value>
+  </data>
+  <data name="SignUp.PassengerRegistration" xml:space="preserve">
+    <value>Passenger Registration</value>
+  </data>
+  <data name="SignUp.FillDetails" xml:space="preserve">
+    <value>Please fill in your details</value>
+  </data>
+  <data name="SignUp.FullName" xml:space="preserve">
+    <value>Full Name</value>
+  </data>
+  <data name="SignUp.Phone" xml:space="preserve">
+    <value>Phone (Optional)</value>
+  </data>
+  <data name="SignUp.ConfirmPassword" xml:space="preserve">
+    <value>Confirm Password</value>
+  </data>
+  <data name="SignUp.CreateAccount" xml:space="preserve">
+    <value>Create Account</value>
+  </data>
+  <data name="SignUp.AlreadyMember" xml:space="preserve">
+    <value>Already a member?</value>
+  </data>
+  <data name="SignUp.SignIn" xml:space="preserve">
+    <value>Sign In</value>
+  </data>
+  <data name="SignUp.RegisterSuccess" xml:space="preserve">
+    <value>Register successfully !!!</value>
+  </data>
+  <data name="User.WhereToNext" xml:space="preserve">
+    <value>WHERE TO NEXT?</value>
+  </data>
+  <data name="User.DiscoverAdventure" xml:space="preserve">
+    <value>Discover your next adventure with premium comfort</value>
+  </data>
+  <data name="User.From" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="User.To" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="User.SelectOrigin" xml:space="preserve">
+    <value>Select Origin</value>
+  </data>
+  <data name="User.SelectDestination" xml:space="preserve">
+    <value>Select Destination</value>
+  </data>
+  <data name="User.Departure" xml:space="preserve">
+    <value>Departure</value>
+  </data>
+  <data name="User.Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="User.AvailableFlights" xml:space="preserve">
+    <value>AVAILABLE FLIGHTS</value>
+  </data>
+  <data name="User.Found" xml:space="preserve">
+    <value>Found</value>
+  </data>
+  <data name="User.StartingFrom" xml:space="preserve">
+    <value>Starting From</value>
+  </data>
+  <data name="User.SelectFlight" xml:space="preserve">
+    <value>Select Flight</value>
+  </data>
+  <data name="User.SeatsLeft" xml:space="preserve">
+    <value>Seats Left</value>
+  </data>
+  <data name="User.ReadyForTakeoff" xml:space="preserve">
+    <value>Ready for Takeoff?</value>
+  </data>
+  <data name="User.SelectDestinationDates" xml:space="preserve">
+    <value>Select your destination and dates above to find the perfect flight for your journey.</value>
+  </data>
+  <data name="Common.Copyright" xml:space="preserve">
+    <value>Ticket Booking System</value>
+  </data>
+  <data name="Admin.SystemAdministration" xml:space="preserve">
+    <value>System Administration</value>
+  </data>
+  <data name="Admin.CommandCenter" xml:space="preserve">
+    <value>COMMAND CENTER</value>
+  </data>
+  <data name="Admin.SystemStatus" xml:space="preserve">
+    <value>System Status</value>
+  </data>
+  <data name="Admin.Operational" xml:space="preserve">
+    <value>OPERATIONAL</value>
+  </data>
+  <data name="Admin.TotalUsers" xml:space="preserve">
+    <value>Total Users</value>
+  </data>
+  <data name="Admin.Registered" xml:space="preserve">
+    <value>Registered</value>
+  </data>
+  <data name="Admin.Companies" xml:space="preserve">
+    <value>Companies</value>
+  </data>
+  <data name="Admin.ActivePartners" xml:space="preserve">
+    <value>Active Partners</value>
+  </data>
+  <data name="Admin.TotalTrips" xml:space="preserve">
+    <value>Total Trips</value>
+  </data>
+  <data name="Admin.Scheduled" xml:space="preserve">
+    <value>Scheduled</value>
+  </data>
+  <data name="Admin.Revenue" xml:space="preserve">
+    <value>Revenue</value>
+  </data>
+  <data name="Admin.TotalSales" xml:space="preserve">
+    <value>Total Sales</value>
+  </data>
+  <data name="Admin.SystemActivity" xml:space="preserve">
+    <value>System Activity</value>
+  </data>
+  <data name="Admin.Weekly" xml:space="preserve">
+    <value>Weekly</value>
+  </data>
+  <data name="Admin.Monthly" xml:space="preserve">
+    <value>Monthly</value>
+  </data>
+  <data name="Admin.UserManagement" xml:space="preserve">
+    <value>USER MANAGEMENT</value>
+  </data>
+  <data name="Admin.TotalUsersCount" xml:space="preserve">
+    <value>Total Users</value>
+  </data>
+  <data name="Admin.RegisteredUsers" xml:space="preserve">
+    <value>Registered Users</value>
+  </data>
+  <data name="Admin.SearchUsers" xml:space="preserve">
+    <value>Search users...</value>
+  </data>
+  <data name="Admin.UserInfo" xml:space="preserve">
+    <value>User Info</value>
+  </data>
+  <data name="Admin.Role" xml:space="preserve">
+    <value>Role</value>
+  </data>
+  <data name="Admin.JoinedDate" xml:space="preserve">
+    <value>Joined Date</value>
+  </data>
+  <data name="Admin.Actions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="Admin.Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Admin.DeleteUserConfirm" xml:space="preserve">
+    <value>Are you sure you want to delete this user?</value>
+  </data>
+  <data name="Admin.PartnerManagement" xml:space="preserve">
+    <value>PARTNER MANAGEMENT</value>
+  </data>
+  <data name="Admin.TotalPartners" xml:space="preserve">
+    <value>Total Partners</value>
+  </data>
+  <data name="Admin.CompaniesCount" xml:space="preserve">
+    <value>COMPANIES</value>
+  </data>
+  <data name="Admin.RegisteredPartners" xml:space="preserve">
+    <value>Registered Partners</value>
+  </data>
+  <data name="Admin.SearchPartners" xml:space="preserve">
+    <value>Search partners...</value>
+  </data>
+  <data name="Admin.Company" xml:space="preserve">
+    <value>Company</value>
+  </data>
+  <data name="Admin.Contact" xml:space="preserve">
+    <value>Contact</value>
+  </data>
+  <data name="Admin.Stats" xml:space="preserve">
+    <value>Stats</value>
+  </data>
+  <data name="Admin.Trips" xml:space="preserve">
+    <value>Trips</value>
+  </data>
+  <data name="Admin.Reviews" xml:space="preserve">
+    <value>Reviews</value>
+  </data>
+  <data name="Admin.DeletePartnerConfirm" xml:space="preserve">
+    <value>Are you sure you want to delete this partner?</value>
+  </data>
+  <data name="Admin.TripManagement" xml:space="preserve">
+    <value>TRIP MANAGEMENT</value>
+  </data>
+  <data name="Admin.ScheduledTrips" xml:space="preserve">
+    <value>Scheduled Trips</value>
+  </data>
+  <data name="Admin.ScheduledCount" xml:space="preserve">
+    <value>SCHEDULED</value>
+  </data>
+  <data name="Admin.SearchTrips" xml:space="preserve">
+    <value>Search trips...</value>
+  </data>
+  <data name="Admin.Route" xml:space="preserve">
+    <value>Route</value>
+  </data>
+  <data name="Admin.Schedule" xml:space="preserve">
+    <value>Schedule</value>
+  </data>
+  <data name="Admin.Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Admin.Duration" xml:space="preserve">
+    <value>Duration</value>
+  </data>
+  <data name="Admin.DeleteTripConfirm" xml:space="preserve">
+    <value>Are you sure you want to delete this trip?</value>
+  </data>
+  <data name="Partner.PartnerPortal" xml:space="preserve">
+    <value>Partner Portal</value>
+  </data>
+  <data name="Partner.Dashboard" xml:space="preserve">
+    <value>DASHBOARD</value>
+  </data>
+  <data name="Partner.PartnerStatus" xml:space="preserve">
+    <value>Partner Status</value>
+  </data>
+  <data name="Partner.Active" xml:space="preserve">
+    <value>ACTIVE</value>
+  </data>
+  <data name="Partner.TotalCompanies" xml:space="preserve">
+    <value>Total Companies</value>
+  </data>
+  <data name="Partner.ActiveFleet" xml:space="preserve">
+    <value>Active Fleet</value>
+  </data>
+  <data name="Partner.TotalBookings" xml:space="preserve">
+    <value>Total Bookings</value>
+  </data>
+  <data name="Partner.Confirmed" xml:space="preserve">
+    <value>Confirmed</value>
+  </data>
+  <data name="Partner.TotalRevenue" xml:space="preserve">
+    <value>Total Revenue</value>
+  </data>
+  <data name="Partner.Gross" xml:space="preserve">
+    <value>Gross</value>
+  </data>
+  <data name="Partner.AvgRating" xml:space="preserve">
+    <value>Avg Rating</value>
+  </data>
+  <data name="Partner.Stars" xml:space="preserve">
+    <value>Stars</value>
+  </data>
+  <data name="Partner.RecentBookings" xml:space="preserve">
+    <value>Recent Bookings</value>
+  </data>
+  <data name="Partner.ViewAll" xml:space="preserve">
+    <value>View All</value>
+  </data>
+  <data name="Partner.BookingID" xml:space="preserve">
+    <value>Booking ID</value>
+  </data>
+  <data name="Partner.Trip" xml:space="preserve">
+    <value>Trip</value>
+  </data>
+  <data name="Partner.Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Partner.Amount" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+  <data name="Partner.NoRecentBookings" xml:space="preserve">
+    <value>No recent bookings found.</value>
+  </data>
+  <data name="Partner.FleetManagement" xml:space="preserve">
+    <value>FLEET MANAGEMENT</value>
+  </data>
+  <data name="Partner.RegisterAirline" xml:space="preserve">
+    <value>REGISTER AIRLINE</value>
+  </data>
+  <data name="Partner.RegisteredAirlines" xml:space="preserve">
+    <value>Registered Airlines</value>
+  </data>
+  <data name="Partner.SearchAirlines" xml:space="preserve">
+    <value>Search airlines...</value>
+  </data>
+  <data name="Partner.Airline" xml:space="preserve">
+    <value>Airline</value>
+  </data>
+  <data name="Partner.ContactInfo" xml:space="preserve">
+    <value>Contact Info</value>
+  </data>
+  <data name="Partner.TripsManagement" xml:space="preserve">
+    <value>TRIPS MANAGEMENT</value>
+  </data>
+  <data name="Partner.ScheduleFlight" xml:space="preserve">
+    <value>SCHEDULE FLIGHT</value>
+  </data>
+  <data name="Partner.ScheduledFlights" xml:space="preserve">
+    <value>Scheduled Flights</value>
+  </data>
+  <data name="Partner.SearchFlights" xml:space="preserve">
+    <value>Search flights...</value>
+  </data>
+  <data name="Partner.AirlinePlane" xml:space="preserve">
+    <value>Airline / Plane</value>
+  </data>
+  <data name="User.PassengerManifest" xml:space="preserve">
+    <value>Passenger Manifest</value>
+  </data>
+  <data name="User.MyProfile" xml:space="preserve">
+    <value>MY PROFILE</value>
+  </data>
+  <data name="User.MemberStatus" xml:space="preserve">
+    <value>Member Status</value>
+  </data>
+  <data name="User.Class" xml:space="preserve">
+    <value>CLASS</value>
+  </data>
+  <data name="User.EmailContact" xml:space="preserve">
+    <value>Email Contact</value>
+  </data>
+  <data name="User.MobileContact" xml:space="preserve">
+    <value>Mobile Contact</value>
+  </data>
+  <data name="User.NotRegistered" xml:space="preserve">
+    <value>NOT REGISTERED</value>
+  </data>
+  <data name="User.RegistrationDate" xml:space="preserve">
+    <value>Registration Date</value>
+  </data>
+  <data name="User.AccountStatus" xml:space="preserve">
+    <value>Account Status</value>
+  </data>
+  <data name="User.Active" xml:space="preserve">
+    <value>ACTIVE</value>
+  </data>
+  <data name="User.EditProfile" xml:space="preserve">
+    <value>Edit Profile</value>
+  </data>
+  <data name="User.TotalFlights" xml:space="preserve">
+    <value>Total Flights</value>
+  </data>
+  <data name="User.Reviews" xml:space="preserve">
+    <value>Reviews</value>
+  </data>
+  <data name="User.MilesPoints" xml:space="preserve">
+    <value>Miles/Points</value>
+  </data>
+  <data name="User.TravelLog" xml:space="preserve">
+    <value>Travel Log</value>
+  </data>
+  <data name="User.MyBookings" xml:space="preserve">
+    <value>MY BOOKINGS</value>
+  </data>
+  <data name="User.AllTickets" xml:space="preserve">
+    <value>All Tickets</value>
+  </data>
+  <data name="User.Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="User.TripInfo" xml:space="preserve">
+    <value>Trip Info</value>
+  </data>
+  <data name="User.DateTime" xml:space="preserve">
+    <value>Date &amp; Time</value>
+  </data>
+  <data name="User.Seat" xml:space="preserve">
+    <value>Seat</value>
+  </data>
+  <data name="User.Amount" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+  <data name="User.Action" xml:space="preserve">
+    <value>Action</value>
+  </data>
+  <data name="User.ViewTicket" xml:space="preserve">
+    <value>View Ticket</value>
+  </data>
+  <data name="User.NoBookingsFound" xml:space="preserve">
+    <value>No Bookings Found</value>
+  </data>
+  <data name="User.NoBookingsYet" xml:space="preserve">
+    <value>You haven't made any bookings yet.</value>
+  </data>
+  <data name="User.BookNow" xml:space="preserve">
+    <value>Book Now</value>
+  </data>
+  <data name="User.BackToSearch" xml:space="preserve">
+    <value>Back to Search</value>
+  </data>
+  <data name="User.CompleteBooking" xml:space="preserve">
+    <value>COMPLETE YOUR BOOKING</value>
+  </data>
+  <data name="User.FlightConfirmation" xml:space="preserve">
+    <value>Flight Confirmation</value>
+  </data>
+  <data name="ForgotPassword.AccountRecovery" xml:space="preserve">
+    <value>Account Recovery</value>
+  </data>
+  <data name="ForgotPassword.AccountRecoveryAccess" xml:space="preserve">
+    <value>ACCOUNT<br/>RECOVERY<br/>ACCESS</value>
+  </data>
+  <data name="ForgotPassword.Lost" xml:space="preserve">
+    <value>LOST</value>
+  </data>
+  <data name="ForgotPassword.Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="ForgotPassword.Found" xml:space="preserve">
+    <value>FOUND</value>
+  </data>
+  <data name="ForgotPassword.Target" xml:space="preserve">
+    <value>Target</value>
+  </data>
+  <data name="ForgotPassword.Priority" xml:space="preserve">
+    <value>PRIORITY</value>
+  </data>
+  <data name="ForgotPassword.RestoreAccess" xml:space="preserve">
+    <value>RESTORE ACCESS</value>
+  </data>
+  <data name="ForgotPassword.CompleteVerification" xml:space="preserve">
+    <value>Please complete the verification process below.</value>
+  </data>
+  <data name="ForgotPassword.SendVerificationCode" xml:space="preserve">
+    <value>SEND VERIFICATION CODE</value>
+  </data>
+  <data name="ForgotPassword.VerificationCodeSent" xml:space="preserve">
+    <value>VERIFICATION CODE SENT TO</value>
+  </data>
+  <data name="ForgotPassword.VerifyIdentity" xml:space="preserve">
+    <value>VERIFY IDENTITY</value>
+  </data>
+  <data name="ForgotPassword.ResendCode" xml:space="preserve">
+    <value>Resend Code</value>
+  </data>
+  <data name="ForgotPassword.Wait" xml:space="preserve">
+    <value>WAIT</value>
+  </data>
+  <data name="ForgotPassword.NewPassword" xml:space="preserve">
+    <value>New Password</value>
+  </data>
+  <data name="ForgotPassword.UpdateCredentials" xml:space="preserve">
+    <value>UPDATE CREDENTIALS</value>
+  </data>
+  <data name="ForgotPassword.AccessRestored" xml:space="preserve">
+    <value>ACCESS RESTORED</value>
+  </data>
+  <data name="ForgotPassword.RedirectingToLogin" xml:space="preserve">
+    <value>REDIRECTING TO LOGIN PORTAL...</value>
+  </data>
+  <data name="ForgotPassword.ReturnToLogin" xml:space="preserve">
+    <value>← Return to Login</value>
+  </data>
+  <data name="ForgotPassword.InvalidOTP" xml:space="preserve">
+    <value>Invalid OTP. Please try again.</value>
+  </data>
+  <data name="ForgotPassword.PasswordsNotMatch" xml:space="preserve">
+    <value>Passwords do not match.</value>
+  </data>
+  <data name="ForgotPassword.FailedToSendOTP" xml:space="preserve">
+    <value>Failed to send OTP. Please check your email.</value>
+  </data>
+  <data name="ForgotPassword.FailedToReset" xml:space="preserve">
+    <value>Failed to reset password.</value>
+  </data>
+  <data name="Common.Unknown" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
+  <data name="Common.UnknownPassenger" xml:space="preserve">
+    <value>UNKNOWN PASSENGER</value>
+  </data>
+  <data name="Partner.NoFlightsScheduled" xml:space="preserve">
+    <value>No flights scheduled</value>
+  </data>
+  <data name="Partner.GetStartedScheduling" xml:space="preserve">
+    <value>Get started by scheduling your first flight.</value>
+  </data>
+  <data name="BookTrip.SelectClass" xml:space="preserve">
+    <value>Select Class</value>
+  </data>
+  <data name="BookTrip.Economy" xml:space="preserve">
+    <value>Economy</value>
+  </data>
+  <data name="BookTrip.Business" xml:space="preserve">
+    <value>Business</value>
+  </data>
+  <data name="BookTrip.FirstClass" xml:space="preserve">
+    <value>First Class</value>
+  </data>
+  <data name="BookTrip.SeatsLeft" xml:space="preserve">
+    <value>seats left</value>
+  </data>
+  <data name="BookTrip.TotalPrice" xml:space="preserve">
+    <value>Total Price</value>
+  </data>
+  <data name="BookTrip.ConfirmBooking" xml:space="preserve">
+    <value>Confirm Booking</value>
+  </data>
+  <data name="BookTrip.Mins" xml:space="preserve">
+    <value>mins</value>
+  </data>
+  <data name="Common.Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Common.Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Partner.DeleteCompanyConfirm" xml:space="preserve">
+    <value>Are you sure you want to delete this company?</value>
+  </data>
+  <data name="Partner.NoAirlinesRegistered" xml:space="preserve">
+    <value>No airlines registered yet.</value>
+  </data>
+  <data name="Common.ID" xml:space="preserve">
+    <value>ID</value>
+  </data>
+  <data name="Partner.Fares" xml:space="preserve">
+    <value>Fares</value>
+  </data>
+  <data name="Partner.Arr" xml:space="preserve">
+    <value>Arr</value>
+  </data>
+  <data name="Partner.ECO" xml:space="preserve">
+    <value>ECO</value>
+  </data>
+  <data name="Partner.BUS" xml:space="preserve">
+    <value>BUS</value>
+  </data>
+  <data name="Partner.FirstClassShort" xml:space="preserve">
+    <value>1ST</value>
+  </data>
+  <data name="Partner.DeleteTripConfirm" xml:space="preserve">
+    <value>Are you sure you want to delete this trip?</value>
+  </data>
+  <data name="Common.Km" xml:space="preserve">
+    <value>km</value>
+  </data>
+  <data name="Common.NA" xml:space="preserve">
+    <value>N/A</value>
+  </data>
+  <data name="ForgotPassword.OTPResentSuccess" xml:space="preserve">
+    <value>OTP resent successfully!</value>
+  </data>
+  <data name="Common.Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Common.Gate" xml:space="preserve">
+    <value>Gate</value>
+  </data>
+  <data name="Common.TicketBooking" xml:space="preserve">
+    <value>TICKET_BOOKING</value>
+  </data>
+  <data name="Login.EmailPlaceholder" xml:space="preserve">
+    <value>passenger@example.com</value>
+  </data>
+</root>
