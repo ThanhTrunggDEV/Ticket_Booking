@@ -4,8 +4,10 @@ using System.Globalization;
 using Ticket_Booking.Data;
 using Ticket_Booking.Interfaces;
 using Ticket_Booking.Models.DomainModels;
+using Ticket_Booking.Models.CurrencyModels;
 using Ticket_Booking.Repositories;
 using Ticket_Booking.Resources;
+using Ticket_Booking.Services;
 using VNPAY.Extensions;
 
 namespace Ticket_Booking
@@ -50,6 +52,28 @@ namespace Ticket_Booking
             builder.Services.AddScoped<IRepository<Payment>, PaymentRepository>();
             builder.Services.AddScoped<IRepository<Review>, ReviewRepository>();
             builder.Services.AddScoped<Services.MailService>();
+
+            // Add memory cache for currency exchange rates
+            builder.Services.AddMemoryCache();
+
+            // Add HTTP context accessor for currency service
+            builder.Services.AddHttpContextAccessor();
+
+            // Configure currency options
+            builder.Services.Configure<CurrencyOptions>(
+                builder.Configuration.GetSection(CurrencyOptions.SectionName));
+
+            // Register HttpClient for Exchange Rate API
+            // AddHttpClient already registers the service, so no need for separate AddScoped
+            builder.Services.AddHttpClient<ICurrencyService, CurrencyService>(client =>
+            {
+                var currencyOptions = builder.Configuration.GetSection(CurrencyOptions.SectionName).Get<CurrencyOptions>();
+                if (currencyOptions != null && !string.IsNullOrEmpty(currencyOptions.ApiEndpoint))
+                {
+                    client.BaseAddress = new Uri(currencyOptions.ApiEndpoint);
+                }
+                client.Timeout = TimeSpan.FromSeconds(5);
+            });
 
             builder.Services.AddSession(options =>
             {
