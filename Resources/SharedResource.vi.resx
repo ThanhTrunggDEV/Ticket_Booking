@@ -673,4 +673,103 @@
   <data name="Login.EmailPlaceholder" xml:space="preserve">
     <value>passenger@example.com</value>
   </data>
+  <data name="PNR.Title" xml:space="preserve">
+    <value>Tra Cứu PNR</value>
+  </data>
+  <data name="PNR.BookingLookup" xml:space="preserve">
+    <value>TRA CỨU ĐẶT CHỖ</value>
+  </data>
+  <data name="PNR.EnterDetails" xml:space="preserve">
+    <value>Vui lòng nhập thông tin đặt chỗ của bạn</value>
+  </data>
+  <data name="PNR.PNRCode" xml:space="preserve">
+    <value>Mã PNR</value>
+  </data>
+  <data name="PNR.EmailAddress" xml:space="preserve">
+    <value>Địa chỉ Email</value>
+  </data>
+  <data name="PNR.LookupBooking" xml:space="preserve">
+    <value>Tra Cứu Đặt Chỗ</value>
+  </data>
+  <data name="PNR.NeedHelp" xml:space="preserve">
+    <value>Cần Trợ Giúp?</value>
+  </data>
+  <data name="PNR.HelpPNRCode" xml:space="preserve">
+    <value>Mã PNR của bạn là mã 6 ký tự được gửi đến email sau khi đặt chỗ</value>
+  </data>
+  <data name="PNR.HelpEmail" xml:space="preserve">
+    <value>Nhập địa chỉ email bạn đã sử dụng khi đặt chỗ</value>
+  </data>
+  <data name="PNR.HelpNotFound" xml:space="preserve">
+    <value>Nếu bạn không tìm thấy mã PNR, hãy kiểm tra email xác nhận đặt chỗ</value>
+  </data>
+  <data name="PNR.BackToHome" xml:space="preserve">
+    <value>Về Trang Chủ</value>
+  </data>
+  <data name="PNR.BookingFound" xml:space="preserve">
+    <value>Đã Tìm Thấy Đặt Chỗ!</value>
+  </data>
+  <data name="PNR.BookingDetails" xml:space="preserve">
+    <value>Chi tiết đặt chỗ của bạn được hiển thị bên dưới.</value>
+  </data>
+  <data name="PNR.Confirmed" xml:space="preserve">
+    <value>Đã Xác Nhận</value>
+  </data>
+  <data name="PNR.Class" xml:space="preserve">
+    <value>Hạng</value>
+  </data>
+  <data name="PNR.Date" xml:space="preserve">
+    <value>Ngày</value>
+  </data>
+  <data name="PNR.Flight" xml:space="preserve">
+    <value>Chuyến Bay</value>
+  </data>
+  <data name="PNR.Gate" xml:space="preserve">
+    <value>Cổng</value>
+  </data>
+  <data name="PNR.Seat" xml:space="preserve">
+    <value>Ghế</value>
+  </data>
+  <data name="PNR.Passenger" xml:space="preserve">
+    <value>Hành Khách</value>
+  </data>
+  <data name="PNR.BoardingPass" xml:space="preserve">
+    <value>Thẻ Lên Máy Bay</value>
+  </data>
+  <data name="PNR.Boarding" xml:space="preserve">
+    <value>Lên Máy Bay</value>
+  </data>
+  <data name="PNR.SeatNumber" xml:space="preserve">
+    <value>Số Ghế</value>
+  </data>
+  <data name="PNR.ScanAtGate" xml:space="preserve">
+    <value>Quét tại cổng</value>
+  </data>
+  <data name="PNR.LookupAnother" xml:space="preserve">
+    <value>Tra Cứu Đặt Chỗ Khác</value>
+  </data>
+  <data name="PNR.PrintTicket" xml:space="preserve">
+    <value>In Vé</value>
+  </data>
+  <data name="PNR.DirectFlight" xml:space="preserve">
+    <value>Chuyến Bay Thẳng</value>
+  </data>
+  <data name="PNR.EnterPNRCode" xml:space="preserve">
+    <value>Nhập mã đặt chỗ 6 ký tự của bạn</value>
+  </data>
+  <data name="PNR.InvalidPNR" xml:space="preserve">
+    <value>Mã PNR hoặc email không hợp lệ. Vui lòng thử lại.</value>
+  </data>
+  <data name="PNR.NotFound" xml:space="preserve">
+    <value>Không tìm thấy đặt chỗ với mã PNR và email đã cung cấp.</value>
+  </data>
+  <data name="PNR.Origin" xml:space="preserve">
+    <value>Điểm Đi</value>
+  </data>
+  <data name="PNR.Destination" xml:space="preserve">
+    <value>Điểm Đến</value>
+  </data>
+  <data name="PNR.Time" xml:space="preserve">
+    <value>Giờ</value>
+  </data>
 </root>
