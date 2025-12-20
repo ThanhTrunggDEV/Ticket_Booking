@@ -673,5 +673,104 @@
   <data name="Login.EmailPlaceholder" xml:space="preserve">
     <value>passenger@example.com</value>
   </data>
+  <data name="PNR.Title" xml:space="preserve">
+    <value>PNR Lookup</value>
+  </data>
+  <data name="PNR.BookingLookup" xml:space="preserve">
+    <value>PNR LOOKUP</value>
+  </data>
+  <data name="PNR.EnterDetails" xml:space="preserve">
+    <value>Please enter your booking details</value>
+  </data>
+  <data name="PNR.PNRCode" xml:space="preserve">
+    <value>PNR Code</value>
+  </data>
+  <data name="PNR.EmailAddress" xml:space="preserve">
+    <value>Email Address</value>
+  </data>
+  <data name="PNR.LookupBooking" xml:space="preserve">
+    <value>Lookup Booking</value>
+  </data>
+  <data name="PNR.NeedHelp" xml:space="preserve">
+    <value>Need Help?</value>
+  </data>
+  <data name="PNR.HelpPNRCode" xml:space="preserve">
+    <value>Your PNR code is a 6-character code sent to your email after booking</value>
+  </data>
+  <data name="PNR.HelpEmail" xml:space="preserve">
+    <value>Enter the email address you used when making the booking</value>
+  </data>
+  <data name="PNR.HelpNotFound" xml:space="preserve">
+    <value>If you can't find your PNR, check your booking confirmation email</value>
+  </data>
+  <data name="PNR.BackToHome" xml:space="preserve">
+    <value>Back to Home</value>
+  </data>
+  <data name="PNR.BookingFound" xml:space="preserve">
+    <value>Booking Found!</value>
+  </data>
+  <data name="PNR.BookingDetails" xml:space="preserve">
+    <value>Your booking details are displayed below.</value>
+  </data>
+  <data name="PNR.Confirmed" xml:space="preserve">
+    <value>Confirmed</value>
+  </data>
+  <data name="PNR.Class" xml:space="preserve">
+    <value>Class</value>
+  </data>
+  <data name="PNR.Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="PNR.Flight" xml:space="preserve">
+    <value>Flight</value>
+  </data>
+  <data name="PNR.Gate" xml:space="preserve">
+    <value>Gate</value>
+  </data>
+  <data name="PNR.Seat" xml:space="preserve">
+    <value>Seat</value>
+  </data>
+  <data name="PNR.Passenger" xml:space="preserve">
+    <value>Passenger</value>
+  </data>
+  <data name="PNR.BoardingPass" xml:space="preserve">
+    <value>Boarding Pass</value>
+  </data>
+  <data name="PNR.Boarding" xml:space="preserve">
+    <value>Boarding</value>
+  </data>
+  <data name="PNR.SeatNumber" xml:space="preserve">
+    <value>Seat Number</value>
+  </data>
+  <data name="PNR.ScanAtGate" xml:space="preserve">
+    <value>Scan at gate</value>
+  </data>
+  <data name="PNR.LookupAnother" xml:space="preserve">
+    <value>Lookup Another Booking</value>
+  </data>
+  <data name="PNR.PrintTicket" xml:space="preserve">
+    <value>Print Ticket</value>
+  </data>
+  <data name="PNR.DirectFlight" xml:space="preserve">
+    <value>Direct Flight</value>
+  </data>
+  <data name="PNR.EnterPNRCode" xml:space="preserve">
+    <value>Enter your 6-character booking code</value>
+  </data>
+  <data name="PNR.InvalidPNR" xml:space="preserve">
+    <value>Invalid PNR code or email. Please try again.</value>
+  </data>
+  <data name="PNR.NotFound" xml:space="preserve">
+    <value>No booking found with the provided PNR and email.</value>
+  </data>
+  <data name="PNR.Origin" xml:space="preserve">
+    <value>Origin</value>
+  </data>
+  <data name="PNR.Destination" xml:space="preserve">
+    <value>Destination</value>
+  </data>
+  <data name="PNR.Time" xml:space="preserve">
+    <value>Time</value>
+  </data>
 </root>
 
