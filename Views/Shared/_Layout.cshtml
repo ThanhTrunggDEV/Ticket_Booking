@@ -57,13 +57,16 @@
                                 }
                                 else
                                 {
-                                    <a asp-controller="User" asp-action="Index" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "bg-indigo-800 text-white" : "text-indigo-200")">
+                                    <a asp-controller="User" asp-action="Index" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Controller"]?.ToString() == "User" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "bg-indigo-800 text-white" : "text-indigo-200")">
                                         @Localizer["Nav.FindFlights"]
                                     </a>
-                                    <a asp-controller="User" asp-action="Profile" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Action"]?.ToString() == "Profile" ? "bg-indigo-800 text-white" : "text-indigo-200")">
+                                    <a asp-controller="PNR" asp-action="Lookup" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Controller"]?.ToString() == "PNR" ? "bg-indigo-800 text-white" : "text-indigo-200")">
+                                        PNR Lookup
+                                    </a>
+                                    <a asp-controller="User" asp-action="Profile" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Controller"]?.ToString() == "User" && ViewContext.RouteData.Values["Action"]?.ToString() == "Profile" ? "bg-indigo-800 text-white" : "text-indigo-200")">
                                         @Localizer["Nav.MyProfile"]
                                     </a>
-                                    <a asp-controller="User" asp-action="MyBooking" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Action"]?.ToString() == "MyBooking" ? "bg-indigo-800 text-white" : "text-indigo-200")">
+                                    <a asp-controller="User" asp-action="MyBooking" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Controller"]?.ToString() == "User" && ViewContext.RouteData.Values["Action"]?.ToString() == "MyBooking" ? "bg-indigo-800 text-white" : "text-indigo-200")">
                                         @Localizer["Nav.MyBookings"]
                                     </a>
                                 }
@@ -88,6 +91,14 @@
                     }
                     else
                     {
+                        <!-- Public Navigation -->
+                        <div class="hidden md:block">
+                            <div class="ml-10 flex items-baseline space-x-1">
+                                <a asp-controller="PNR" asp-action="Lookup" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Controller"]?.ToString() == "PNR" ? "bg-indigo-800 text-white" : "text-indigo-200")">
+                                    PNR Lookup
+                                </a>
+                            </div>
+                        </div>
                         <!-- Language and Currency Switchers for non-logged in users -->
                         <div class="hidden md:block">
                             <div class="flex items-center gap-4">
