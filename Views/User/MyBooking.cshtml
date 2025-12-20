@@ -46,6 +46,7 @@
                                 <thead class="bg-gray-50">
                                     <tr>
                                         <th class="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">@Localizer["User.TripInfo"]</th>
+                                        <th class="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">PNR</th>
                                         <th class="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">@Localizer["User.DateTime"]</th>
                                         <th class="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">@Localizer["User.Seat"]</th>
                                         <th class="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">@Localizer["Admin.Status"]</th>
@@ -66,6 +67,19 @@
                                                     </span>
                                                     <span class="text-xs text-gray-500 font-medium">@ticket.Trip?.Company?.Name</span>
                                                 </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                @if (!string.IsNullOrEmpty(ticket.PNR))
+                                                {
+                                                    <div class="bg-indigo-50 border border-indigo-200 px-3 py-1.5 rounded-lg inline-block">
+                                                        <div class="text-xs font-bold text-indigo-600 uppercase tracking-widest mb-0.5">PNR</div>
+                                                        <div class="text-sm font-black text-indigo-700 font-mono tracking-widest">@ticket.PNR</div>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-xs text-gray-400 italic">N/A</span>
+                                                }
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <div class="flex flex-col">
