@@ -209,5 +209,65 @@ namespace Ticket_Booking.Repositories
         {
             throw new NotImplementedException();
         }
+
+        // PNR-specific methods
+        /// <summary>
+        /// Gets a ticket by PNR code (case-insensitive)
+        /// </summary>
+        /// <param name="pnr">PNR code to search for</param>
+        /// <returns>Ticket if found, null otherwise</returns>
+        public async Task<Ticket?> GetByPNRAsync(string pnr)
+        {
+            if (string.IsNullOrWhiteSpace(pnr))
+                return null;
+
+            var upperPnr = pnr.ToUpper();
+            return await _dbSet
+                .Where(t => t.PNR != null && t.PNR.ToUpper() == upperPnr)
+                .Include(t => t.Trip)
+                .ThenInclude(tr => tr.Company)
+                .Include(t => t.User)
+                .FirstOrDefaultAsync();
+        }
+
+        /// <summary>
+        /// Gets a ticket by PNR code and email (case-insensitive)
+        /// Used for secure PNR lookup requiring email validation
+        /// </summary>
+        /// <param name="pnr">PNR code to search for</param>
+        /// <param name="email">Email address to validate</param>
+        /// <returns>Ticket if found and email matches, null otherwise</returns>
+        public async Task<Ticket?> GetByPNRAndEmailAsync(string pnr, string email)
+        {
+            if (string.IsNullOrWhiteSpace(pnr) || string.IsNullOrWhiteSpace(email))
+                return null;
+
+            var upperPnr = pnr.ToUpper();
+            var lowerEmail = email.ToLower();
+            
+            return await _dbSet
+                .Where(t => t.PNR != null && 
+                           t.PNR.ToUpper() == upperPnr &&
+                           t.User.Email.ToLower() == lowerEmail)
+                .Include(t => t.Trip)
+                .ThenInclude(tr => tr.Company)
+                .Include(t => t.User)
+                .FirstOrDefaultAsync();
+        }
+
+        /// <summary>
+        /// Checks if a PNR code already exists (case-insensitive)
+        /// </summary>
+        /// <param name="pnr">PNR code to check</param>
+        /// <returns>True if PNR exists, false otherwise</returns>
+        public async Task<bool> PNRExistsAsync(string pnr)
+        {
+            if (string.IsNullOrWhiteSpace(pnr))
+                return false;
+
+            var upperPnr = pnr.ToUpper();
+            return await _dbSet
+                .AnyAsync(t => t.PNR != null && t.PNR.ToUpper() == upperPnr);
+        }
     }
 }
