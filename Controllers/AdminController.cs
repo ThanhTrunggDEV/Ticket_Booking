@@ -3,6 +3,7 @@ using Ticket_Booking.Enums;
 using Ticket_Booking.Interfaces;
 using Ticket_Booking.Models.DomainModels;
 using Ticket_Booking.Models.ViewModels;
+using Ticket_Booking.Repositories;
 
 namespace Ticket_Booking.Controllers
 {
@@ -146,6 +147,36 @@ namespace Ticket_Booking.Controllers
             await _tripRepository.SaveChangesAsync();
 
             return RedirectToAction(nameof(TripManagement));
+        }
+
+        /// <summary>
+        /// Search ticket by PNR code (Admin only)
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> SearchTicketByPNR(string pnr)
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Admin")
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            if (string.IsNullOrWhiteSpace(pnr))
+            {
+                return RedirectToAction("Index");
+            }
+
+            var ticketRepository = (TicketRepository)_ticketRepository;
+            var ticket = await ticketRepository.GetByPNRAsync(pnr);
+
+            if (ticket == null)
+            {
+                TempData["Error"] = $"No ticket found with PNR: {pnr}";
+                return RedirectToAction("Index");
+            }
+
+            // Redirect to ticket detail view (if exists) or show in a view
+            return RedirectToAction("Ticket", "User", new { id = ticket.Id });
         }
     }
 }
