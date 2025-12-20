@@ -110,7 +110,13 @@ namespace Ticket_Booking.Data
                 entity.Property(e => e.SeatNumber).IsRequired().HasMaxLength(10);
                 entity.Property(e => e.PaymentStatus).IsRequired().HasMaxLength(20);
                 entity.Property(e => e.QrCode).HasMaxLength(255);
+                entity.Property(e => e.PNR).HasMaxLength(6);
                 entity.Property(e => e.TotalPrice).HasPrecision(10, 2);
+                
+                // Unique index on PNR (allows multiple NULLs for backward compatibility)
+                entity.HasIndex(e => e.PNR)
+                    .IsUnique()
+                    .HasFilter("[PNR] IS NOT NULL");
                 
                 entity.HasOne(e => e.Trip)
                     .WithMany(t => t.Tickets)
