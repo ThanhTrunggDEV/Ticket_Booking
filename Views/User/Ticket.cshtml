@@ -45,8 +45,14 @@
                         </div>
                         <div>
                             <h1 class="text-2xl font-bold text-slate-800 tracking-tight">@Model.Trip.Company.Name</h1>
-                            <div class="flex items-center text-sm text-slate-500 font-medium mt-0.5">
-                                <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider mr-2">Confirmed</span>
+                            <div class="flex items-center text-sm text-slate-500 font-medium mt-0.5 flex-wrap gap-2">
+                                <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider">Confirmed</span>
+                                @if (!string.IsNullOrEmpty(Model.PNR))
+                                {
+                                    <span class="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider font-mono">
+                                        PNR: @Model.PNR
+                                    </span>
+                                }
                                 <span>Booking ID: #@Model.Id.ToString("D6")</span>
                             </div>
                         </div>
@@ -149,6 +155,13 @@
                     </div>
 
                     <div class="space-y-6">
+                        @if (!string.IsNullOrEmpty(Model.PNR))
+                        {
+                            <div class="bg-indigo-50 border-2 border-indigo-200 p-4 rounded-xl">
+                                <div class="text-xs font-bold text-indigo-600 uppercase tracking-widest mb-1">PNR Code</div>
+                                <div class="text-2xl font-black text-indigo-700 font-mono tracking-widest">@Model.PNR</div>
+                            </div>
+                        }
                         <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
                             <div class="flex justify-between mb-2">
                                 <span class="text-xs font-bold text-slate-400 uppercase">From</span>
