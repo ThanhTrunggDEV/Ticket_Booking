@@ -8,6 +8,7 @@ using Ticket_Booking.Models.CurrencyModels;
 using Ticket_Booking.Repositories;
 using Ticket_Booking.Resources;
 using Ticket_Booking.Services;
+using Ticket_Booking.Helpers;
 using VNPAY.Extensions;
 
 namespace Ticket_Booking
@@ -52,6 +53,9 @@ namespace Ticket_Booking
             builder.Services.AddScoped<IRepository<Payment>, PaymentRepository>();
             builder.Services.AddScoped<IRepository<Review>, ReviewRepository>();
             builder.Services.AddScoped<Services.MailService>();
+
+            // Register PNR Helper
+            builder.Services.AddScoped<IPNRHelper, PNRHelper>();
 
             // Add memory cache for currency exchange rates
             builder.Services.AddMemoryCache();
