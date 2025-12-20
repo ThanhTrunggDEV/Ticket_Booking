@@ -2,6 +2,7 @@
 using Ticket_Booking.Interfaces;
 using Ticket_Booking.Models.DomainModels;
 using Ticket_Booking.Models.ViewModels;
+using Ticket_Booking.Repositories;
 
 namespace Ticket_Booking.Controllers
 {
@@ -318,6 +319,43 @@ namespace Ticket_Booking.Controllers
             await _tripRepository.SaveChangesAsync();
 
             return RedirectToAction(nameof(TripsManagement));
+        }
+
+        /// <summary>
+        /// Search ticket by PNR code (Partner only - only shows tickets for their trips)
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> SearchTicketByPNR(string pnr)
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Partner")
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            if (string.IsNullOrWhiteSpace(pnr))
+            {
+                return RedirectToAction("Index");
+            }
+
+            var ticketRepository = (TicketRepository)_ticketRepository;
+            var ticket = await ticketRepository.GetByPNRAsync(pnr);
+
+            // Verify ticket belongs to partner's company
+            if (ticket == null || ticket.Trip?.Company?.OwnerId != userId)
+            {
+                TempData["Error"] = $"No ticket found with PNR: {pnr} or ticket does not belong to your company.";
+                return RedirectToAction("Index");
+            }
+
+            // Redirect to ticket detail view
+            return RedirectToAction("Ticket", "User", new { id = ticket.Id });
         }
     }
 }
