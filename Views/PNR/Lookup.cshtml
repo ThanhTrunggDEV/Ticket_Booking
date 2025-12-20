@@ -1,0 +1,201 @@
+@{
+    ViewData["Title"] = @Localizer["PNR.Title"];
+    Layout = "_Layout";
+}
+
+<div class="min-h-screen bg-zinc-100 flex items-center justify-center p-4 font-mono relative overflow-hidden">
+    <!-- Background Texture -->
+    <div class="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
+    
+    <!-- Floating Elements -->
+    <div class="absolute top-10 left-10 w-24 h-24 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+    <div class="absolute bottom-10 right-10 w-32 h-32 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+
+    <!-- The Ticket Container -->
+    <div class="w-full max-w-5xl relative group perspective-1000">
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative transform transition-transform duration-500 hover:rotate-1 hover:scale-[1.01]">
+            
+            <!-- Left Side: The "Brand" (Visuals) -->
+            <div class="md:w-2/5 bg-indigo-900 p-8 text-white relative overflow-hidden flex flex-col justify-between min-h-[400px]">
+                <!-- Decorative Circles (Holes) -->
+                <div class="absolute -right-4 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-zinc-100 rounded-full z-30 shadow-inner"></div>
+                
+                <div class="z-10 relative">
+                    <div class="flex items-center space-x-2 mb-6">
+                        <div class="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                        </div>
+                        <span class="font-bold tracking-widest text-sm">SkyBooking</span>
+                    </div>
+                    <h1 class="text-4xl font-black tracking-tighter leading-none opacity-90">@Html.Raw(@Localizer["PNR.BookingLookup"])</h1>
+                </div>
+
+                <div class="z-10 my-8 relative">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="text-center">
+                            <div class="text-5xl font-black tracking-tighter">PNR</div>
+                            <div class="text-xs opacity-50 uppercase tracking-widest mt-1">@Localizer["PNR.Origin"]</div>
+                        </div>
+                        <div class="flex-1 px-4 flex flex-col items-center justify-center opacity-50">
+                            <svg class="w-6 h-6 transform rotate-90 mb-1" fill="currentColor" viewBox="0 0 24 24"><path d="M21,16v-2l-8-5V3.5c0-0.83-0.67-1.5-1.5-1.5S10,2.67,10,3.5V9l-8,5v2l8-2.5V19l-2,1.5V22l3.5-1l3.5,1v-1.5L13,19v-5.5L21,16z"/></svg>
+                            <div class="w-full h-px bg-white/30 border-t border-dashed border-white/50"></div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-5xl font-black tracking-tighter">TICKET</div>
+                            <div class="text-xs opacity-50 uppercase tracking-widest mt-1">@Localizer["PNR.Destination"]</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="z-10 relative">
+                    <div class="flex justify-between items-end">
+                        <div>
+                            <div class="text-xs uppercase tracking-widest opacity-50 mb-1">@Localizer["Common.Date"]</div>
+                            <div class="text-lg font-bold">@DateTime.Now.ToString("dd MMM")</div>
+                        </div>
+                        <div>
+                            <div class="text-xs uppercase tracking-widest opacity-50 mb-1">@Localizer["PNR.Time"]</div>
+                            <div class="text-lg font-bold">@DateTime.Now.ToString("HH:mm")</div>
+                        </div>
+                        <div>
+                            <div class="text-xs uppercase tracking-widest opacity-50 mb-1">@Localizer["Common.Gate"]</div>
+                            <div class="text-lg font-bold">A01</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Background Pattern -->
+                <div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/20 to-transparent"></div>
+                <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-indigo-500 rounded-full mix-blend-overlay filter blur-3xl opacity-50"></div>
+            </div>
+
+            <!-- Perforation Line (Visual only for desktop) -->
+            <div class="hidden md:block absolute left-[40%] top-4 bottom-4 w-px border-l-2 border-dashed border-gray-300 z-20"></div>
+
+            <!-- Right Side: The "Form" (Inputs) -->
+            <div class="md:w-3/5 p-8 md:p-12 bg-white relative flex flex-col justify-center">
+                <!-- Decorative Circle (Hole) -->
+                <div class="hidden md:block absolute -left-4 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-zinc-100 rounded-full z-30 shadow-inner"></div>
+
+                <div class="mb-10">
+                    <h2 class="text-2xl font-bold text-gray-900 uppercase tracking-wide flex items-center">
+                        <span class="w-2 h-8 bg-indigo-600 mr-3 rounded-sm"></span>
+                        @Localizer["PNR.Title"]
+                    </h2>
+                    <p class="text-gray-400 text-xs uppercase tracking-widest mt-2 ml-5">@Localizer["PNR.EnterDetails"]</p>
+                </div>
+
+                <form asp-action="Lookup" method="post" class="space-y-8">
+                    @Html.AntiForgeryToken()
+
+                    <div class="grid grid-cols-1 gap-8">
+                        <!-- PNR Input -->
+                        <div class="relative group">
+                            <label class="block text-[10px] uppercase text-gray-400 tracking-[0.2em] mb-2 group-focus-within:text-indigo-600 transition-colors">
+                                @Localizer["PNR.PNRCode"] <span class="text-red-500">*</span>
+                            </label>
+                            <input 
+                                id="pnr" 
+                                name="pnr" 
+                                type="text" 
+                                required 
+                                maxlength="6"
+                                pattern="[A-Za-z0-9]{6}"
+                                class="w-full border-b-2 border-gray-200 py-2 text-xl text-gray-900 font-bold placeholder-gray-200 focus:outline-none focus:border-indigo-600 transition-all bg-transparent font-mono tracking-widest uppercase"
+                                placeholder="ABC123"
+                                value="@ViewData["pnr"]">
+                            <p class="mt-2 text-[10px] text-gray-400 uppercase tracking-widest">@Localizer["PNR.EnterPNRCode"]</p>
+                            @if (ViewData.ModelState["pnr"]?.Errors.Count > 0)
+                            {
+                                <p class="mt-1 text-xs text-red-600 font-bold">@ViewData.ModelState["pnr"].Errors[0].ErrorMessage</p>
+                            }
+                        </div>
+                        
+                        <!-- Email Input -->
+                        <div class="relative group">
+                            <label class="block text-[10px] uppercase text-gray-400 tracking-[0.2em] mb-2 group-focus-within:text-indigo-600 transition-colors">
+                                @Localizer["PNR.EmailAddress"] <span class="text-red-500">*</span>
+                            </label>
+                            <input 
+                                id="email" 
+                                name="email" 
+                                type="email" 
+                                required 
+                                class="w-full border-b-2 border-gray-200 py-2 text-xl text-gray-900 font-bold placeholder-gray-200 focus:outline-none focus:border-indigo-600 transition-all bg-transparent font-mono tracking-tight"
+                                placeholder="@Localizer["Login.EmailPlaceholder"]"
+                                value="@ViewData["email"]">
+                            @if (ViewData.ModelState["email"]?.Errors.Count > 0)
+                            {
+                                <p class="mt-1 text-xs text-red-600 font-bold">@ViewData.ModelState["email"].Errors[0].ErrorMessage</p>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- General Error Message -->
+                    @if (ViewData.ModelState[string.Empty]?.Errors.Count > 0)
+                    {
+                        <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
+                            <p class="text-xs text-red-700 font-bold uppercase tracking-wider">@ViewData.ModelState[string.Empty].Errors[0].ErrorMessage</p>
+                        </div>
+                    }
+
+                    <!-- Submit Button -->
+                    <div class="pt-4">
+                        <button 
+                            type="submit" 
+                            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-xs transition-all transform hover:scale-[1.02] hover:shadow-xl flex items-center justify-center space-x-2 group">
+                            <span>@Localizer["PNR.LookupBooking"]</span>
+                            <svg class="w-5 h-5 transform transition-transform duration-300 group-hover:translate-x-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Help Text -->
+                <div class="mt-8 pt-8 border-t border-gray-200">
+                    <div class="bg-gray-50 rounded-xl p-6">
+                        <h3 class="text-xs font-bold text-gray-700 uppercase tracking-widest mb-3">@Localizer["PNR.NeedHelp"]</h3>
+                        <ul class="space-y-2 text-xs text-gray-600">
+                            <li class="flex items-start">
+                                <svg class="w-4 h-4 text-indigo-600 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span>@Localizer["PNR.HelpPNRCode"]</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-4 h-4 text-indigo-600 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span>@Localizer["PNR.HelpEmail"]</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-4 h-4 text-indigo-600 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span>@Localizer["PNR.HelpNotFound"]</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Back Link -->
+                <div class="mt-6 text-center">
+                    <a href="@Url.Action("Index", "User")" class="text-indigo-600 hover:text-indigo-800 font-medium text-xs uppercase tracking-widest inline-flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                        @Localizer["PNR.BackToHome"]
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Auto-uppercase PNR input
+    document.getElementById('pnr')?.addEventListener('input', function(e) {
+        e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    });
+</script>
