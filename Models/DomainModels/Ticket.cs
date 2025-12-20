@@ -12,6 +12,7 @@ namespace Ticket_Booking.Models.DomainModels
         public DateTime BookingDate { get; set; }
         public PaymentStatus PaymentStatus { get; set; } 
         public string? QrCode { get; set; }
+        public string? PNR { get; set; }  // Passenger Name Record - 6-character booking code
         public decimal TotalPrice { get; set; }
 
      
