@@ -8,6 +8,7 @@ using Ticket_Booking.Enums;
 using VNPAY;
 using VNPAY.Models.Enums;
 using System.Threading.Tasks;
+using Ticket_Booking.Helpers;
 
 namespace Ticket_Booking.Controllers
 {
@@ -18,16 +19,18 @@ namespace Ticket_Booking.Controllers
         private readonly IRepository<Trip> _tripRepository;
         private readonly IVnpayClient _vnPayClient;
         private readonly IRepository<Payment> _paymentRepository;
+        private readonly IPNRHelper _pnrHelper;
 
         private static int _currentTripId;
 
-        public UserController(IRepository<Payment> paymentRepository,IRepository<User> userRepository, IRepository<Ticket> ticketRepository, IRepository<Trip> tripRepository, IVnpayClient vnpayClient)
+        public UserController(IRepository<Payment> paymentRepository,IRepository<User> userRepository, IRepository<Ticket> ticketRepository, IRepository<Trip> tripRepository, IVnpayClient vnpayClient, IPNRHelper pnrHelper)
         {
             _userRepository = userRepository;
             _ticketRepository = ticketRepository;
             _tripRepository = tripRepository;
             _paymentRepository = paymentRepository;
             _vnPayClient = vnpayClient;
+            _pnrHelper = pnrHelper;
         }
 
         public async Task<IActionResult> Index(string? fromCity, string? toCity, DateTime? date)
@@ -231,6 +234,19 @@ namespace Ticket_Booking.Controllers
                 return RedirectToAction("BookTrip", new { tripId });
             }
 
+            // Generate unique PNR code
+            string pnr;
+            try
+            {
+                var ticketRepository = (TicketRepository)_ticketRepository;
+                pnr = await _pnrHelper.GenerateUniquePNRAsync(ticketRepository);
+            }
+            catch (InvalidOperationException ex)
+            {
+                TempData["Error"] = "Unable to generate booking code. Please try again.";
+                return RedirectToAction("BookTrip", new { tripId });
+            }
+
             var ticket = new Ticket
             {
                 TripId = tripId,
@@ -241,6 +257,7 @@ namespace Ticket_Booking.Controllers
                 PaymentStatus = PaymentStatus.Pending, // Chờ thanh toán
                 TotalPrice = price,
                 QrCode = Guid.NewGuid().ToString(),
+                PNR = pnr, // Assign generated PNR
             };
 
             await _ticketRepository.AddAsync(ticket);
