@@ -17,10 +17,20 @@ namespace Ticket_Booking.Models.DomainModels
         public DateTime? CheckInTime { get; set; }  // UTC timestamp when check-in occurred
         public string? BoardingPassUrl { get; set; }  // Relative path to boarding pass PDF (e.g., boarding-passes/ABC123/boarding-pass-ABC123-20241220120000.pdf)
         public decimal TotalPrice { get; set; }
+        
+        // Round-trip booking fields
+        public TicketType Type { get; set; } = TicketType.OneWay;  // OneWay or RoundTrip
+        public int? OutboundTicketId { get; set; }  // For return ticket: link to outbound ticket
+        public int? ReturnTicketId { get; set; }  // For outbound ticket: link to return ticket
+        public int? BookingGroupId { get; set; }  // Groups tickets in same round-trip booking
 
      
         public Trip Trip { get; set; } = null!;
         public User User { get; set; } = null!;
         public Payment? Payment { get; set; }
+        
+        // Navigation properties for round-trip linking
+        public Ticket? OutboundTicket { get; set; }  // The outbound ticket (if this is a return ticket)
+        public Ticket? ReturnTicket { get; set; }  // The return ticket (if this is an outbound ticket)
     }
 }
