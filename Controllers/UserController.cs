@@ -9,6 +9,7 @@ using VNPAY;
 using VNPAY.Models.Enums;
 using System.Threading.Tasks;
 using Ticket_Booking.Helpers;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ticket_Booking.Controllers
 {
@@ -20,10 +21,20 @@ namespace Ticket_Booking.Controllers
         private readonly IVnpayClient _vnPayClient;
         private readonly IRepository<Payment> _paymentRepository;
         private readonly IPNRHelper _pnrHelper;
+        private readonly IPriceCalculatorService _priceCalculatorService;
+        private readonly TripRepository _tripRepositoryConcrete;
 
         private static int _currentTripId;
 
-        public UserController(IRepository<Payment> paymentRepository,IRepository<User> userRepository, IRepository<Ticket> ticketRepository, IRepository<Trip> tripRepository, IVnpayClient vnpayClient, IPNRHelper pnrHelper)
+        public UserController(
+            IRepository<Payment> paymentRepository,
+            IRepository<User> userRepository, 
+            IRepository<Ticket> ticketRepository, 
+            IRepository<Trip> tripRepository, 
+            IVnpayClient vnpayClient, 
+            IPNRHelper pnrHelper,
+            IPriceCalculatorService priceCalculatorService,
+            TripRepository tripRepositoryConcrete)
         {
             _userRepository = userRepository;
             _ticketRepository = ticketRepository;
@@ -31,6 +42,8 @@ namespace Ticket_Booking.Controllers
             _paymentRepository = paymentRepository;
             _vnPayClient = vnpayClient;
             _pnrHelper = pnrHelper;
+            _priceCalculatorService = priceCalculatorService;
+            _tripRepositoryConcrete = tripRepositoryConcrete;
         }
 
         public async Task<IActionResult> Index(string? fromCity, string? toCity, DateTime? date)
@@ -98,14 +111,33 @@ namespace Ticket_Booking.Controllers
             }
 
             var ticketRepo = _ticketRepository as TicketRepository;
+            IEnumerable<Ticket> tickets;
+            
             if (ticketRepo != null)
             {
-                var tickets = await ticketRepo.GetByUserAsync(userId.Value);
-                return View(tickets);
+                tickets = await ticketRepo.GetByUserAsync(userId.Value);
+            }
+            else
+            {
+                tickets = await _ticketRepository.FindAsync(t => t.UserId == userId.Value);
             }
             
-            var allTickets = await _ticketRepository.FindAsync(t => t.UserId == userId.Value);
-            return View(allTickets);
+            // Group round-trip tickets: only show outbound ticket, but include return info
+            var groupedTickets = tickets
+                .Where(t => t.Type == TicketType.RoundTrip && t.BookingGroupId.HasValue)
+                .GroupBy(t => t.BookingGroupId.Value)
+                .Select(g => g.OrderBy(t => t.Trip?.DepartureTime).First()) // Get outbound ticket (earlier departure)
+                .ToList();
+            
+            // Get one-way tickets and outbound tickets from round-trip bookings
+            var displayTickets = tickets
+                .Where(t => t.Type == TicketType.OneWay || 
+                           (t.Type == TicketType.RoundTrip && t.BookingGroupId.HasValue && 
+                            groupedTickets.Any(gt => gt.Id == t.Id)))
+                .OrderByDescending(t => t.BookingDate)
+                .ToList();
+            
+            return View(displayTickets);
         }
 
         [HttpGet]
@@ -163,7 +195,7 @@ namespace Ticket_Booking.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> BookTrip(int tripId)
+        public async Task<IActionResult> BookTrip(int tripId, TicketType? ticketType = null, int? returnTripId = null)
         {
             var userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
@@ -171,17 +203,71 @@ namespace Ticket_Booking.Controllers
                 return RedirectToAction("Index", "Login");
             }
 
-            var trip = await _tripRepository.GetByIdAsync(tripId);
-            if (trip == null)
+            var outboundTrip = await _tripRepository.GetByIdAsync(tripId);
+            if (outboundTrip == null)
             {
                 return NotFound();
             }
 
-            return View(trip);
+            var viewModel = new BookingViewModel
+            {
+                TicketType = ticketType ?? TicketType.OneWay,
+                OutboundTrip = outboundTrip,
+                OutboundTripId = tripId,
+                SeatClass = SeatClass.Economy
+            };
+
+            // If round-trip is selected, load available return trips
+            if (viewModel.TicketType == TicketType.RoundTrip)
+            {
+                // Find return trips (reverse route: ToCity -> FromCity, same company)
+                var returnTrips = await _tripRepositoryConcrete.SearchTripsAsync(
+                    outboundTrip.ToCity, 
+                    outboundTrip.FromCity, 
+                    null);
+
+                // Filter to same company and future dates (return must be after outbound)
+                viewModel.AvailableReturnTrips = returnTrips
+                    .Where(t => t.CompanyId == outboundTrip.CompanyId && 
+                                t.DepartureTime > outboundTrip.ArrivalTime &&
+                                (t.EconomySeats > 0 || t.BusinessSeats > 0 || t.FirstClassSeats > 0))
+                    .OrderBy(t => t.DepartureTime)
+                    .Take(20) // Limit to 20 options
+                    .ToList();
+
+                // If returnTripId is provided, load that specific trip
+                if (returnTripId.HasValue)
+                {
+                    viewModel.ReturnTrip = await _tripRepository.GetByIdAsync(returnTripId.Value);
+                    viewModel.ReturnTripId = returnTripId.Value;
+
+                    // Calculate price breakdown if both trips are selected
+                    if (viewModel.ReturnTrip != null)
+                    {
+                        viewModel.PriceBreakdown = _priceCalculatorService.CalculateRoundTripPrice(
+                            outboundTrip,
+                            viewModel.ReturnTrip,
+                            viewModel.SeatClass);
+                        
+                        viewModel.OutboundPrice = viewModel.PriceBreakdown.OutboundPrice;
+                        viewModel.ReturnPrice = viewModel.PriceBreakdown.ReturnPrice;
+                        viewModel.DiscountAmount = viewModel.PriceBreakdown.DiscountAmount;
+                        viewModel.TotalPrice = viewModel.PriceBreakdown.TotalPrice;
+                        viewModel.SavingsAmount = viewModel.PriceBreakdown.SavingsAmount;
+                        viewModel.DiscountPercent = viewModel.PriceBreakdown.DiscountPercent;
+                    }
+                }
+            }
+
+            return View(viewModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> ConfirmBooking(int tripId, SeatClass seatClass)
+        public async Task<IActionResult> ConfirmBooking(
+            int tripId, 
+            SeatClass seatClass, 
+            TicketType? ticketType = null,
+            int? returnTripId = null)
         {
             var userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
@@ -189,13 +275,28 @@ namespace Ticket_Booking.Controllers
                 return RedirectToAction("Index", "Login");
             }
 
-            var trip = await _tripRepository.GetByIdAsync(tripId);
+            // Determine if this is a round-trip booking
+            var isRoundTrip = ticketType == TicketType.RoundTrip && returnTripId.HasValue && returnTripId.Value > 0;
+            
+            if (isRoundTrip)
+            {
+                return await CreateRoundTripBookingAsync(tripId, returnTripId.Value, seatClass, userId.Value);
+            }
+            else
+            {
+                return await CreateOneWayBookingAsync(tripId, seatClass, userId.Value);
+            }
+        }
 
+        private async Task<IActionResult> CreateOneWayBookingAsync(int tripId, SeatClass seatClass, int userId)
+        {
+            var trip = await _tripRepository.GetByIdAsync(tripId);
             if (trip == null)
             {
                 return NotFound();
             }
             _currentTripId = tripId;
+
             // Check availability and calculate price
             decimal price = 0;
             bool isAvailable = false;
@@ -241,7 +342,7 @@ namespace Ticket_Booking.Controllers
                 var ticketRepository = (TicketRepository)_ticketRepository;
                 pnr = await _pnrHelper.GenerateUniquePNRAsync(ticketRepository);
             }
-            catch (InvalidOperationException ex)
+            catch (InvalidOperationException)
             {
                 TempData["Error"] = "Unable to generate booking code. Please try again.";
                 return RedirectToAction("BookTrip", new { tripId });
@@ -250,27 +351,27 @@ namespace Ticket_Booking.Controllers
             var ticket = new Ticket
             {
                 TripId = tripId,
-                UserId = userId.Value,
+                UserId = userId,
                 SeatClass = seatClass,
-                SeatNumber = "A1", 
+                SeatNumber = "A1",
                 BookingDate = DateTime.Now,
-                PaymentStatus = PaymentStatus.Pending, // Chờ thanh toán
+                PaymentStatus = PaymentStatus.Pending,
                 TotalPrice = price,
                 QrCode = Guid.NewGuid().ToString(),
-                PNR = pnr, // Assign generated PNR
+                PNR = pnr,
+                Type = TicketType.OneWay
             };
 
             await _ticketRepository.AddAsync(ticket);
             await _tripRepository.UpdateAsync(trip);
             await _ticketRepository.SaveChangesAsync();
 
-            
             try
             {
-                if(price < 5000) price *= 26000;
-                var moneyToPay = price; 
+                if (price < 5000) price *= 26000;
+                var moneyToPay = price;
                 var description = $"Thanh toan ve so {ticket.Id} - {trip.FromCity} to {trip.ToCity}";
-                
+
                 var paymentUrlInfo = _vnPayClient.CreatePaymentUrl(
                     (double)moneyToPay,
                     description,
@@ -279,13 +380,12 @@ namespace Ticket_Booking.Controllers
 
                 return Redirect(paymentUrlInfo.Url);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                TempData["Error"] = $"Error creating payment: {ex.Message}";
-                // Nếu lỗi, xóa ticket đã tạo
+                TempData["Error"] = "Error creating payment. Please try again.";
                 await _ticketRepository.DeleteAsync(ticket);
                 await _ticketRepository.SaveChangesAsync();
-                // Hoàn lại số ghế
+                // Restore seats
                 switch (seatClass)
                 {
                     case SeatClass.Economy:
@@ -304,27 +404,199 @@ namespace Ticket_Booking.Controllers
             }
         }
 
+        private async Task<IActionResult> CreateRoundTripBookingAsync(int outboundTripId, int returnTripId, SeatClass seatClass, int userId)
+        {
+            var outboundTrip = await _tripRepository.GetByIdAsync(outboundTripId);
+            var returnTrip = await _tripRepository.GetByIdAsync(returnTripId);
+
+            if (outboundTrip == null || returnTrip == null)
+            {
+                TempData["Error"] = "One or both trips not found.";
+                return RedirectToAction("BookTrip", new { tripId = outboundTripId, ticketType = TicketType.RoundTrip });
+            }
+
+            // Validate return trip is after outbound
+            if (returnTrip.DepartureTime <= outboundTrip.ArrivalTime)
+            {
+                TempData["Error"] = "Return flight must depart after outbound flight arrival.";
+                return RedirectToAction("BookTrip", new { tripId = outboundTripId, ticketType = TicketType.RoundTrip });
+            }
+
+            // Check availability for both trips
+            bool outboundAvailable = CheckSeatAvailability(outboundTrip, seatClass);
+            bool returnAvailable = CheckSeatAvailability(returnTrip, seatClass);
+
+            if (!outboundAvailable || !returnAvailable)
+            {
+                TempData["Error"] = "Selected seat class is not available for one or both flights.";
+                return RedirectToAction("BookTrip", new { tripId = outboundTripId, ticketType = TicketType.RoundTrip });
+            }
+
+            // Calculate round-trip price
+            var priceBreakdown = _priceCalculatorService.CalculateRoundTripPrice(
+                outboundTrip, returnTrip, seatClass);
+            var totalPrice = priceBreakdown.TotalPrice;
+
+            // Generate booking group ID (use timestamp-based unique ID)
+            var bookingGroupId = (int)(DateTime.UtcNow.Ticks % int.MaxValue);
+
+            // Generate PNRs
+            var ticketRepository = (TicketRepository)_ticketRepository;
+            string outboundPnr, returnPnr;
+            try
+            {
+                outboundPnr = await _pnrHelper.GenerateUniquePNRAsync(ticketRepository);
+                returnPnr = await _pnrHelper.GenerateUniquePNRAsync(ticketRepository);
+            }
+            catch (InvalidOperationException)
+            {
+                TempData["Error"] = "Unable to generate booking codes. Please try again.";
+                return RedirectToAction("BookTrip", new { tripId = outboundTripId, ticketType = TicketType.RoundTrip });
+            }
+
+            // Use database transaction for atomicity
+            using var transaction = await ((TicketRepository)_ticketRepository).BeginTransactionAsync();
+            try
+            {
+                // Decrease seat availability
+                DecreaseSeatAvailability(outboundTrip, seatClass);
+                DecreaseSeatAvailability(returnTrip, seatClass);
+
+                // Create outbound ticket
+                var outboundTicket = new Ticket
+                {
+                    TripId = outboundTripId,
+                    UserId = userId,
+                    SeatClass = seatClass,
+                    SeatNumber = "A1",
+                    BookingDate = DateTime.Now,
+                    PaymentStatus = PaymentStatus.Pending,
+                    TotalPrice = priceBreakdown.OutboundPrice,
+                    QrCode = Guid.NewGuid().ToString(),
+                    PNR = outboundPnr,
+                    Type = TicketType.RoundTrip,
+                    BookingGroupId = bookingGroupId
+                };
+
+                // Create return ticket
+                var returnTicket = new Ticket
+                {
+                    TripId = returnTripId,
+                    UserId = userId,
+                    SeatClass = seatClass,
+                    SeatNumber = "A1",
+                    BookingDate = DateTime.Now,
+                    PaymentStatus = PaymentStatus.Pending,
+                    TotalPrice = priceBreakdown.ReturnPrice,
+                    QrCode = Guid.NewGuid().ToString(),
+                    PNR = returnPnr,
+                    Type = TicketType.RoundTrip,
+                    BookingGroupId = bookingGroupId,
+                    OutboundTicketId = null // Will be set after outbound ticket is saved
+                };
+
+                await _ticketRepository.AddAsync(outboundTicket);
+                await _ticketRepository.AddAsync(returnTicket);
+                await _ticketRepository.SaveChangesAsync();
+
+                // Link tickets bidirectionally
+                returnTicket.OutboundTicketId = outboundTicket.Id;
+                outboundTicket.ReturnTicketId = returnTicket.Id;
+                await _ticketRepository.UpdateAsync(outboundTicket);
+                await _ticketRepository.UpdateAsync(returnTicket);
+
+                await _tripRepository.UpdateAsync(outboundTrip);
+                await _tripRepository.UpdateAsync(returnTrip);
+                await _ticketRepository.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                // Create payment
+                try
+                {
+                    if (totalPrice < 5000) totalPrice *= 26000;
+                    var moneyToPay = totalPrice;
+                    var description = $"Thanh toan ve khứ hồi - {outboundTrip.FromCity} to {outboundTrip.ToCity} (PNR: {outboundPnr})";
+
+                    var paymentUrlInfo = _vnPayClient.CreatePaymentUrl(
+                        (double)moneyToPay,
+                        description,
+                        BankCode.ANY
+                    );
+
+                    return Redirect(paymentUrlInfo.Url);
+                }
+                catch (Exception)
+                {
+                    TempData["Error"] = "Error creating payment. Please try again.";
+                    // Rollback will happen automatically when transaction is disposed
+                    return RedirectToAction("BookTrip", new { tripId = outboundTripId, ticketType = TicketType.RoundTrip });
+                }
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                TempData["Error"] = "Error creating booking. Please try again.";
+                return RedirectToAction("BookTrip", new { tripId = outboundTripId, ticketType = TicketType.RoundTrip });
+            }
+        }
+
+        private bool CheckSeatAvailability(Trip trip, SeatClass seatClass)
+        {
+            return seatClass switch
+            {
+                SeatClass.Economy => trip.EconomySeats > 0,
+                SeatClass.Business => trip.BusinessSeats > 0,
+                SeatClass.FirstClass => trip.FirstClassSeats > 0,
+                _ => false
+            };
+        }
+
+        private void DecreaseSeatAvailability(Trip trip, SeatClass seatClass)
+        {
+            switch (seatClass)
+            {
+                case SeatClass.Economy:
+                    trip.EconomySeats--;
+                    break;
+                case SeatClass.Business:
+                    trip.BusinessSeats--;
+                    break;
+                case SeatClass.FirstClass:
+                    trip.FirstClassSeats--;
+                    break;
+            }
+        }
+
         public async Task<IActionResult> PaySuccess()
         {
             var paymentResult = _vnPayClient.GetPaymentResult(this.Request);
             
-          //   var payment = new Payment
-          //  {
-            //    TicketId = _currentTripId,
-              //  PaymentDate = DateTime.Now,
-               // Status = PaymentStatus.Success,
-               // Amount = paymentResult.Amount,
-               // Method = PaymentMethod.VNPAY,
-               // TransactionCode = paymentResult.VnpayTransactionId.ToString(),
-            //};
-
             var ticket = await _ticketRepository.GetByIdAsync(_currentTripId);
             if (ticket == null)
             {
                 return NotFound();
             }
+            
+            // Update payment status for the ticket
             ticket.PaymentStatus = PaymentStatus.Success;
             await _ticketRepository.UpdateAsync(ticket);
+            
+            // If this is a round-trip booking, update the linked ticket as well
+            if (ticket.Type == TicketType.RoundTrip && ticket.BookingGroupId.HasValue)
+            {
+                var ticketRepository = (TicketRepository)_ticketRepository;
+                var linkedTickets = await ticketRepository.FindAsync(t => 
+                    t.BookingGroupId == ticket.BookingGroupId.Value && 
+                    t.Id != ticket.Id);
+                
+                foreach (var linkedTicket in linkedTickets)
+                {
+                    linkedTicket.PaymentStatus = PaymentStatus.Success;
+                    await _ticketRepository.UpdateAsync(linkedTicket);
+                }
+            }
+            
             await _ticketRepository.SaveChangesAsync();
             return RedirectToAction("MyBooking");
         }
