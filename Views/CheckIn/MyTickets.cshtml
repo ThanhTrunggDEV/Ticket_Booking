@@ -1,0 +1,125 @@
+@model List<Ticket_Booking.Models.DomainModels.Ticket>
+@inject Microsoft.Extensions.Localization.IStringLocalizer<Ticket_Booking.Resources.SharedResource> Localizer
+@{
+    ViewData["Title"] = "My Tickets - Check-In";
+    Layout = "_Layout";
+}
+
+<div class="min-h-screen bg-zinc-100 py-8 px-4">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">My Tickets - Check-In</h1>
+            <p class="text-gray-600">Select a ticket to check in online</p>
+        </div>
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+                <p class="text-gray-600 text-lg mb-4">No tickets available for check-in at this time.</p>
+                <p class="text-gray-500 text-sm mb-6">Check-in is available 24-48 hours before departure.</p>
+                <a 
+                    href="@Url.Action("Index", "User")" 
+                    class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-bold transition-all">
+                    Back to Home
+                </a>
+            </div>
+        }
+        else
+        {
+            <!-- Tickets List -->
+            <div class="space-y-4">
+                @foreach (var ticket in Model)
+                {
+                    var hoursUntilDeparture = (ticket.Trip.DepartureTime - DateTime.UtcNow).TotalHours;
+                    var checkInWindowStart = ticket.Trip.DepartureTime.AddHours(-48);
+                    var checkInWindowEnd = ticket.Trip.DepartureTime.AddHours(-2);
+                    var isInWindow = DateTime.UtcNow >= checkInWindowStart && DateTime.UtcNow <= checkInWindowEnd;
+
+                    <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                            <!-- Ticket Info -->
+                            <div class="flex-1">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                    <div>
+                                        <p class="text-sm text-gray-500 mb-1">Route</p>
+                                        <p class="text-lg font-bold">@ticket.Trip.FromCity → @ticket.Trip.ToCity</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-500 mb-1">Departure</p>
+                                        <p class="text-lg font-semibold">@ticket.Trip.DepartureTime.ToString("dd MMM yyyy HH:mm")</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-500 mb-1">PNR</p>
+                                        <p class="text-lg font-mono font-bold">@ticket.PNR</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-xs font-semibold">
+                                        @ticket.SeatClass
+                                    </span>
+                                    @if (!string.IsNullOrEmpty(ticket.SeatNumber))
+                                    {
+                                        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
+                                            Seat: @ticket.SeatNumber
+                                        </span>
+                                    }
+                                    @if (ticket.IsCheckedIn)
+                                    {
+                                        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
+                                            ✓ Checked In
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="flex flex-col sm:flex-row gap-2">
+                                @if (ticket.IsCheckedIn)
+                                {
+                                    <a 
+                                        href="@Url.Action("Confirmation", new { ticketId = ticket.Id })" 
+                                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold text-center transition-all">
+                                        View Details
+                                    </a>
+                                }
+                                else if (isInWindow)
+                                {
+                                    <a 
+                                        href="@Url.Action("Index", new { pnr = ticket.PNR, email = ticket.User.Email })" 
+                                        class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold text-center transition-all">
+                                        Check In
+                                    </a>
+                                }
+                                else
+                                {
+                                    <div class="text-center">
+                                        @if (DateTime.UtcNow < checkInWindowStart)
+                                        {
+                                            <p class="text-sm text-gray-500 mb-1">Check-in opens</p>
+                                            <p class="text-xs font-semibold text-gray-700">@checkInWindowStart.ToString("dd MMM HH:mm")</p>
+                                        }
+                                        else
+                                        {
+                                            <p class="text-sm text-red-600 font-semibold">Check-in closed</p>
+                                            <p class="text-xs text-gray-500">Please check in at airport</p>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Back Link -->
+            <div class="mt-6 text-center">
+                <a href="@Url.Action("Index", "User")" class="text-indigo-600 hover:text-indigo-800 font-medium">
+                    ← Back to Home
+                </a>
+            </div>
+        }
+    </div>
+</div>
+

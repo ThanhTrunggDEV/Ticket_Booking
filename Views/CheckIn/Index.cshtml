@@ -1,0 +1,195 @@
+@model Ticket_Booking.Models.ViewModels.CheckInViewModel
+@inject Microsoft.Extensions.Localization.IStringLocalizer<Ticket_Booking.Resources.SharedResource> Localizer
+@{
+    ViewData["Title"] = "Online Check-In";
+    Layout = "_Layout";
+}
+
+<div class="min-h-screen bg-zinc-100 py-8 px-4">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Online Check-In</h1>
+            <p class="text-gray-600">Check in for your flight and select your seat</p>
+        </div>
+
+        @if (Model.Ticket == null)
+        {
+            <!-- PNR Lookup Form -->
+            <div class="bg-white rounded-xl shadow-lg p-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Enter Your Booking Details</h2>
+                
+                <form asp-action="Index" method="post" class="space-y-6">
+                    @Html.AntiForgeryToken()
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">PNR Code <span class="text-red-500">*</span></label>
+                        <input 
+                            name="pnr" 
+                            type="text" 
+                            required 
+                            maxlength="6"
+                            pattern="[A-Za-z0-9]{6}"
+                            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-600 focus:ring-2 focus:ring-indigo-200 font-mono text-lg uppercase tracking-widest"
+                            placeholder="ABC123"
+                            value="@ViewData["pnr"]">
+                        <p class="mt-1 text-xs text-gray-500">Enter your 6-character PNR code</p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email Address <span class="text-red-500">*</span></label>
+                        <input 
+                            name="email" 
+                            type="email" 
+                            required 
+                            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-600 focus:ring-2 focus:ring-indigo-200"
+                            placeholder="your.email@example.com"
+                            value="@ViewData["email"]">
+                    </div>
+
+                    @if (ViewData.ModelState[string.Empty]?.Errors.Count > 0)
+                    {
+                        <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded">
+                            <p class="text-sm text-red-700">@ViewData.ModelState[string.Empty].Errors[0].ErrorMessage</p>
+                        </div>
+                    }
+
+                    <button 
+                        type="submit" 
+                        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-bold transition-all transform hover:scale-[1.02]">
+                        Look Up Booking
+                    </button>
+                </form>
+            </div>
+        }
+        else
+        {
+            <!-- Ticket Information -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">Flight Information</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <p class="text-sm text-gray-500 mb-1">Passenger</p>
+                        <p class="text-lg font-semibold">@Model.Ticket.User.FullName</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 mb-1">PNR Code</p>
+                        <p class="text-lg font-mono font-bold">@Model.Ticket.PNR</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 mb-1">Route</p>
+                        <p class="text-lg font-semibold">@Model.Ticket.Trip.FromCity → @Model.Ticket.Trip.ToCity</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 mb-1">Departure</p>
+                        <p class="text-lg font-semibold">@Model.Ticket.Trip.DepartureTime.ToString("dd MMM yyyy HH:mm")</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 mb-1">Seat Class</p>
+                        <p class="text-lg font-semibold">@Model.Ticket.SeatClass</p>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.Ticket.SeatNumber))
+                    {
+                        <div>
+                            <p class="text-sm text-gray-500 mb-1">Current Seat</p>
+                            <p class="text-lg font-mono font-bold text-indigo-600">@Model.Ticket.SeatNumber</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Eligibility Status -->
+            @if (Model.IsEligible)
+            {
+                <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-lg mb-6">
+                    <div class="flex items-center">
+                        <svg class="w-6 h-6 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <div>
+                            <p class="font-semibold text-green-800">You are eligible for check-in!</p>
+                            <p class="text-sm text-green-700">@Model.EligibilityMessage</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Check-In Window Info -->
+                @if (Model.CheckInWindowStart.HasValue && Model.CheckInWindowEnd.HasValue)
+                {
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg mb-6">
+                        <p class="text-sm text-blue-800">
+                            <strong>Check-in window:</strong> 
+                            @Model.CheckInWindowStart.Value.ToString("dd MMM yyyy HH:mm") - 
+                            @Model.CheckInWindowEnd.Value.ToString("dd MMM yyyy HH:mm")
+                        </p>
+                    </div>
+                }
+
+                <!-- Action Buttons -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    @if (string.IsNullOrEmpty(Model.Ticket.SeatNumber))
+                    {
+                        <p class="text-gray-700 mb-4">Please select a seat to proceed with check-in.</p>
+                        <a 
+                            href="@Url.Action("SeatMap", new { ticketId = Model.Ticket.Id })" 
+                            class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-bold transition-all transform hover:scale-[1.02]">
+                            Select Seat
+                        </a>
+                    }
+                    else
+                    {
+                        <p class="text-gray-700 mb-4">Your seat: <span class="font-mono font-bold text-indigo-600">@Model.Ticket.SeatNumber</span></p>
+                        <div class="flex gap-4">
+                            <a 
+                                href="@Url.Action("SeatMap", new { ticketId = Model.Ticket.Id })" 
+                                class="inline-block bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-bold transition-all">
+                                Change Seat
+                            </a>
+                            <form asp-action="CheckIn" method="post" class="inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="ticketId" value="@Model.Ticket.Id" />
+                                <input type="hidden" name="seatNumber" value="@Model.Ticket.SeatNumber" />
+                                <button 
+                                    type="submit" 
+                                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-bold transition-all transform hover:scale-[1.02]">
+                                    Complete Check-In
+                                </button>
+                            </form>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <!-- Not Eligible -->
+                <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg mb-6">
+                    <div class="flex items-center">
+                        <svg class="w-6 h-6 text-red-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <div>
+                            <p class="font-semibold text-red-800">Check-in is not available</p>
+                            <p class="text-sm text-red-700">@Model.EligibilityMessage</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+
+        <!-- Back Link -->
+        <div class="mt-6 text-center">
+            <a href="@Url.Action("Index", "User")" class="text-indigo-600 hover:text-indigo-800 font-medium">
+                ← Back to Home
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Auto-uppercase PNR input
+    document.querySelector('input[name="pnr"]')?.addEventListener('input', function(e) {
+        e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    });
+</script>
+

@@ -1,0 +1,212 @@
+@model Ticket_Booking.Models.ViewModels.CheckInViewModel
+@inject Microsoft.Extensions.Localization.IStringLocalizer<Ticket_Booking.Resources.SharedResource> Localizer
+@{
+    ViewData["Title"] = "Select Your Seat";
+    Layout = "_Layout";
+}
+
+<div class="min-h-screen bg-zinc-100 py-8 px-4">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Select Your Seat</h1>
+            <p class="text-gray-600">@Model.Ticket.Trip.FromCity → @Model.Ticket.Trip.ToCity</p>
+            <p class="text-sm text-gray-500 mt-1">Departure: @Model.Ticket.Trip.DepartureTime.ToString("dd MMM yyyy HH:mm")</p>
+        </div>
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg mb-6">
+                <p class="text-red-700">@TempData["Error"]</p>
+            </div>
+        }
+
+        @if (Model.SeatMap != null)
+        {
+            <!-- Seat Map Legend -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <div class="flex flex-wrap gap-6 items-center">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-green-200 border-2 border-green-500 rounded mr-2"></div>
+                        <span class="text-sm">Available</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-red-200 border-2 border-red-500 rounded mr-2"></div>
+                        <span class="text-sm">Occupied</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-indigo-200 border-2 border-indigo-500 rounded mr-2"></div>
+                        <span class="text-sm">Selected</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-gray-200 border-2 border-gray-400 rounded mr-2"></div>
+                        <span class="text-sm">Window</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-yellow-200 border-2 border-yellow-500 rounded mr-2"></div>
+                        <span class="text-sm">Aisle</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seat Map -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <div class="text-center mb-6">
+                    <h2 class="text-xl font-bold text-gray-900">@Model.SeatMap.SeatClass Class</h2>
+                    <p class="text-sm text-gray-500">@Model.SeatMap.AvailableSeats seats available</p>
+                </div>
+
+                <!-- Aircraft Layout -->
+                <div class="flex justify-center mb-4">
+                    <div class="text-center">
+                        <div class="text-xs text-gray-500 mb-2">Front of Aircraft</div>
+                        <div class="w-1 h-8 bg-gray-400 mx-auto"></div>
+                    </div>
+                </div>
+
+                <!-- Seat Grid -->
+                <div class="space-y-2">
+                    @for (int row = 1; row <= Model.SeatMap.TotalRows; row++)
+                    {
+                        var rowSeats = Model.SeatMap.Seats.Where(s => s.Row == row).OrderBy(s => s.Column).ToList();
+                        if (rowSeats.Any())
+                        {
+                            <div class="flex items-center justify-center gap-2">
+                                <!-- Row Number -->
+                                <div class="w-12 text-center font-bold text-gray-700">@row</div>
+                                
+                                <!-- Seats -->
+                                <div class="flex gap-1">
+                                    @foreach (var seat in rowSeats)
+                                    {
+                                        var seatClass = seat.IsAvailable 
+                                            ? (seat.Position == Ticket_Booking.Models.ViewModels.SeatPosition.Window 
+                                                ? "bg-gray-200 border-gray-400 hover:bg-gray-300" 
+                                                : seat.Position == Ticket_Booking.Models.ViewModels.SeatPosition.Aisle 
+                                                    ? "bg-yellow-200 border-yellow-500 hover:bg-yellow-300" 
+                                                    : "bg-green-200 border-green-500 hover:bg-green-300")
+                                            : "bg-red-200 border-red-500 cursor-not-allowed";
+                                        
+                                        var isSelected = seat.SeatNumber.Equals(Model.Ticket.SeatNumber, StringComparison.OrdinalIgnoreCase);
+                                        if (isSelected)
+                                        {
+                                            seatClass = "bg-indigo-200 border-indigo-500 ring-2 ring-indigo-400";
+                                        }
+
+                                        <button 
+                                            type="button"
+                                            data-seat="@seat.SeatNumber"
+                                            data-position="@seat.Position"
+                                            data-original-class="seat-btn w-12 h-12 border-2 rounded @seatClass @(seat.IsAvailable && !isSelected ? "cursor-pointer" : "cursor-not-allowed") transition-all @(seat.IsAvailable && !isSelected ? "hover:scale-110" : "")"
+                                            class="seat-btn w-12 h-12 border-2 rounded @seatClass @(seat.IsAvailable && !isSelected ? "cursor-pointer" : "cursor-not-allowed") transition-all @(seat.IsAvailable && !isSelected ? "hover:scale-110" : "")"
+                                            @if (!seat.IsAvailable || isSelected) { <text>disabled</text> }
+                                            title="@seat.SeatNumber - @seat.Position">
+                                            <span class="text-xs font-bold">@seat.ColumnLetter</span>
+                                        </button>
+                                    }
+                                </div>
+                                
+                                <!-- Row Number (right side) -->
+                                <div class="w-12 text-center font-bold text-gray-700">@row</div>
+                            </div>
+                        }
+                    }
+                </div>
+
+                <!-- Aircraft Layout (back) -->
+                <div class="flex justify-center mt-4">
+                    <div class="text-center">
+                        <div class="w-1 h-8 bg-gray-400 mx-auto"></div>
+                        <div class="text-xs text-gray-500 mt-2">Back of Aircraft</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Selected Seat Info -->
+            <div id="selectedSeatInfo" class="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-lg mb-6 hidden">
+                <p class="font-semibold text-indigo-800">Selected Seat: <span id="selectedSeatNumber" class="font-mono"></span></p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <form id="seatSelectionForm" asp-action="CheckIn" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="ticketId" value="@Model.Ticket.Id" />
+                    <input type="hidden" name="seatNumber" id="selectedSeatInput" value="@Model.Ticket.SeatNumber" />
+                    
+                    <div class="flex gap-4">
+                        <a 
+                            href="@Url.Action("Index", new { pnr = Model.Ticket.PNR, email = Model.Ticket.User.Email })" 
+                            class="inline-block bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-bold transition-all">
+                            Cancel
+                        </a>
+                        <button 
+                            type="submit" 
+                            id="checkInBtn"
+                            class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-bold transition-all transform hover:scale-[1.02] disabled:bg-gray-400 disabled:cursor-not-allowed"
+                            @if (string.IsNullOrEmpty(Model.Ticket.SeatNumber)) { <text>disabled</text> }>
+                            Complete Check-In
+                        </button>
+                    </div>
+                </form>
+            </div>
+        }
+        else
+        {
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
+                <p class="text-red-700">Unable to load seat map. Please try again later.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    let selectedSeat = '@Model.Ticket.SeatNumber';
+    
+    document.querySelectorAll('.seat-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const seatNumber = this.getAttribute('data-seat');
+            if (this.disabled) return;
+            
+            // Remove previous selection
+            document.querySelectorAll('.seat-btn').forEach(b => {
+                if (b.getAttribute('data-seat') === selectedSeat && selectedSeat !== '') {
+                    // Reset to original state based on availability
+                    const originalClass = b.getAttribute('data-original-class');
+                    if (originalClass) {
+                        b.className = originalClass;
+                    } else {
+                        // Fallback: check if it's available and restore appropriate color
+                        if (!b.disabled) {
+                            const position = b.getAttribute('data-position');
+                            if (position === 'Window') {
+                                b.className = b.className.replace('bg-indigo-200 border-indigo-500 ring-2 ring-indigo-400', 'bg-gray-200 border-gray-400');
+                            } else if (position === 'Aisle') {
+                                b.className = b.className.replace('bg-indigo-200 border-indigo-500 ring-2 ring-indigo-400', 'bg-yellow-200 border-yellow-500');
+                            } else {
+                                b.className = b.className.replace('bg-indigo-200 border-indigo-500 ring-2 ring-indigo-400', 'bg-green-200 border-green-500');
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Set new selection
+            selectedSeat = seatNumber;
+            this.className = 'seat-btn w-12 h-12 border-2 rounded bg-indigo-200 border-indigo-500 ring-2 ring-indigo-400 cursor-pointer transition-all hover:scale-110';
+            document.getElementById('selectedSeatInput').value = seatNumber;
+            document.getElementById('selectedSeatNumber').textContent = seatNumber;
+            document.getElementById('selectedSeatInfo').classList.remove('hidden');
+            document.getElementById('checkInBtn').disabled = false;
+        });
+    });
+    
+    // Initialize if seat already selected
+    if (selectedSeat) {
+        document.getElementById('selectedSeatInput').value = selectedSeat;
+        document.getElementById('selectedSeatNumber').textContent = selectedSeat;
+        document.getElementById('selectedSeatInfo').classList.remove('hidden');
+        document.getElementById('checkInBtn').disabled = false;
+    }
+</script>
+
