@@ -63,6 +63,9 @@
                                     <a asp-controller="PNR" asp-action="Lookup" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Controller"]?.ToString() == "PNR" ? "bg-indigo-800 text-white" : "text-indigo-200")">
                                         PNR Lookup
                                     </a>
+                                    <a asp-controller="CheckIn" asp-action="MyTickets" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Controller"]?.ToString() == "CheckIn" ? "bg-indigo-800 text-white" : "text-indigo-200")">
+                                        Check-In
+                                    </a>
                                     <a asp-controller="User" asp-action="Profile" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Controller"]?.ToString() == "User" && ViewContext.RouteData.Values["Action"]?.ToString() == "Profile" ? "bg-indigo-800 text-white" : "text-indigo-200")">
                                         @Localizer["Nav.MyProfile"]
                                     </a>
@@ -96,6 +99,9 @@
                             <div class="ml-10 flex items-baseline space-x-1">
                                 <a asp-controller="PNR" asp-action="Lookup" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Controller"]?.ToString() == "PNR" ? "bg-indigo-800 text-white" : "text-indigo-200")">
                                     PNR Lookup
+                                </a>
+                                <a asp-controller="CheckIn" asp-action="Index" class="px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-800 transition-all hover:text-white @(ViewContext.RouteData.Values["Controller"]?.ToString() == "CheckIn" ? "bg-indigo-800 text-white" : "text-indigo-200")">
+                                    Check-In
                                 </a>
                             </div>
                         </div>
