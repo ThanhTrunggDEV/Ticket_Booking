@@ -3,6 +3,7 @@ using Ticket_Booking.Interfaces;
 using Ticket_Booking.Models.DomainModels;
 using Ticket_Booking.Models.ViewModels;
 using Ticket_Booking.Repositories;
+using Ticket_Booking.Services;
 
 namespace Ticket_Booking.Controllers
 {
@@ -13,19 +14,25 @@ namespace Ticket_Booking.Controllers
         private readonly IRepository<Company> _companyRepository;
         private readonly IRepository<Review> _reviewRepository;
         private readonly IRepository<Payment> _paymentRepository;
+        private readonly IPricingService _pricingService;
+        private readonly TripRepository _tripRepositoryConcrete;
 
         public PartnerController(
             IRepository<Review> reviewRepository,
             IRepository<Trip> tripRepository,
             IRepository<Ticket> ticketRepository,
             IRepository<Company> companyRepository,
-            IRepository<Payment> paymentRepository)
+            IRepository<Payment> paymentRepository,
+            IPricingService pricingService,
+            TripRepository tripRepositoryConcrete)
         {
             _tripRepository = tripRepository;
             _ticketRepository = ticketRepository;
             _companyRepository = companyRepository;
             _reviewRepository = reviewRepository;
             _paymentRepository = paymentRepository;
+            _pricingService = pricingService;
+            _tripRepositoryConcrete = tripRepositoryConcrete;
         }
 
         public async Task<IActionResult> Index()
@@ -244,9 +251,12 @@ namespace Ticket_Booking.Controllers
             if (role != "Partner") return RedirectToAction("Index", "Login");
 
             var userId = HttpContext.Session.GetInt32("UserId");
-            var trip = await _tripRepository.GetByIdAsync(id);
+            if (userId == null) return RedirectToAction("Index", "Login");
 
-            if (trip == null || trip.Company.OwnerId != userId)
+            // Get trip with Company included
+            var trip = await _tripRepositoryConcrete.GetCompleteAsync(id);
+
+            if (trip == null || trip.Company == null || trip.Company.OwnerId != userId)
             {
                 return NotFound();
             }
@@ -264,9 +274,12 @@ namespace Ticket_Booking.Controllers
             if (role != "Partner") return RedirectToAction("Index", "Login");
 
             var userId = HttpContext.Session.GetInt32("UserId");
-            var existingTrip = await _tripRepository.GetByIdAsync(trip.Id);
+            if (userId == null) return RedirectToAction("Index", "Login");
 
-            if (existingTrip == null || existingTrip.Company.OwnerId != userId)
+            // Get trip with Company included
+            var existingTrip = await _tripRepositoryConcrete.GetCompleteAsync(trip.Id);
+
+            if (existingTrip == null || existingTrip.Company == null || existingTrip.Company.OwnerId != userId)
             {
                 return NotFound();
             }
@@ -292,6 +305,13 @@ namespace Ticket_Booking.Controllers
             existingTrip.BusinessSeats = trip.BusinessSeats;
             existingTrip.FirstClassPrice = trip.FirstClassPrice;
             existingTrip.FirstClassSeats = trip.FirstClassSeats;
+            
+            // Update round-trip discount if provided
+            if (trip.RoundTripDiscountPercent >= 0 && trip.RoundTripDiscountPercent <= 50)
+            {
+                existingTrip.RoundTripDiscountPercent = trip.RoundTripDiscountPercent;
+                existingTrip.PriceLastUpdated = DateTime.UtcNow;
+            }
 
             existingTrip.Status = trip.Status;
 
@@ -299,6 +319,130 @@ namespace Ticket_Booking.Controllers
             await _tripRepository.SaveChangesAsync();
 
             return RedirectToAction(nameof(TripsManagement));
+        }
+
+        /// <summary>
+        /// Update pricing for a specific trip (including round-trip discount)
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> UpdateTripPricing(
+            int tripId,
+            decimal economyPrice,
+            decimal businessPrice,
+            decimal firstClassPrice,
+            decimal roundTripDiscountPercent)
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Partner") return Unauthorized();
+
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null) return Unauthorized();
+
+            var trip = await _tripRepository.GetByIdAsync(tripId);
+            if (trip == null || trip.Company.OwnerId != userId)
+            {
+                return NotFound();
+            }
+
+            // Validate discount
+            if (!_pricingService.ValidateDiscount(roundTripDiscountPercent))
+            {
+                TempData["Error"] = "Discount must be between 0% and 50%.";
+                return RedirectToAction(nameof(TripsManagement));
+            }
+
+            // Update prices
+            trip.EconomyPrice = economyPrice;
+            trip.BusinessPrice = businessPrice;
+            trip.FirstClassPrice = firstClassPrice;
+            trip.RoundTripDiscountPercent = roundTripDiscountPercent;
+            trip.PriceLastUpdated = DateTime.UtcNow;
+
+            await _tripRepository.UpdateAsync(trip);
+            await _tripRepository.SaveChangesAsync();
+
+            TempData["Success"] = "Pricing updated successfully.";
+            return RedirectToAction(nameof(TripsManagement));
+        }
+
+        /// <summary>
+        /// Update round-trip discount for all trips in a route
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> UpdateRouteDiscount(
+            int companyId,
+            string fromCity,
+            string toCity,
+            decimal discountPercent)
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Partner") return Unauthorized();
+
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null) return Unauthorized();
+
+            // Verify company ownership
+            var company = await _companyRepository.GetByIdAsync(companyId);
+            if (company == null || company.OwnerId != userId)
+            {
+                return Unauthorized();
+            }
+
+            // Validate discount
+            if (!_pricingService.ValidateDiscount(discountPercent))
+            {
+                TempData["Error"] = "Discount must be between 0% and 50%.";
+                return RedirectToAction(nameof(TripsManagement));
+            }
+
+            // Update discount for all trips in the route
+            var success = await _pricingService.UpdateRouteDiscountAsync(companyId, fromCity, toCity, discountPercent);
+            
+            if (success)
+            {
+                TempData["Success"] = $"Round-trip discount updated to {discountPercent}% for all trips on route {fromCity} → {toCity}.";
+            }
+            else
+            {
+                TempData["Error"] = "No trips found for this route.";
+            }
+
+            return RedirectToAction(nameof(TripsManagement));
+        }
+
+        /// <summary>
+        /// Get pricing information for a specific route
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> RoutePricing(int companyId, string fromCity, string toCity)
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Partner") return Unauthorized();
+
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null) return Unauthorized();
+
+            // Verify company ownership
+            var company = await _companyRepository.GetByIdAsync(companyId);
+            if (company == null || company.OwnerId != userId)
+            {
+                return Unauthorized();
+            }
+
+            // Get discount for the route
+            var discount = _pricingService.GetRoundTripDiscount(companyId, fromCity, toCity);
+            
+            // Get trips for the route
+            var trips = await _tripRepositoryConcrete.SearchTripsAsync(fromCity, toCity, null);
+            var routeTrips = trips.Where(t => t.CompanyId == companyId).ToList();
+
+            ViewBag.CompanyId = companyId;
+            ViewBag.FromCity = fromCity;
+            ViewBag.ToCity = toCity;
+            ViewBag.Discount = discount;
+            ViewBag.Trips = routeTrips;
+
+            return View();
         }
 
         [HttpPost]
@@ -319,43 +463,6 @@ namespace Ticket_Booking.Controllers
             await _tripRepository.SaveChangesAsync();
 
             return RedirectToAction(nameof(TripsManagement));
-        }
-
-        /// <summary>
-        /// Search ticket by PNR code (Partner only - only shows tickets for their trips)
-        /// </summary>
-        [HttpGet]
-        public async Task<IActionResult> SearchTicketByPNR(string pnr)
-        {
-            var role = HttpContext.Session.GetString("UserRole");
-            if (role != "Partner")
-            {
-                return RedirectToAction("Index", "Login");
-            }
-
-            var userId = HttpContext.Session.GetInt32("UserId");
-            if (userId == null)
-            {
-                return RedirectToAction("Index", "Login");
-            }
-
-            if (string.IsNullOrWhiteSpace(pnr))
-            {
-                return RedirectToAction("Index");
-            }
-
-            var ticketRepository = (TicketRepository)_ticketRepository;
-            var ticket = await ticketRepository.GetByPNRAsync(pnr);
-
-            // Verify ticket belongs to partner's company
-            if (ticket == null || ticket.Trip?.Company?.OwnerId != userId)
-            {
-                TempData["Error"] = $"No ticket found with PNR: {pnr} or ticket does not belong to your company.";
-                return RedirectToAction("Index");
-            }
-
-            // Redirect to ticket detail view
-            return RedirectToAction("Ticket", "User", new { id = ticket.Id });
         }
     }
 }
