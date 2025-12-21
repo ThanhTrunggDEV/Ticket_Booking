@@ -24,6 +24,10 @@ namespace Ticket_Booking.Models.DomainModels
         public int FirstClassSeats { get; set; }
 
         public TripStatus Status { get; set; } 
+        
+        // Round-trip pricing fields
+        public decimal RoundTripDiscountPercent { get; set; } = 0;  // Discount percentage for round-trip (0-50)
+        public DateTime? PriceLastUpdated { get; set; }  // When pricing was last modified
 
     
         public Company Company { get; set; } = null!;
