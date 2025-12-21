@@ -13,6 +13,9 @@ namespace Ticket_Booking.Models.DomainModels
         public PaymentStatus PaymentStatus { get; set; } 
         public string? QrCode { get; set; }
         public string? PNR { get; set; }  // Passenger Name Record - 6-character booking code
+        public bool IsCheckedIn { get; set; }  // Online check-in status
+        public DateTime? CheckInTime { get; set; }  // UTC timestamp when check-in occurred
+        public string? BoardingPassUrl { get; set; }  // Relative path to boarding pass PDF (e.g., boarding-passes/ABC123/boarding-pass-ABC123-20241220120000.pdf)
         public decimal TotalPrice { get; set; }
 
      
