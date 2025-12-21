@@ -109,6 +109,12 @@ namespace Ticket_Booking.Repositories
             return await _context.SaveChangesAsync();
         }
 
+        // Transaction support
+        public async Task<Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction> BeginTransactionAsync()
+        {
+            return await _context.Database.BeginTransactionAsync();
+        }
+
         // Ticket-specific methods
         public async Task<IEnumerable<Ticket>> GetByUserAsync(int userId)
         {
@@ -116,6 +122,9 @@ namespace Ticket_Booking.Repositories
                 .Where(t => t.UserId == userId)
                 .Include(t => t.Trip)
                 .ThenInclude(tr => tr.Company)
+                .Include(t => t.ReturnTicket)
+                .ThenInclude(rt => rt != null ? rt.Trip : null!)
+                .ThenInclude(rt => rt != null ? rt.Company : null!)
                 .OrderByDescending(t => t.BookingDate)
                 .ToListAsync();
         }
