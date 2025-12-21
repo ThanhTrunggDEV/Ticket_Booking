@@ -1,4 +1,4 @@
-@model Ticket_Booking.Models.DomainModels.Trip
+@model Ticket_Booking.Models.ViewModels.BookingViewModel
 @using Ticket_Booking.Enums
 @using Ticket_Booking.Services
 @inject ICurrencyService CurrencyService
@@ -7,20 +7,21 @@
     ViewData["Title"] = "Book Flight";
     Layout = "_Layout";
 
+    var outboundTrip = Model.OutboundTrip ?? throw new InvalidOperationException("Outbound trip is required");
     var defaultClass = SeatClass.Economy;
-    decimal defaultPrice = Model.EconomyPrice;
+    decimal defaultPrice = outboundTrip.EconomyPrice;
     
-    if (Model.EconomySeats == 0)
+    if (outboundTrip.EconomySeats == 0)
     {
-        if (Model.BusinessSeats > 0)
+        if (outboundTrip.BusinessSeats > 0)
         {
             defaultClass = SeatClass.Business;
-            defaultPrice = Model.BusinessPrice;
+            defaultPrice = outboundTrip.BusinessPrice;
         }
-        else if (Model.FirstClassSeats > 0)
+        else if (outboundTrip.FirstClassSeats > 0)
         {
             defaultClass = SeatClass.FirstClass;
-            defaultPrice = Model.FirstClassPrice;
+            defaultPrice = outboundTrip.FirstClassPrice;
         }
     }
 
@@ -50,16 +51,42 @@
             </div>
 
             <div class="p-8 md:p-12">
-                <!-- Flight Details -->
+                <!-- Ticket Type Selector -->
+                <div class="mb-8">
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Ticket Type</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <label class="cursor-pointer relative">
+                            <input type="radio" name="ticketType" value="@TicketType.OneWay" class="peer sr-only ticket-type-radio" 
+                                   @(Model.TicketType == TicketType.OneWay ? "checked" : "") 
+                                   onchange="handleTicketTypeChange('@TicketType.OneWay')">
+                            <div class="p-4 rounded-xl border-2 border-gray-100 hover:border-indigo-200 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all text-center">
+                                <div class="text-sm font-bold text-gray-900">One-Way</div>
+                                <div class="text-xs text-gray-500 mt-1">Single flight</div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer relative">
+                            <input type="radio" name="ticketType" value="@TicketType.RoundTrip" class="peer sr-only ticket-type-radio" 
+                                   @(Model.TicketType == TicketType.RoundTrip ? "checked" : "") 
+                                   onchange="handleTicketTypeChange('@TicketType.RoundTrip')">
+                            <div class="p-4 rounded-xl border-2 border-gray-100 hover:border-indigo-200 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all text-center">
+                                <div class="text-sm font-bold text-gray-900">Round-Trip</div>
+                                <div class="text-xs text-gray-500 mt-1">Save with discount</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Outbound Flight Details -->
                 <div class="bg-zinc-50 rounded-2xl p-6 mb-8 border border-zinc-100">
+                    <div class="text-xs font-bold text-indigo-600 uppercase tracking-widest mb-4">Outbound Flight</div>
                     <div class="flex flex-col md:flex-row justify-between items-center gap-6">
                         <div class="text-center md:text-left">
-                            <div class="text-4xl font-black text-indigo-900">@Model.FromCity</div>
-                            <div class="text-sm font-bold text-gray-400 uppercase tracking-wider">@Model.DepartureTime.ToString("HH:mm, dd MMM")</div>
+                            <div class="text-4xl font-black text-indigo-900">@outboundTrip.FromCity</div>
+                            <div class="text-sm font-bold text-gray-400 uppercase tracking-wider">@outboundTrip.DepartureTime.ToString("HH:mm, dd MMM")</div>
                         </div>
 
                         <div class="flex-1 flex flex-col items-center px-8 w-full">
-                            <div class="text-xs font-bold text-indigo-500 mb-2">@Model.EstimatedDuration @Localizer["BookTrip.Mins"]</div>
+                            <div class="text-xs font-bold text-indigo-500 mb-2">@outboundTrip.EstimatedDuration @Localizer["BookTrip.Mins"]</div>
                             <div class="w-full h-0.5 bg-gray-300 relative">
                                 <div class="absolute left-0 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-indigo-900 rounded-full"></div>
                                 <div class="absolute right-0 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-indigo-900 rounded-full"></div>
@@ -67,15 +94,95 @@
                                     <svg class="w-6 h-6 text-indigo-900 transform rotate-90" fill="currentColor" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
                                 </div>
                             </div>
-                            <div class="text-xs font-bold text-gray-400 mt-2">@Model.PlaneName</div>
+                            <div class="text-xs font-bold text-gray-400 mt-2">@outboundTrip.PlaneName</div>
                         </div>
 
                         <div class="text-center md:text-right">
-                            <div class="text-4xl font-black text-indigo-900">@Model.ToCity</div>
-                            <div class="text-sm font-bold text-gray-400 uppercase tracking-wider">@Model.ArrivalTime.ToString("HH:mm, dd MMM")</div>
+                            <div class="text-4xl font-black text-indigo-900">@outboundTrip.ToCity</div>
+                            <div class="text-sm font-bold text-gray-400 uppercase tracking-wider">@outboundTrip.ArrivalTime.ToString("HH:mm, dd MMM")</div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Return Flight Selection (Round-Trip Only) -->
+                <div id="returnFlightSection" class="mb-8 @(Model.TicketType == TicketType.RoundTrip ? "" : "hidden")">
+                    <div class="bg-zinc-50 rounded-2xl p-6 border border-zinc-100">
+                        <div class="text-xs font-bold text-indigo-600 uppercase tracking-widest mb-4">Return Flight</div>
+                        
+                        @if (Model.AvailableReturnTrips != null && Model.AvailableReturnTrips.Any())
+                        {
+                            <div class="space-y-3 max-h-96 overflow-y-auto">
+                                @foreach (var returnTrip in Model.AvailableReturnTrips)
+                                {
+                                    <label class="cursor-pointer block">
+                                        <input type="radio" name="returnTripId" value="@returnTrip.Id" class="peer sr-only return-trip-radio"
+                                               @(Model.ReturnTripId == returnTrip.Id ? "checked" : "")
+                                               onchange="selectReturnTrip(@returnTrip.Id)">
+                                        <div class="p-4 rounded-xl border-2 border-gray-100 hover:border-indigo-200 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all">
+                                            <div class="flex justify-between items-center">
+                                                <div>
+                                                    <div class="text-sm font-bold text-gray-900">@returnTrip.FromCity → @returnTrip.ToCity</div>
+                                                    <div class="text-xs text-gray-500 mt-1">@returnTrip.DepartureTime.ToString("dd MMM yyyy, HH:mm")</div>
+                                                </div>
+                                                <div class="text-right">
+                                                    <div class="text-sm font-bold text-indigo-900">@Html.DisplayPrice(returnTrip.EconomyPrice)</div>
+                                                    <div class="text-xs text-gray-500">Economy</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-8 text-gray-500">
+                                <p>No return flights available for this route.</p>
+                                <p class="text-sm mt-2">Please select a different outbound flight.</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Price Breakdown (Round-Trip Only) -->
+                @if (Model.TicketType == TicketType.RoundTrip && Model.PriceBreakdown != null)
+                {
+                    <div id="priceBreakdown" class="bg-green-50 rounded-2xl p-6 mb-8 border-2 border-green-200">
+                        <div class="text-xs font-bold text-green-700 uppercase tracking-widest mb-4">Price Breakdown</div>
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Outbound:</span>
+                                <span class="font-bold">@Html.DisplayPrice(Model.PriceBreakdown.OutboundPrice)</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Return:</span>
+                                <span class="font-bold">@Html.DisplayPrice(Model.PriceBreakdown.ReturnPrice)</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Subtotal:</span>
+                                <span class="font-bold">@Html.DisplayPrice(Model.PriceBreakdown.Subtotal)</span>
+                            </div>
+                            @if (Model.PriceBreakdown.DiscountPercent > 0)
+                            {
+                                <div class="flex justify-between text-sm text-green-700">
+                                    <span>Discount (@Model.PriceBreakdown.DiscountPercent%):</span>
+                                    <span class="font-bold">-@Html.DisplayPrice(Model.PriceBreakdown.DiscountAmount)</span>
+                                </div>
+                            }
+                            <div class="border-t border-green-300 pt-2 mt-2 flex justify-between">
+                                <span class="text-lg font-bold text-green-900">Total:</span>
+                                <span class="text-lg font-black text-green-900">@Html.DisplayPrice(Model.PriceBreakdown.TotalPrice)</span>
+                            </div>
+                            @if (Model.PriceBreakdown.SavingsAmount > 0)
+                            {
+                                <div class="bg-green-200 rounded-lg p-3 mt-3 text-center">
+                                    <div class="text-xs font-bold text-green-800 uppercase">You Save</div>
+                                    <div class="text-2xl font-black text-green-900">@Html.DisplayPrice(Model.PriceBreakdown.SavingsAmount)</div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
 
                 @if (TempData["Error"] != null)
                 {
@@ -84,39 +191,50 @@
                     </div>
                 }
 
-                <form asp-action="ConfirmBooking" method="post">
-                    <input type="hidden" name="tripId" value="@Model.Id" />
+                <form asp-action="ConfirmBooking" method="post" id="bookingForm">
+                    <input type="hidden" name="tripId" value="@outboundTrip.Id" />
+                    <input type="hidden" name="ticketType" id="ticketTypeInput" value="@Model.TicketType" />
+                    <input type="hidden" name="returnTripId" id="returnTripIdInput" value="@(Model.ReturnTripId?.ToString() ?? "")" />
                     
                     <div class="mb-8">
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">@Localizer["BookTrip.SelectClass"]</label>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <!-- Economy -->
                             <label class="cursor-pointer relative">
-                                <input type="radio" name="seatClass" value="@SeatClass.Economy" class="peer sr-only" onchange="updatePrice(@Model.EconomyPrice)" @(Model.EconomySeats == 0 ? "disabled" : "") @(defaultClass == SeatClass.Economy ? "checked" : "")>
-                                <div class="p-6 rounded-xl border-2 border-gray-100 hover:border-indigo-200 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all h-full @(Model.EconomySeats == 0 ? "opacity-50 cursor-not-allowed" : "")">
+                                <input type="radio" name="seatClass" value="@SeatClass.Economy" class="peer sr-only" 
+                                       onchange="updatePrice()" 
+                                       @(outboundTrip.EconomySeats == 0 ? "disabled" : "") 
+                                       @(defaultClass == SeatClass.Economy ? "checked" : "")>
+                                <div class="p-6 rounded-xl border-2 border-gray-100 hover:border-indigo-200 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all h-full @(outboundTrip.EconomySeats == 0 ? "opacity-50 cursor-not-allowed" : "")">
                                     <div class="text-sm font-bold text-gray-900 mb-1">@Localizer["BookTrip.Economy"]</div>
-                                    <div class="text-2xl font-black text-indigo-900 mb-2">@Html.DisplayPrice(Model.EconomyPrice)</div>
-                                    <div class="text-xs font-mono text-gray-500">@Model.EconomySeats @Localizer["BookTrip.SeatsLeft"]</div>
+                                    <div class="text-2xl font-black text-indigo-900 mb-2">@Html.DisplayPrice(outboundTrip.EconomyPrice)</div>
+                                    <div class="text-xs font-mono text-gray-500">@outboundTrip.EconomySeats @Localizer["BookTrip.SeatsLeft"]</div>
                                 </div>
                             </label>
 
                             <!-- Business -->
                             <label class="cursor-pointer relative">
-                                <input type="radio" name="seatClass" value="@SeatClass.Business" class="peer sr-only" onchange="updatePrice(@Model.BusinessPrice)" @(Model.BusinessSeats == 0 ? "disabled" : "") @(defaultClass == SeatClass.Business ? "checked" : "")>
-                                <div class="p-6 rounded-xl border-2 border-gray-100 hover:border-indigo-200 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all h-full @(Model.BusinessSeats == 0 ? "opacity-50 cursor-not-allowed" : "")">
+                                <input type="radio" name="seatClass" value="@SeatClass.Business" class="peer sr-only" 
+                                       onchange="updatePrice()" 
+                                       @(outboundTrip.BusinessSeats == 0 ? "disabled" : "") 
+                                       @(defaultClass == SeatClass.Business ? "checked" : "")>
+                                <div class="p-6 rounded-xl border-2 border-gray-100 hover:border-indigo-200 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all h-full @(outboundTrip.BusinessSeats == 0 ? "opacity-50 cursor-not-allowed" : "")">
                                     <div class="text-sm font-bold text-indigo-600 mb-1">@Localizer["BookTrip.Business"]</div>
-                                    <div class="text-2xl font-black text-indigo-900 mb-2">@Html.DisplayPrice(Model.BusinessPrice)</div>
-                                    <div class="text-xs font-mono text-gray-500">@Model.BusinessSeats @Localizer["BookTrip.SeatsLeft"]</div>
+                                    <div class="text-2xl font-black text-indigo-900 mb-2">@Html.DisplayPrice(outboundTrip.BusinessPrice)</div>
+                                    <div class="text-xs font-mono text-gray-500">@outboundTrip.BusinessSeats @Localizer["BookTrip.SeatsLeft"]</div>
                                 </div>
                             </label>
 
                             <!-- First Class -->
                             <label class="cursor-pointer relative">
-                                <input type="radio" name="seatClass" value="@SeatClass.FirstClass" class="peer sr-only" onchange="updatePrice(@Model.FirstClassPrice)" @(Model.FirstClassSeats == 0 ? "disabled" : "") @(defaultClass == SeatClass.FirstClass ? "checked" : "")>
-                                <div class="p-6 rounded-xl border-2 border-gray-100 hover:border-indigo-200 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all h-full @(Model.FirstClassSeats == 0 ? "opacity-50 cursor-not-allowed" : "")">
+                                <input type="radio" name="seatClass" value="@SeatClass.FirstClass" class="peer sr-only" 
+                                       onchange="updatePrice()" 
+                                       @(outboundTrip.FirstClassSeats == 0 ? "disabled" : "") 
+                                       @(defaultClass == SeatClass.FirstClass ? "checked" : "")>
+                                <div class="p-6 rounded-xl border-2 border-gray-100 hover:border-indigo-200 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all h-full @(outboundTrip.FirstClassSeats == 0 ? "opacity-50 cursor-not-allowed" : "")">
                                     <div class="text-sm font-bold text-purple-600 mb-1">@Localizer["BookTrip.FirstClass"]</div>
-                                    <div class="text-2xl font-black text-indigo-900 mb-2">@Html.DisplayPrice(Model.FirstClassPrice)</div>
-                                    <div class="text-xs font-mono text-gray-500">@Model.FirstClassSeats @Localizer["BookTrip.SeatsLeft"]</div>
+                                    <div class="text-2xl font-black text-indigo-900 mb-2">@Html.DisplayPrice(outboundTrip.FirstClassPrice)</div>
+                                    <div class="text-xs font-mono text-gray-500">@outboundTrip.FirstClassSeats @Localizer["BookTrip.SeatsLeft"]</div>
                                 </div>
                             </label>
                         </div>
@@ -125,9 +243,20 @@
                     <div class="border-t border-gray-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
                         <div>
                             <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">@Localizer["BookTrip.TotalPrice"]</div>
-                            <div class="text-4xl font-black text-indigo-900" id="totalPrice">@Html.DisplayPrice(defaultPrice)</div>
+                            <div class="text-4xl font-black text-indigo-900" id="totalPrice">
+                                @if (Model.TicketType == TicketType.RoundTrip && Model.PriceBreakdown != null)
+                                {
+                                    @Html.DisplayPrice(Model.PriceBreakdown.TotalPrice)
+                                }
+                                else
+                                {
+                                    @Html.DisplayPrice(defaultPrice)
+                                }
+                            </div>
                         </div>
-                        <button type="submit" class="w-full md:w-auto px-8 py-4 bg-indigo-600 text-white rounded-xl font-bold uppercase tracking-widest text-sm hover:bg-indigo-700 transition-all shadow-lg hover:shadow-indigo-500/30 transform hover:-translate-y-1">
+                        <button type="submit" class="w-full md:w-auto px-8 py-4 bg-indigo-600 text-white rounded-xl font-bold uppercase tracking-widest text-sm hover:bg-indigo-700 transition-all shadow-lg hover:shadow-indigo-500/30 transform hover:-translate-y-1"
+                                id="submitButton"
+                                @(Model.TicketType == TicketType.RoundTrip && !Model.ReturnTripId.HasValue ? "disabled" : "")>
                             @Localizer["BookTrip.ConfirmBooking"]
                         </button>
                     </div>
@@ -141,18 +270,78 @@
     // Currency configuration from server
     const currentCurrency = '@currentCurrency';
     const exchangeRate = @exchangeRate;
+    const outboundTripId = @outboundTrip.Id;
     
-    function updatePrice(usdPrice) {
+    function handleTicketTypeChange(ticketType) {
+        const returnSection = document.getElementById('returnFlightSection');
+        const priceBreakdown = document.getElementById('priceBreakdown');
+        const ticketTypeInput = document.getElementById('ticketTypeInput');
+        const submitButton = document.getElementById('submitButton');
+        
+        ticketTypeInput.value = ticketType;
+        
+        if (ticketType === '@TicketType.RoundTrip') {
+            returnSection.classList.remove('hidden');
+            if (priceBreakdown) priceBreakdown.classList.remove('hidden');
+            // Reload page with round-trip parameter
+            window.location.href = '@Url.Action("BookTrip", "User")?tripId=' + outboundTripId + '&ticketType=@TicketType.RoundTrip';
+        } else {
+            returnSection.classList.add('hidden');
+            if (priceBreakdown) priceBreakdown.classList.add('hidden');
+            // Reload page with one-way parameter
+            window.location.href = '@Url.Action("BookTrip", "User")?tripId=' + outboundTripId + '&ticketType=@TicketType.OneWay';
+        }
+    }
+    
+    function selectReturnTrip(returnTripId) {
+        const returnTripIdInput = document.getElementById('returnTripIdInput');
+        returnTripIdInput.value = returnTripId;
+        
+        // Reload page with return trip selected
+        window.location.href = '@Url.Action("BookTrip", "User")?tripId=' + outboundTripId + '&ticketType=@TicketType.RoundTrip&returnTripId=' + returnTripId;
+    }
+    
+    function updatePrice() {
+        const seatClass = document.querySelector('input[name="seatClass"]:checked')?.value;
+        const ticketType = document.querySelector('input[name="ticketType"]:checked')?.value;
+        const totalPriceElement = document.getElementById('totalPrice');
+        
+        if (ticketType === '@TicketType.RoundTrip') {
+            // For round-trip, price is already calculated and displayed in breakdown
+            // Just update the total display if needed
+            @if (Model.PriceBreakdown != null)
+            {
+                <text>
+                const totalPrice = @Model.PriceBreakdown.TotalPrice;
+                totalPriceElement.innerText = formatPrice(totalPrice);
+                </text>
+            }
+        } else {
+            // For one-way, calculate based on selected seat class
+            let price = 0;
+            switch(seatClass) {
+                case '@SeatClass.Economy':
+                    price = @outboundTrip.EconomyPrice;
+                    break;
+                case '@SeatClass.Business':
+                    price = @outboundTrip.BusinessPrice;
+                    break;
+                case '@SeatClass.FirstClass':
+                    price = @outboundTrip.FirstClassPrice;
+                    break;
+            }
+            totalPriceElement.innerText = formatPrice(price);
+        }
+    }
+    
+    function formatPrice(usdPrice) {
         let convertedPrice = usdPrice;
         let formattedPrice;
         
         if (currentCurrency === 'VND') {
-            // Convert to VND
             convertedPrice = usdPrice * exchangeRate;
-            // Format VND: no decimals, use ₫ symbol
             formattedPrice = '₫' + Math.round(convertedPrice).toLocaleString('en-US');
         } else {
-            // USD: 2 decimals, use $ symbol
             formattedPrice = new Intl.NumberFormat('en-US', { 
                 style: 'currency', 
                 currency: 'USD', 
@@ -161,6 +350,6 @@
             }).format(usdPrice);
         }
         
-        document.getElementById('totalPrice').innerText = formattedPrice;
+        return formattedPrice;
     }
 </script>
