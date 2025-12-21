@@ -274,6 +274,8 @@ namespace Ticket_Booking.Data
                 entity.Property(e => e.BusinessPrice).HasPrecision(10, 2);
                 entity.Property(e => e.FirstClassPrice).HasPrecision(10, 2);
                 entity.Property(e => e.Status).IsRequired().HasMaxLength(20);
+                entity.Property(e => e.RoundTripDiscountPercent).HasPrecision(5, 2).HasDefaultValue(0);
+                entity.Property(e => e.PriceLastUpdated);
                 
                 entity.HasOne(e => e.Company)
                     .WithMany(c => c.Trips)
@@ -293,6 +295,12 @@ namespace Ticket_Booking.Data
                 entity.Property(e => e.BoardingPassUrl).HasMaxLength(500);
                 entity.Property(e => e.TotalPrice).HasPrecision(10, 2);
                 
+                // Round-trip booking fields
+                entity.Property(e => e.Type).HasDefaultValue(TicketType.OneWay);
+                entity.Property(e => e.OutboundTicketId);
+                entity.Property(e => e.ReturnTicketId);
+                entity.Property(e => e.BookingGroupId);
+                
                 // Unique index on PNR (allows multiple NULLs for backward compatibility)
                 entity.HasIndex(e => e.PNR)
                     .IsUnique()
@@ -306,6 +314,18 @@ namespace Ticket_Booking.Data
                 entity.HasIndex(e => new { e.TripId, e.SeatNumber })
                     .HasDatabaseName("IX_Tickets_TripId_SeatNumber");
                 
+                // Indexes for round-trip booking queries
+                entity.HasIndex(e => e.Type)
+                    .HasDatabaseName("IX_Tickets_Type");
+                entity.HasIndex(e => e.BookingGroupId)
+                    .HasDatabaseName("IX_Tickets_BookingGroupId");
+                entity.HasIndex(e => new { e.BookingGroupId, e.Type })
+                    .HasDatabaseName("IX_Tickets_BookingGroupId_Type");
+                entity.HasIndex(e => e.OutboundTicketId)
+                    .HasDatabaseName("IX_Tickets_OutboundTicketId");
+                entity.HasIndex(e => e.ReturnTicketId)
+                    .HasDatabaseName("IX_Tickets_ReturnTicketId");
+                
                 entity.HasOne(e => e.Trip)
                     .WithMany(t => t.Tickets)
                     .HasForeignKey(e => e.TripId)
@@ -315,6 +335,17 @@ namespace Ticket_Booking.Data
                     .WithMany(u => u.Tickets)
                     .HasForeignKey(e => e.UserId)
                     .OnDelete(DeleteBehavior.Restrict);
+                
+                // Self-referencing relationships for round-trip ticket linking
+                entity.HasOne(e => e.ReturnTicket)
+                    .WithOne()
+                    .HasForeignKey<Ticket>(e => e.ReturnTicketId)
+                    .OnDelete(DeleteBehavior.SetNull);
+                
+                entity.HasOne(e => e.OutboundTicket)
+                    .WithOne()
+                    .HasForeignKey<Ticket>(e => e.OutboundTicketId)
+                    .OnDelete(DeleteBehavior.SetNull);
             });
 
             
