@@ -170,6 +170,17 @@ namespace Ticket_Booking.Repositories
                 .ToListAsync();
         }
 
+        /// <summary>
+        /// Gets booked seat numbers for a specific trip and seat class
+        /// </summary>
+        public async Task<List<string>> GetBookedSeatsAsync(int tripId, SeatClass seatClass)
+        {
+            return await _dbSet
+                .Where(t => t.TripId == tripId && t.SeatClass == seatClass)
+                .Select(t => t.SeatNumber)
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<Ticket>> GetUpcomingTicketsByUserAsync(int userId)
         {
             var now = DateTime.Now;
@@ -268,6 +279,95 @@ namespace Ticket_Booking.Repositories
             var upperPnr = pnr.ToUpper();
             return await _dbSet
                 .AnyAsync(t => t.PNR != null && t.PNR.ToUpper() == upperPnr);
+        }
+
+        /// <summary>
+        /// Checks if a ticket is eligible for online check-in
+        /// Validates payment status, check-in window, and flight status
+        /// </summary>
+        /// <param name="ticketId">The ticket ID to check</param>
+        /// <returns>True if ticket is eligible for check-in, false otherwise</returns>
+        public async Task<bool> IsEligibleForCheckInAsync(int ticketId)
+        {
+            var ticket = await _dbSet
+                .Include(t => t.Trip)
+                .FirstOrDefaultAsync(t => t.Id == ticketId);
+
+            if (ticket == null)
+                return false;
+
+            // Check payment status (must be Success/Confirmed)
+            if (ticket.PaymentStatus != PaymentStatus.Success)
+                return false;
+
+            // Check if already checked in
+            if (ticket.IsCheckedIn)
+                return false;
+
+            // Check check-in window (24-48 hours before departure, closes 2 hours before)
+            var now = DateTime.UtcNow;
+            var departureTime = ticket.Trip.DepartureTime;
+            var hoursUntilDeparture = (departureTime - now).TotalHours;
+
+            // Check-in window: 24-48 hours before departure, closes 2 hours before
+            if (hoursUntilDeparture < 2 || hoursUntilDeparture > 48)
+                return false;
+
+            // Check flight status (must be Active, not Cancelled)
+            if (ticket.Trip.Status == TripStatus.Cancelled)
+                return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Updates the check-in status of a ticket
+        /// </summary>
+        /// <param name="ticketId">The ticket ID</param>
+        /// <param name="isCheckedIn">Check-in status</param>
+        /// <param name="checkInTime">UTC timestamp when check-in occurred</param>
+        /// <param name="boardingPassUrl">Optional boarding pass URL/path</param>
+        /// <returns>True if update was successful, false otherwise</returns>
+        public async Task<bool> UpdateCheckInStatusAsync(int ticketId, bool isCheckedIn, DateTime checkInTime, string? boardingPassUrl = null)
+        {
+            var ticket = await _dbSet.FindAsync(ticketId);
+            if (ticket == null)
+                return false;
+
+            ticket.IsCheckedIn = isCheckedIn;
+            ticket.CheckInTime = checkInTime;
+            if (!string.IsNullOrEmpty(boardingPassUrl))
+            {
+                ticket.BoardingPassUrl = boardingPassUrl;
+            }
+
+            await SaveChangesAsync();
+            return true;
+        }
+
+        /// <summary>
+        /// Gets all tickets for a user that are eligible for check-in
+        /// </summary>
+        /// <param name="userId">The user ID</param>
+        /// <returns>List of eligible tickets</returns>
+        public async Task<List<Ticket>> GetEligibleTicketsForCheckInAsync(int userId)
+        {
+            var now = DateTime.UtcNow;
+            var minDepartureTime = now.AddHours(2);  // At least 2 hours before departure
+            var maxDepartureTime = now.AddHours(48); // At most 48 hours before departure
+
+            return await _dbSet
+                .Where(t => t.UserId == userId &&
+                           t.PaymentStatus == PaymentStatus.Success &&
+                           !t.IsCheckedIn &&
+                           t.Trip.DepartureTime >= minDepartureTime &&
+                           t.Trip.DepartureTime <= maxDepartureTime &&
+                           t.Trip.Status != TripStatus.Cancelled)
+                .Include(t => t.Trip)
+                .ThenInclude(tr => tr.Company)
+                .Include(t => t.User)
+                .OrderBy(t => t.Trip.DepartureTime)
+                .ToListAsync();
         }
     }
 }
