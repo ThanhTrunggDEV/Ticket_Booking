@@ -206,6 +206,26 @@
                     </div>
                 </div>
 
+                <!-- Round-Trip Pricing -->
+                <div class="space-y-6">
+                    <h3 class="text-lg font-black text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-2">Round-Trip Pricing</h3>
+                    <div class="bg-green-50 rounded-2xl p-6 border-2 border-green-100">
+                        <div class="mb-4">
+                            <label asp-for="RoundTripDiscountPercent" class="block text-xs font-bold text-green-700 uppercase tracking-wider mb-2">Round-Trip Discount (%)</label>
+                            <div class="relative">
+                                <input asp-for="RoundTripDiscountPercent" type="number" step="0.1" min="0" max="50" 
+                                       class="block w-full px-4 py-3 bg-white border-2 border-green-200 rounded-xl focus:ring-0 focus:border-green-500 transition-colors font-bold text-green-900" 
+                                       placeholder="0.0" />
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <span class="text-green-500 font-bold">%</span>
+                                </div>
+                            </div>
+                            <p class="text-xs text-green-600 mt-2 font-medium">Enter discount percentage for round-trip bookings (0-50%). This discount will be applied to the total price of both outbound and return tickets.</p>
+                            <span asp-validation-for="RoundTripDiscountPercent" class="text-red-500 text-xs font-bold mt-1 block"></span>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Status -->
                 <div class="space-y-6">
                     <h3 class="text-lg font-black text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-2">Operational Status</h3>
