@@ -54,6 +54,11 @@ namespace Ticket_Booking
             builder.Services.AddScoped<IRepository<Review>, ReviewRepository>();
             builder.Services.AddScoped<Services.MailService>();
 
+            // Register Check-In Services
+            builder.Services.AddScoped<ISeatMapService, SeatMapService>();
+            builder.Services.AddScoped<ISeatSelectionService, SeatSelectionService>();
+            builder.Services.AddScoped<IBoardingPassService, BoardingPassService>();
+
             // Register PNR Helper
             builder.Services.AddScoped<IPNRHelper, PNRHelper>();
 
