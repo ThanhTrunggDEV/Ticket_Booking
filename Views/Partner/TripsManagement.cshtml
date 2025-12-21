@@ -42,6 +42,20 @@
                         </div>
                     </div>
                     
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="mx-6 mt-4 bg-green-50 text-green-800 p-4 rounded-xl font-bold text-sm border border-green-200">
+                            @TempData["Success"]
+                        </div>
+                    }
+                    
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="mx-6 mt-4 bg-red-50 text-red-600 p-4 rounded-xl font-bold text-sm border border-red-100">
+                            @TempData["Error"]
+                        </div>
+                    }
+                    
                     <div class="overflow-x-auto">
                         <table class="min-w-full">
                             <thead class="bg-zinc-50">
@@ -50,6 +64,7 @@
                                     <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-widest">@Localizer["Partner.AirlinePlane"]</th>
                                     <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-widest">@Localizer["Admin.Schedule"]</th>
                                     <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-widest">@Localizer["Partner.Fares"]</th>
+                                    <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-widest">Round-Trip Discount</th>
                                     <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-widest">@Localizer["Admin.Status"]</th>
                                     <th scope="col" class="px-6 py-4 text-right text-xs font-bold text-gray-400 uppercase tracking-widest">@Localizer["Admin.Actions"]</th>
                                 </tr>
@@ -101,15 +116,32 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-sm font-bold @(item.RoundTripDiscountPercent > 0 ? "text-green-700" : "text-gray-500")">
+                                                    @item.RoundTripDiscountPercent.ToString("F1")%
+                                                </span>
+                                                @if (item.PriceLastUpdated.HasValue)
+                                                {
+                                                    <span class="text-xs text-gray-400" title="Updated: @item.PriceLastUpdated.Value.ToString("dd MMM yyyy HH:mm")">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                        </svg>
+                                                    </span>
+                                                }
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full @(item.Status == Ticket_Booking.Enums.TripStatus.Active ? "bg-green-100 text-green-800" : "bg-zinc-100 text-zinc-800")">
                                                 @item.Status
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <a href="@Url.Action("EditTrip", "Partner", new { id = item.Id })" class="text-indigo-600 hover:text-indigo-900 mr-3 font-bold">@Localizer["Common.Edit"]</a>
-                                            <form asp-action="DeleteTrip" asp-route-id="@item.Id" method="post" class="inline" onsubmit="return confirm('@Localizer["Partner.DeleteTripConfirm"]');">
-                                                <button type="submit" class="text-red-400 hover:text-red-600 font-bold">@Localizer["Common.Delete"]</button>
-                                            </form>
+                                            <div class="flex items-center justify-end gap-2">
+                                                <a href="@Url.Action("EditTrip", "Partner", new { id = item.Id })" class="text-indigo-600 hover:text-indigo-900 font-bold">@Localizer["Common.Edit"]</a>
+                                                <form asp-action="DeleteTrip" asp-route-id="@item.Id" method="post" class="inline" onsubmit="return confirm('@Localizer["Partner.DeleteTripConfirm"]');">
+                                                    <button type="submit" class="text-red-400 hover:text-red-600 font-bold">@Localizer["Common.Delete"]</button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 }
