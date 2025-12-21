@@ -57,6 +57,184 @@ namespace Ticket_Booking.Data
                 Users.Add(parnter);
 
             SaveChanges();
+
+            // Seed Companies
+            SeedCompanies(parnter.Id);
+            
+            // Seed Trips
+            SeedTrips();
+        }
+
+        private void SeedCompanies(int partnerId)
+        {
+            if (Companies.Any())
+                return;
+
+            var companies = new List<Company>
+            {
+                new Company
+                {
+                    Name = "Vietnam Airlines",
+                    Contact = "contact@vietnamairlines.com",
+                    LogoUrl = "https://www.vietnamairlines.com/logo.png",
+                    OwnerId = partnerId
+                },
+                new Company
+                {
+                    Name = "VietJet Air",
+                    Contact = "contact@vietjetair.com",
+                    LogoUrl = "https://www.vietjetair.com/logo.png",
+                    OwnerId = partnerId
+                },
+                new Company
+                {
+                    Name = "Bamboo Airways",
+                    Contact = "contact@bambooairways.com",
+                    LogoUrl = "https://www.bambooairways.com/logo.png",
+                    OwnerId = partnerId
+                },
+                new Company
+                {
+                    Name = "Jetstar Pacific",
+                    Contact = "contact@jetstarpacific.com",
+                    LogoUrl = "https://www.jetstarpacific.com/logo.png",
+                    OwnerId = partnerId
+                }
+            };
+
+            Companies.AddRange(companies);
+            SaveChanges();
+        }
+
+        private void SeedTrips()
+        {
+            if (Trips.Any())
+                return;
+
+            var companies = Companies.ToList();
+            if (!companies.Any())
+                return;
+
+            var now = DateTime.UtcNow;
+            var random = new Random();
+
+            // Popular routes in Vietnam
+            var routes = new List<(string from, string to, int duration)>
+            {
+                ("Ho Chi Minh City", "Ha Noi", 120),      // 2 hours
+                ("Ha Noi", "Ho Chi Minh City", 120),
+                ("Ho Chi Minh City", "Da Nang", 90),      // 1.5 hours
+                ("Da Nang", "Ho Chi Minh City", 90),
+                ("Ha Noi", "Da Nang", 90),
+                ("Da Nang", "Ha Noi", 90),
+                ("Ho Chi Minh City", "Nha Trang", 60),    // 1 hour
+                ("Nha Trang", "Ho Chi Minh City", 60),
+                ("Ha Noi", "Phu Quoc", 150),              // 2.5 hours
+                ("Phu Quoc", "Ha Noi", 150),
+                ("Ho Chi Minh City", "Phu Quoc", 60),
+                ("Phu Quoc", "Ho Chi Minh City", 60),
+                ("Da Nang", "Nha Trang", 60),
+                ("Nha Trang", "Da Nang", 60)
+            };
+
+            var planeNames = new List<string>
+            {
+                "Boeing 787 Dreamliner",
+                "Airbus A350",
+                "Boeing 737 MAX",
+                "Airbus A321",
+                "Boeing 777",
+                "Airbus A330"
+            };
+
+            var trips = new List<Trip>();
+
+            // Create trips for the next 30 days
+            for (int day = 0; day < 30; day++)
+            {
+                var baseDate = now.AddDays(day);
+                
+                // 2-3 flights per day
+                int flightsPerDay = random.Next(2, 4);
+                
+                for (int flight = 0; flight < flightsPerDay; flight++)
+                {
+                    var route = routes[random.Next(routes.Count)];
+                    var company = companies[random.Next(companies.Count)];
+                    var planeName = planeNames[random.Next(planeNames.Count)];
+                    
+                    // Random departure time between 6 AM and 10 PM
+                    var hour = random.Next(6, 23);
+                    var minute = random.Next(0, 60);
+                    var departureTime = new DateTime(baseDate.Year, baseDate.Month, baseDate.Day, hour, minute, 0, DateTimeKind.Utc);
+                    var arrivalTime = departureTime.AddMinutes(route.duration);
+
+                    // Calculate distance (approximate)
+                    var distance = route.duration * 8.5m; // ~8.5 km per minute of flight
+
+                    // Price varies by route and class
+                    var basePrice = route.duration * 50000m; // Base price calculation
+                    
+                    trips.Add(new Trip
+                    {
+                        CompanyId = company.Id,
+                        PlaneName = planeName,
+                        FromCity = route.from,
+                        ToCity = route.to,
+                        Distance = distance,
+                        EstimatedDuration = route.duration,
+                        DepartureTime = departureTime,
+                        ArrivalTime = arrivalTime,
+                        EconomyPrice = basePrice,
+                        EconomySeats = random.Next(150, 200), // 150-200 economy seats
+                        BusinessPrice = basePrice * 2.5m,
+                        BusinessSeats = random.Next(20, 40), // 20-40 business seats
+                        FirstClassPrice = basePrice * 5m,
+                        FirstClassSeats = random.Next(8, 16), // 8-16 first class seats
+                        Status = TripStatus.Active
+                    });
+                }
+            }
+
+            // Add some trips in check-in window (24-48 hours from now) for testing
+            var checkInWindowStart = now.AddHours(24);
+            var checkInWindowEnd = now.AddHours(48);
+            
+            for (int i = 0; i < 5; i++)
+            {
+                var route = routes[random.Next(routes.Count)];
+                var company = companies[random.Next(companies.Count)];
+                var planeName = planeNames[random.Next(planeNames.Count)];
+                
+                // Random time within check-in window
+                var hoursOffset = random.Next(24, 48);
+                var departureTime = now.AddHours(hoursOffset);
+                var arrivalTime = departureTime.AddMinutes(route.duration);
+                var distance = route.duration * 8.5m;
+                var basePrice = route.duration * 50000m;
+
+                trips.Add(new Trip
+                {
+                    CompanyId = company.Id,
+                    PlaneName = planeName,
+                    FromCity = route.from,
+                    ToCity = route.to,
+                    Distance = distance,
+                    EstimatedDuration = route.duration,
+                    DepartureTime = departureTime,
+                    ArrivalTime = arrivalTime,
+                    EconomyPrice = basePrice,
+                    EconomySeats = random.Next(150, 200),
+                    BusinessPrice = basePrice * 2.5m,
+                    BusinessSeats = random.Next(20, 40),
+                    FirstClassPrice = basePrice * 5m,
+                    FirstClassSeats = random.Next(8, 16),
+                    Status = TripStatus.Active
+                });
+            }
+
+            Trips.AddRange(trips);
+            SaveChanges();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -111,12 +289,22 @@ namespace Ticket_Booking.Data
                 entity.Property(e => e.PaymentStatus).IsRequired().HasMaxLength(20);
                 entity.Property(e => e.QrCode).HasMaxLength(255);
                 entity.Property(e => e.PNR).HasMaxLength(6);
+                entity.Property(e => e.IsCheckedIn).HasDefaultValue(false);
+                entity.Property(e => e.BoardingPassUrl).HasMaxLength(500);
                 entity.Property(e => e.TotalPrice).HasPrecision(10, 2);
                 
                 // Unique index on PNR (allows multiple NULLs for backward compatibility)
                 entity.HasIndex(e => e.PNR)
                     .IsUnique()
                     .HasFilter("[PNR] IS NOT NULL");
+                
+                // Index on IsCheckedIn for fast queries
+                entity.HasIndex(e => e.IsCheckedIn)
+                    .HasDatabaseName("IX_Tickets_IsCheckedIn");
+                
+                // Composite index for seat availability queries
+                entity.HasIndex(e => new { e.TripId, e.SeatNumber })
+                    .HasDatabaseName("IX_Tickets_TripId_SeatNumber");
                 
                 entity.HasOne(e => e.Trip)
                     .WithMany(t => t.Tickets)
