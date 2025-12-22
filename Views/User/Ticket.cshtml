@@ -1,5 +1,6 @@
 @model Ticket_Booking.Models.DomainModels.Ticket
 @using Ticket_Booking.Enums
+@inject Microsoft.Extensions.Localization.IStringLocalizer<Ticket_Booking.Resources.SharedResource> Localizer
 
 @{
     ViewData["Title"] = "Your Flight Ticket";
@@ -11,18 +12,20 @@
     var durationString = $"{durationHours}h {durationMinutes}m";
 }
 
-<div class="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center font-sans">
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 font-mono relative overflow-hidden py-12">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
     
-    <div class="w-full max-w-5xl">
-        <!-- Navigation -->
-        <div class="mb-8 flex justify-between items-center">
-            <a href="@Url.Action("MyBooking", "User")" class="group inline-flex items-center text-slate-300 hover:text-white transition-colors duration-200">
-                <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center mr-3 group-hover:bg-white/20 transition-all">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                </div>
-                <span class="font-medium">Back to Bookings</span>
+    <div class="max-w-6xl mx-auto px-4 relative z-10">
+        <!-- Navigation & Actions -->
+        <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <a href="@Url.Action("MyBooking", "User")" class="inline-flex items-center text-indigo-600 font-bold hover:text-indigo-800 transition-colors group">
+                <svg class="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                @Localizer["Nav.MyBookings"]
             </a>
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3 flex-wrap">
                 @{
                     var now = DateTime.UtcNow;
                     var hoursUntilDeparture = (Model.Trip.DepartureTime - now).TotalHours;
@@ -35,7 +38,7 @@
                 @if (isEligibleForCheckIn && !string.IsNullOrEmpty(Model.PNR))
                 {
                     <a href="@Url.Action("Index", "CheckIn", new { pnr = Model.PNR, email = Model.User.Email })" 
-                       class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-lg shadow-green-500/30 transition-all transform hover:-translate-y-0.5 font-medium text-sm">
+                       class="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:from-indigo-700 hover:to-indigo-800 transition-all shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
@@ -45,216 +48,256 @@
                 else if (Model.IsCheckedIn)
                 {
                     <a href="@Url.Action("Confirmation", "CheckIn", new { ticketId = Model.Id })" 
-                       class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-lg shadow-blue-500/30 transition-all transform hover:-translate-y-0.5 font-medium text-sm">
+                       class="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:from-green-700 hover:to-green-800 transition-all shadow-lg shadow-green-500/30 hover:shadow-green-500/50">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                         View Check-In
                     </a>
                 }
-                <button onclick="window.print()" class="inline-flex items-center px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg shadow-lg shadow-indigo-500/30 transition-all transform hover:-translate-y-0.5 font-medium text-sm">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                <button onclick="window.print()" class="inline-flex items-center px-5 py-2.5 bg-white border-2 border-gray-300 text-gray-700 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-gray-50 hover:border-gray-400 transition-all shadow-md">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                    </svg>
                     Print Ticket
                 </button>
             </div>
         </div>
 
-        <!-- Ticket Card -->
-        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row relative">
-            
-            <!-- Left Section: Main Ticket Info -->
-            <div class="flex-1 p-8 lg:p-10 relative z-10">
-                <!-- Background Pattern -->
-                <div class="absolute top-0 right-0 -mt-20 -mr-20 w-80 h-80 bg-indigo-50 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
-                
-                <!-- Header -->
-                <div class="flex justify-between items-center mb-10 relative">
-                    <div class="flex items-center gap-4">
-                        <!-- Airline Logo Placeholder -->
-                        <div class="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-indigo-200 shadow-lg transform rotate-3">
-                            <span class="font-black text-xl">@Model.Trip.Company.Name.Substring(0, 1)</span>
+        <!-- Main Ticket Container -->
+        <div class="grid lg:grid-cols-3 gap-6">
+            <!-- Left Column: Main Ticket Info (2/3 width) -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Ticket Header Card -->
+                <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
+                    <div class="bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 p-8 text-white relative overflow-hidden">
+                        <!-- Decorative Elements -->
+                        <div class="absolute top-0 right-0 -mt-20 -mr-20 w-60 h-60 bg-white opacity-10 rounded-full blur-3xl"></div>
+                        <div class="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-purple-300 opacity-10 rounded-full blur-2xl"></div>
+                        
+                        <div class="relative z-10">
+                            <div class="flex items-start justify-between gap-6 mb-6">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-indigo-900 shadow-xl transform rotate-3 hover:rotate-6 transition-transform">
+                                        <span class="font-black text-2xl">@Model.Trip.Company.Name.Substring(0, 1)</span>
+                                    </div>
+                                    <div>
+                                        <h1 class="text-3xl font-black tracking-tighter mb-2">@Model.Trip.Company.Name</h1>
+                                        <div class="flex items-center gap-2 flex-wrap">
+                                            <span class="bg-green-500 text-white px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-widest shadow-lg">CONFIRMED</span>
+                                            @if (!string.IsNullOrEmpty(Model.PNR))
+                                            {
+                                                <span class="bg-white/20 backdrop-blur-sm text-white px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-widest font-mono border border-white/30">
+                                                    PNR: @Model.PNR
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-right hidden sm:block">
+                                    <div class="text-xs text-indigo-200 font-bold uppercase tracking-widest mb-1">Class</div>
+                                    <div class="text-2xl font-black mb-1">@Model.SeatClass</div>
+                                    <div class="text-xs text-indigo-200">
+                                        @if (!string.IsNullOrEmpty(Model.SeatNumber))
+                                        {
+                                            <span>Seat @Model.SeatNumber</span>
+                                        }
+                                        else
+                                        {
+                                            <span>@Localizer["User.Seat"] @Localizer["User.SeatNotAssigned"]</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-xs text-indigo-200 font-mono">Booking ID: #@Model.Id.ToString("D6")</div>
                         </div>
-                        <div>
-                            <h1 class="text-2xl font-bold text-slate-800 tracking-tight">@Model.Trip.Company.Name</h1>
-                            <div class="flex items-center text-sm text-slate-500 font-medium mt-0.5 flex-wrap gap-2">
-                                <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider">Confirmed</span>
-                                @if (!string.IsNullOrEmpty(Model.PNR))
-                                {
-                                    <span class="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider font-mono">
-                                        PNR: @Model.PNR
-                                    </span>
-                                }
-                                <span>Booking ID: #@Model.Id.ToString("D6")</span>
+                    </div>
+
+                    <!-- Flight Route -->
+                    <div class="p-8">
+                        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-8 border-2 border-indigo-100">
+                            <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+                                <!-- Departure -->
+                                <div class="text-center md:text-left flex-1">
+                                    <div class="text-5xl font-black text-indigo-900 mb-2 tracking-tighter">@Model.Trip.FromCity</div>
+                                    <div class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">@departureTime.ToString("dd MMM yyyy")</div>
+                                    <div class="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-xl shadow-md">
+                                        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        <span class="text-lg font-black text-indigo-900">@departureTime.ToString("HH:mm")</span>
+                                    </div>
+                                </div>
+
+                                <!-- Flight Path -->
+                                <div class="flex flex-col items-center px-6 w-full md:w-auto">
+                                    <div class="text-xs font-bold text-indigo-600 uppercase tracking-widest mb-3">@durationString</div>
+                                    <div class="relative w-full md:w-64">
+                                        <div class="h-1 bg-gradient-to-r from-indigo-300 via-purple-300 to-indigo-300 rounded-full relative">
+                                            <div class="absolute left-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-indigo-900 rounded-full ring-4 ring-white shadow-lg"></div>
+                                            <div class="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-indigo-900 rounded-full ring-4 ring-white shadow-lg"></div>
+                                            <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-indigo-50 to-purple-50 px-3 py-1 rounded-full shadow-lg">
+                                                <svg class="w-6 h-6 text-indigo-900 transform rotate-90" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="text-xs font-bold text-gray-500 mt-3">@Model.Trip.PlaneName</div>
+                                </div>
+
+                                <!-- Arrival -->
+                                <div class="text-center md:text-right flex-1">
+                                    <div class="text-5xl font-black text-indigo-900 mb-2 tracking-tighter">@Model.Trip.ToCity</div>
+                                    <div class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">@arrivalTime.ToString("dd MMM yyyy")</div>
+                                    <div class="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-xl shadow-md">
+                                        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        <span class="text-lg font-black text-indigo-900">@arrivalTime.ToString("HH:mm")</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="text-right hidden sm:block">
-                        <div class="text-sm text-slate-400 font-bold uppercase tracking-widest mb-1">Class</div>
-                        <div class="text-lg font-black text-indigo-600">@Model.SeatClass</div>
-                        <div class="text-xs text-slate-400 mt-2">
-                            @if (!string.IsNullOrEmpty(Model.SeatNumber))
-                            {
-                                <span>Seat @Model.SeatNumber</span>
-                            }
-                            else
-                            {
-                                <span>Seat TBD</span>
-                            }
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Flight Route Visualization -->
-                <div class="flex items-center justify-between mb-12 relative">
-                    <!-- From -->
-                    <div class="text-left z-10">
-                        <div class="text-5xl font-black text-slate-800 tracking-tighter">@Model.Trip.FromCity.Substring(0, 3).ToUpper()</div>
-                        <div class="text-sm font-bold text-slate-400 uppercase tracking-wider mt-2">@Model.Trip.FromCity</div>
-                        <div class="inline-block mt-2 px-3 py-1 bg-slate-100 rounded-full text-xs font-bold text-slate-600">
-                            @departureTime.ToString("HH:mm")
-                        </div>
-                    </div>
-
-                    <!-- Path -->
-                    <div class="flex-1 px-8 flex flex-col items-center relative">
-                        <div class="text-xs font-bold text-indigo-400 mb-4 uppercase tracking-widest">@durationString</div>
-                        <div class="w-full h-0.5 bg-slate-200 relative flex items-center">
-                            <div class="absolute w-2 h-2 bg-indigo-500 rounded-full left-0 ring-4 ring-white"></div>
-                            <div class="absolute w-2 h-2 bg-slate-300 rounded-full right-0"></div>
-                            <!-- Plane Icon -->
-                            <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-2">
-                                <svg class="w-6 h-6 text-indigo-500 transform rotate-90" fill="currentColor" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+                        <!-- Flight Details Grid -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+                            <div class="bg-white rounded-xl p-4 border-2 border-gray-100 hover:border-indigo-200 transition-colors">
+                                <div class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-2">Date</div>
+                                <div class="text-xl font-black text-indigo-900">@departureTime.ToString("dd MMM")</div>
+                                <div class="text-xs text-gray-500 mt-1">@departureTime.ToString("yyyy")</div>
+                            </div>
+                            <div class="bg-white rounded-xl p-4 border-2 border-gray-100 hover:border-indigo-200 transition-colors">
+                                <div class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-2">Flight</div>
+                                <div class="text-xl font-black text-indigo-900">@Model.Trip.PlaneName</div>
+                                <div class="text-xs text-gray-500 mt-1">Boeing 787</div>
+                            </div>
+                            <div class="bg-white rounded-xl p-4 border-2 border-gray-100 hover:border-indigo-200 transition-colors">
+                                <div class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-2">Gate</div>
+                                <div class="text-xl font-black text-indigo-900">A04</div>
+                                <div class="text-xs text-gray-500 mt-1">Terminal 2</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-4 border-2 border-indigo-200">
+                                <div class="text-xs text-indigo-600 font-bold uppercase tracking-widest mb-2">Seat</div>
+                                <div class="text-xl font-black text-indigo-900">
+                                    @if (!string.IsNullOrEmpty(Model.SeatNumber))
+                                    {
+                                        <text>@Model.SeatNumber</text>
+                                    }
+                                    else
+                                    {
+                                        <text>@Localizer["User.SeatNotAssigned"]</text>
+                                    }
+                                </div>
+                                <div class="text-xs text-indigo-600 mt-1">Window</div>
                             </div>
                         </div>
-                        <div class="mt-4 text-xs text-slate-400 font-medium">Direct Flight</div>
-                    </div>
 
-                    <!-- To -->
-                    <div class="text-right z-10">
-                        <div class="text-5xl font-black text-slate-800 tracking-tighter">@Model.Trip.ToCity.Substring(0, 3).ToUpper()</div>
-                        <div class="text-sm font-bold text-slate-400 uppercase tracking-wider mt-2">@Model.Trip.ToCity</div>
-                        <div class="inline-block mt-2 px-3 py-1 bg-slate-100 rounded-full text-xs font-bold text-slate-600">
-                            @arrivalTime.ToString("HH:mm")
+                        <!-- Passenger Info -->
+                        <div class="mt-8 flex items-center gap-4 bg-gradient-to-r from-gray-50 to-indigo-50 rounded-xl p-5 border-2 border-gray-100">
+                            <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-lg">
+                                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-1">Passenger</div>
+                                <div class="text-lg font-black text-indigo-900">@Model.User.FullName</div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Info Grid -->
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-8 pt-8 border-t border-dashed border-slate-200">
-                    <div>
-                        <div class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-2">Date</div>
-                        <div class="text-lg font-bold text-slate-800">@departureTime.ToString("dd MMM")</div>
-                        <div class="text-xs text-slate-500">@departureTime.ToString("yyyy")</div>
-                    </div>
-                    <div>
-                        <div class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-2">Flight</div>
-                        <div class="text-lg font-bold text-slate-800">@Model.Trip.PlaneName</div>
-                        <div class="text-xs text-slate-500">Boeing 787</div>
-                    </div>
-                    <div>
-                        <div class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-2">Gate</div>
-                        <div class="text-lg font-bold text-slate-800">A04</div>
-                        <div class="text-xs text-slate-500">Terminal 2</div>
-                    </div>
-                    <div>
-                        <div class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-2">Seat</div>
-                        <div class="text-lg font-bold text-indigo-600">@Model.SeatNumber</div>
-                        <div class="text-xs text-slate-500">Window</div>
-                    </div>
-                </div>
-
-                <!-- Passenger -->
-                <div class="mt-8 pt-8 border-t border-dashed border-slate-200 flex items-center">
-                    <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mr-4">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                    </div>
-                    <div>
-                        <div class="text-xs text-slate-400 font-bold uppercase tracking-widest">Passenger</div>
-                        <div class="text-base font-bold text-slate-800">@Model.User.FullName</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Divider (The "Tear" Line) -->
-            <div class="relative hidden lg:flex flex-col items-center justify-center w-12 bg-slate-50">
-                <div class="absolute top-0 bottom-0 left-1/2 border-l-2 border-dashed border-slate-300 transform -translate-x-1/2"></div>
-                <!-- Cutout Circles -->
-                <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 w-6 h-6 bg-slate-900 rounded-full"></div>
-                <div class="absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-6 h-6 bg-slate-900 rounded-full"></div>
-            </div>
-
-            <!-- Right Section: Boarding Pass Stub -->
-            <div class="lg:w-80 bg-slate-50 p-8 flex flex-col relative border-t-2 border-dashed border-slate-200 lg:border-none">
-                <!-- Mobile Cutouts -->
-                <div class="lg:hidden absolute -top-3 -left-3 w-6 h-6 bg-slate-900 rounded-full"></div>
-                <div class="lg:hidden absolute -top-3 -right-3 w-6 h-6 bg-slate-900 rounded-full"></div>
-
-                <div class="flex-1">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-lg font-bold text-slate-800">Boarding Pass</h3>
-                        <svg class="w-6 h-6 text-indigo-500" fill="currentColor" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
-                    </div>
-
-                    <div class="space-y-6">
+            <!-- Right Column: Boarding Pass (1/3 width) -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100 sticky top-6">
+                    <div class="bg-gradient-to-br from-indigo-600 to-purple-600 p-6 text-white">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-black tracking-tighter">Boarding Pass</h3>
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
+                            </svg>
+                        </div>
                         @if (!string.IsNullOrEmpty(Model.PNR))
                         {
-                            <div class="bg-indigo-50 border-2 border-indigo-200 p-4 rounded-xl">
-                                <div class="text-xs font-bold text-indigo-600 uppercase tracking-widest mb-1">PNR Code</div>
-                                <div class="text-2xl font-black text-indigo-700 font-mono tracking-widest">@Model.PNR</div>
-                            </div>
-                        }
-                        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
-                            <div class="flex justify-between mb-2">
-                                <span class="text-xs font-bold text-slate-400 uppercase">From</span>
-                                <span class="text-xs font-bold text-slate-800">@Model.Trip.FromCity.Substring(0, 3).ToUpper()</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-xs font-bold text-slate-400 uppercase">To</span>
-                                <span class="text-xs font-bold text-slate-800">@Model.Trip.ToCity.Substring(0, 3).ToUpper()</span>
-                            </div>
-                        </div>
-
-                        <div class="flex justify-between items-end">
-                            <div>
-                                <div class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">Boarding</div>
-                                <div class="text-xl font-black text-indigo-600">@departureTime.AddMinutes(-45).ToString("HH:mm")</div>
-                            </div>
-                            <div class="text-right">
-                                <div class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">Gate</div>
-                                <div class="text-xl font-black text-slate-800">A04</div>
-                            </div>
-                        </div>
-                        
-                        <div class="text-center pt-4">
-                            <div class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">Seat Number</div>
-                            <div class="text-4xl font-black text-slate-800">@Model.SeatNumber</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- QR Code Area -->
-                <div class="mt-8 pt-8 border-t border-dashed border-slate-200 flex flex-col items-center">
-                    <div class="bg-white p-2 rounded-xl shadow-sm mb-3">
-                        @if (!string.IsNullOrEmpty(Model.QrCode))
-                        {
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=@Model.QrCode" alt="QR Code" class="w-32 h-32 object-contain opacity-90" />
-                        }
-                        else
-                        {
-                            <div class="w-32 h-32 bg-slate-100 flex items-center justify-center text-slate-400 text-xs font-bold">
-                                NO QR CODE
+                            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-3 border border-white/30">
+                                <div class="text-[10px] font-bold uppercase tracking-widest mb-1 opacity-90">PNR Code</div>
+                                <div class="text-2xl font-black font-mono tracking-widest">@Model.PNR</div>
                             </div>
                         }
                     </div>
-                    <div class="text-[10px] font-mono text-slate-400 uppercase tracking-widest">Scan at gate</div>
+
+                    <div class="p-6 space-y-6">
+                        <!-- Route -->
+                        <div class="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="text-xs font-bold text-gray-400 uppercase">From</span>
+                                <span class="text-lg font-black text-indigo-900">@Model.Trip.FromCity.Substring(0, 3).ToUpper()</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs font-bold text-gray-400 uppercase">To</span>
+                                <span class="text-lg font-black text-indigo-900">@Model.Trip.ToCity.Substring(0, 3).ToUpper()</span>
+                            </div>
+                        </div>
+
+                        <!-- Boarding Time & Gate -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-indigo-50 rounded-xl p-4 border-2 border-indigo-100">
+                                <div class="text-[10px] text-indigo-600 font-bold uppercase tracking-widest mb-1">Boarding</div>
+                                <div class="text-xl font-black text-indigo-900">@departureTime.AddMinutes(-45).ToString("HH:mm")</div>
+                            </div>
+                            <div class="bg-purple-50 rounded-xl p-4 border-2 border-purple-100">
+                                <div class="text-[10px] text-purple-600 font-bold uppercase tracking-widest mb-1">Gate</div>
+                                <div class="text-xl font-black text-purple-900">A04</div>
+                            </div>
+                        </div>
+
+                        <!-- Seat Number -->
+                        <div class="text-center bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-6 border-2 border-indigo-200">
+                            <div class="text-xs text-indigo-600 font-bold uppercase tracking-widest mb-2">Seat Number</div>
+                            <div class="text-5xl font-black text-indigo-900">
+                                @if (!string.IsNullOrEmpty(Model.SeatNumber))
+                                {
+                                    <text>@Model.SeatNumber</text>
+                                }
+                                else
+                                {
+                                    <text>@Localizer["User.SeatNotAssigned"]</text>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- QR Code -->
+                        <div class="pt-6 border-t-2 border-dashed border-gray-200">
+                            <div class="bg-white p-3 rounded-xl shadow-inner border-2 border-gray-100 mb-3">
+                                @if (!string.IsNullOrEmpty(Model.QrCode))
+                                {
+                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=@Model.QrCode" alt="QR Code" class="w-full h-auto object-contain" />
+                                }
+                                else
+                                {
+                                    <div class="w-full aspect-square bg-gray-100 flex items-center justify-center text-gray-400 text-xs font-bold rounded-lg">
+                                        NO QR CODE
+                                    </div>
+                                }
+                            </div>
+                            <div class="text-[10px] font-mono text-gray-400 uppercase tracking-widest text-center">Scan at gate</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         
         <!-- Footer Info -->
-        <div class="mt-8 text-center text-slate-500 text-sm">
-            <p>Please arrive at the gate 45 minutes before departure.</p>
-            <p class="mt-2 text-xs opacity-60">&copy; @DateTime.Now.Year TicketBooking Inc. All rights reserved.</p>
+        <div class="mt-8 text-center">
+            <div class="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-xl shadow-md border border-gray-200">
+                <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <p class="text-sm text-gray-600 font-semibold">Please arrive at the gate 45 minutes before departure</p>
+            </div>
+            <p class="mt-4 text-xs text-gray-400">&copy; @DateTime.Now.Year TicketBooking Inc. All rights reserved.</p>
         </div>
     </div>
 </div>
@@ -269,7 +312,7 @@
             padding: 0;
             display: block;
         }
-        .max-w-5xl {
+        .max-w-6xl {
             max-width: 100%;
         }
         button, a {
@@ -280,7 +323,13 @@
             border: 1px solid #ddd;
         }
         .bg-gradient-to-br {
-            background: none;
+            background: white !important;
+        }
+        .absolute {
+            display: none !important;
+        }
+        .sticky {
+            position: relative !important;
         }
     }
 </style>
