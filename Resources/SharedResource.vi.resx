@@ -121,6 +121,12 @@
   <data name="Nav.Logout" xml:space="preserve">
     <value>Đăng xuất</value>
   </data>
+  <data name="Nav.PNRLookup" xml:space="preserve">
+    <value>Tra cứu PNR</value>
+  </data>
+  <data name="Nav.CheckIn" xml:space="preserve">
+    <value>Làm thủ tục</value>
+  </data>
   <data name="SignUp.Title" xml:space="preserve">
     <value>Đăng ký</value>
   </data>
