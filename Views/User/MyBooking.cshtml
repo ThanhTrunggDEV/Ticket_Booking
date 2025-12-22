@@ -108,7 +108,14 @@
                                                 </div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="text-sm font-bold text-gray-900 bg-gray-100 px-2 py-1 rounded inline-block">@ticket.SeatNumber</div>
+                                                @if (!string.IsNullOrEmpty(ticket.SeatNumber))
+                                                {
+                                                    <div class="text-sm font-bold text-gray-900 bg-gray-100 px-2 py-1 rounded inline-block">@ticket.SeatNumber</div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="text-sm font-bold text-gray-400 bg-gray-50 px-2 py-1 rounded inline-block italic">TBD</div>
+                                                }
                                                 <div class="text-[10px] text-gray-500 mt-1 uppercase">@ticket.SeatClass</div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
