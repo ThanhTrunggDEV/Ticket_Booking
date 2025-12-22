@@ -91,6 +91,16 @@
                     <div class="text-right hidden sm:block">
                         <div class="text-sm text-slate-400 font-bold uppercase tracking-widest mb-1">Class</div>
                         <div class="text-lg font-black text-indigo-600">@Model.SeatClass</div>
+                        <div class="text-xs text-slate-400 mt-2">
+                            @if (!string.IsNullOrEmpty(Model.SeatNumber))
+                            {
+                                <span>Seat @Model.SeatNumber</span>
+                            }
+                            else
+                            {
+                                <span>Seat TBD</span>
+                            }
+                        </div>
                     </div>
                 </div>
 
