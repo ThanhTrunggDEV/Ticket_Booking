@@ -487,6 +487,9 @@
   <data name="User.Seat" xml:space="preserve">
     <value>Seat</value>
   </data>
+  <data name="User.SeatNotAssigned" xml:space="preserve">
+    <value>Not Assigned</value>
+  </data>
   <data name="User.Amount" xml:space="preserve">
     <value>Amount</value>
   </data>
