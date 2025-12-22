@@ -13,53 +13,30 @@
             <p class="text-gray-600">Check in for your flight and select your seat</p>
         </div>
 
-        @if (Model.Ticket == null)
+        @if (TempData["Error"] != null)
         {
-            <!-- PNR Lookup Form -->
-            <div class="bg-white rounded-xl shadow-lg p-8">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6">Enter Your Booking Details</h2>
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg mb-6">
+                <p class="text-red-700">@TempData["Error"]</p>
+            </div>
+        }
+
+        @if (Model == null || Model.Ticket == null)
+        {
+            <!-- No Ticket Message -->
+            <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+                <div class="mb-6">
+                    <svg class="w-16 h-16 text-indigo-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-3">Ready to Check-In?</h2>
+                    <p class="text-gray-600 mb-6">Please use PNR Lookup to find your booking first, then proceed with check-in.</p>
+                </div>
                 
-                <form asp-action="Index" method="post" class="space-y-6">
-                    @Html.AntiForgeryToken()
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">PNR Code <span class="text-red-500">*</span></label>
-                        <input 
-                            name="pnr" 
-                            type="text" 
-                            required 
-                            maxlength="6"
-                            pattern="[A-Za-z0-9]{6}"
-                            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-600 focus:ring-2 focus:ring-indigo-200 font-mono text-lg uppercase tracking-widest"
-                            placeholder="ABC123"
-                            value="@ViewData["pnr"]">
-                        <p class="mt-1 text-xs text-gray-500">Enter your 6-character PNR code</p>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Email Address <span class="text-red-500">*</span></label>
-                        <input 
-                            name="email" 
-                            type="email" 
-                            required 
-                            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-600 focus:ring-2 focus:ring-indigo-200"
-                            placeholder="your.email@example.com"
-                            value="@ViewData["email"]">
-                    </div>
-
-                    @if (ViewData.ModelState[string.Empty]?.Errors.Count > 0)
-                    {
-                        <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded">
-                            <p class="text-sm text-red-700">@ViewData.ModelState[string.Empty].Errors[0].ErrorMessage</p>
-                        </div>
-                    }
-
-                    <button 
-                        type="submit" 
-                        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-bold transition-all transform hover:scale-[1.02]">
-                        Look Up Booking
-                    </button>
-                </form>
+                <a 
+                    href="@Url.Action("Lookup", "PNR")" 
+                    class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-xl font-bold transition-all transform hover:scale-[1.02] shadow-lg">
+                    Go to PNR Lookup
+                </a>
             </div>
         }
         else
@@ -186,10 +163,4 @@
     </div>
 </div>
 
-<script>
-    // Auto-uppercase PNR input
-    document.querySelector('input[name="pnr"]')?.addEventListener('input', function(e) {
-        e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-    });
-</script>
 
