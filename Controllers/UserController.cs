@@ -24,6 +24,7 @@ namespace Ticket_Booking.Controllers
         private readonly IPriceCalculatorService _priceCalculatorService;
         private readonly TripRepository _tripRepositoryConcrete;
 
+        // Stores the last created primary ticket id for payment callback
         private static int _currentTripId;
 
         public UserController(
@@ -295,7 +296,6 @@ namespace Ticket_Booking.Controllers
             {
                 return NotFound();
             }
-            _currentTripId = tripId;
 
             // Check availability and calculate price
             decimal price = 0;
@@ -365,6 +365,9 @@ namespace Ticket_Booking.Controllers
             await _ticketRepository.AddAsync(ticket);
             await _tripRepository.UpdateAsync(trip);
             await _ticketRepository.SaveChangesAsync();
+            
+            // Store ticket id for PaySuccess callback
+            _currentTripId = ticket.Id;
 
             try
             {
@@ -499,6 +502,9 @@ namespace Ticket_Booking.Controllers
                 await _ticketRepository.AddAsync(returnTicket);
                 await _ticketRepository.SaveChangesAsync();
 
+                // For payment callback, treat outbound ticket as primary
+                _currentTripId = outboundTicket.Id;
+
                 // Link tickets bidirectionally
                 returnTicket.OutboundTicketId = outboundTicket.Id;
                 outboundTicket.ReturnTicketId = returnTicket.Id;
@@ -570,35 +576,57 @@ namespace Ticket_Booking.Controllers
 
         public async Task<IActionResult> PaySuccess()
         {
-            var paymentResult = _vnPayClient.GetPaymentResult(this.Request);
+            // Handle VNPay callback safely – in dev/manual testing there may be no VNPay parameters
+            try
+            {
+                var paymentResult = _vnPayClient.GetPaymentResult(this.Request);
+                // Currently we don't persist paymentResult, but calling it validates the response
+            }
+            catch (VNPAY.Models.Exceptions.VnpayException)
+            {
+                // If VNPay callback data is invalid or missing, treat as payment failure but
+                // avoid crashing the app. Show a friendly message instead.
+                TempData["Error"] = "Payment verification failed. Please try again or contact support.";
+                return RedirectToAction("MyBooking");
+            }
             
-            var ticket = await _ticketRepository.GetByIdAsync(_currentTripId);
-            if (ticket == null)
+            var ticketRepository = (TicketRepository)_ticketRepository;
+            var primaryTicket = await ticketRepository.GetCompleteAsync(_currentTripId);
+            if (primaryTicket == null)
             {
                 return NotFound();
             }
             
-            // Update payment status for the ticket
-            ticket.PaymentStatus = PaymentStatus.Success;
-            await _ticketRepository.UpdateAsync(ticket);
+            // Update payment status for the primary ticket
+            primaryTicket.PaymentStatus = PaymentStatus.Success;
+            await _ticketRepository.UpdateAsync(primaryTicket);
             
-            // If this is a round-trip booking, update the linked ticket as well
-            if (ticket.Type == TicketType.RoundTrip && ticket.BookingGroupId.HasValue)
+            // Collect all tickets in this booking (round-trip or single)
+            var tickets = new List<Ticket> { primaryTicket };
+            
+            if (primaryTicket.Type == TicketType.RoundTrip && primaryTicket.BookingGroupId.HasValue)
             {
-                var ticketRepository = (TicketRepository)_ticketRepository;
                 var linkedTickets = await ticketRepository.FindAsync(t => 
-                    t.BookingGroupId == ticket.BookingGroupId.Value && 
-                    t.Id != ticket.Id);
+                    t.BookingGroupId == primaryTicket.BookingGroupId.Value && 
+                    t.Id != primaryTicket.Id);
                 
                 foreach (var linkedTicket in linkedTickets)
                 {
                     linkedTicket.PaymentStatus = PaymentStatus.Success;
                     await _ticketRepository.UpdateAsync(linkedTicket);
+                    tickets.Add(linkedTicket);
                 }
             }
             
             await _ticketRepository.SaveChangesAsync();
-            return RedirectToAction("MyBooking");
+            
+            var viewModel = new PaymentSuccessViewModel
+            {
+                PrimaryTicket = primaryTicket,
+                Tickets = tickets.OrderBy(t => t.Trip.DepartureTime).ToList()
+            };
+            
+            return View("PaymentSuccess", viewModel);
         }
 
 
