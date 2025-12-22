@@ -120,6 +120,7 @@ namespace Ticket_Booking.Repositories
         {
             return await _dbSet
                 .Where(t => t.UserId == userId)
+                .Include(t => t.User)
                 .Include(t => t.Trip)
                 .ThenInclude(tr => tr.Company)
                 .Include(t => t.ReturnTicket)
