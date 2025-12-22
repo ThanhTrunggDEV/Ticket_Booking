@@ -247,9 +247,11 @@ namespace Ticket_Booking.Controllers
                 // Redirect to confirmation
                 return RedirectToAction("Confirmation", new { ticketId });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                TempData["Error"] = "An error occurred during check-in. Please try again.";
+                // For development/debugging, surface the exception message to help diagnose issues.
+                // In production, this should be logged instead of shown to the user.
+                TempData["Error"] = $"An error occurred during check-in: {ex.Message}";
                 return RedirectToAction("SeatMap", new { ticketId });
             }
         }
