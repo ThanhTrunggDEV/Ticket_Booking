@@ -3,14 +3,29 @@
 @{
     ViewData["Title"] = "Select Your Seat";
     Layout = "_Layout";
+    
+    // Group seats by row and split into left/right sections
+    var seatsByRow = Model.SeatMap?.Seats
+        .GroupBy(s => s.Row)
+        .OrderBy(g => g.Key)
+        .ToList() ?? new List<IGrouping<int, Ticket_Booking.Models.ViewModels.SeatInfo>>();
+    
+    // Determine aisle position (middle of seatsPerRow)
+    int seatsPerRow = Model.SeatMap?.SeatsPerRow ?? 6;
+    int aislePosition = seatsPerRow / 2; // For 6 seats: 3 (between C and D)
 }
 
-<div class="min-h-screen bg-zinc-100 py-8 px-4">
-    <div class="max-w-6xl mx-auto">
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-8 px-4">
+    <div class="max-w-7xl mx-auto">
         <!-- Header -->
-        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">Select Your Seat</h1>
-            <p class="text-gray-600">@Model.Ticket.Trip.FromCity → @Model.Ticket.Trip.ToCity</p>
+        <div class="bg-white rounded-2xl shadow-xl p-6 mb-6 border border-gray-100">
+            <h1 class="text-3xl font-black text-gray-900 mb-2 flex items-center gap-3">
+                <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+                Select Your Seat
+            </h1>
+            <p class="text-lg font-semibold text-indigo-600">@Model.Ticket.Trip.FromCity → @Model.Ticket.Trip.ToCity</p>
             <p class="text-sm text-gray-500 mt-1">Departure: @Model.Ticket.Trip.DepartureTime.ToString("dd MMM yyyy HH:mm")</p>
         </div>
 
@@ -24,107 +39,228 @@
         @if (Model.SeatMap != null)
         {
             <!-- Seat Map Legend -->
-            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-                <div class="flex flex-wrap gap-6 items-center">
-                    <div class="flex items-center">
-                        <div class="w-8 h-8 bg-green-200 border-2 border-green-500 rounded mr-2"></div>
-                        <span class="text-sm">Available</span>
+            <div class="bg-white rounded-2xl shadow-lg p-6 mb-6 border border-gray-100">
+                <div class="flex flex-wrap gap-6 items-center justify-center">
+                    <div class="flex items-center gap-2">
+                        <div class="w-10 h-10 bg-green-100 border-2 border-green-500 rounded-lg flex items-center justify-center">
+                            <span class="text-xs font-bold text-green-700">✓</span>
+                        </div>
+                        <span class="text-sm font-semibold">Available</span>
                     </div>
-                    <div class="flex items-center">
-                        <div class="w-8 h-8 bg-red-200 border-2 border-red-500 rounded mr-2"></div>
-                        <span class="text-sm">Occupied</span>
+                    <div class="flex items-center gap-2">
+                        <div class="w-10 h-10 bg-red-100 border-2 border-red-500 rounded-lg flex items-center justify-center">
+                            <span class="text-xs font-bold text-red-700">✗</span>
+                        </div>
+                        <span class="text-sm font-semibold">Occupied</span>
                     </div>
-                    <div class="flex items-center">
-                        <div class="w-8 h-8 bg-indigo-200 border-2 border-indigo-500 rounded mr-2"></div>
-                        <span class="text-sm">Selected</span>
+                    <div class="flex items-center gap-2">
+                        <div class="w-10 h-10 bg-indigo-100 border-2 border-indigo-500 rounded-lg ring-2 ring-indigo-300 flex items-center justify-center">
+                            <span class="text-xs font-bold text-indigo-700">★</span>
+                        </div>
+                        <span class="text-sm font-semibold">Selected</span>
                     </div>
-                    <div class="flex items-center">
-                        <div class="w-8 h-8 bg-gray-200 border-2 border-gray-400 rounded mr-2"></div>
-                        <span class="text-sm">Window</span>
+                    <div class="flex items-center gap-2">
+                        <div class="w-10 h-10 bg-blue-100 border-2 border-blue-400 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                        </div>
+                        <span class="text-sm font-semibold">Window</span>
                     </div>
-                    <div class="flex items-center">
-                        <div class="w-8 h-8 bg-yellow-200 border-2 border-yellow-500 rounded mr-2"></div>
-                        <span class="text-sm">Aisle</span>
+                    <div class="flex items-center gap-2">
+                        <div class="w-10 h-10 bg-yellow-100 border-2 border-yellow-500 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-yellow-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                            </svg>
+                        </div>
+                        <span class="text-sm font-semibold">Aisle</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Seat Map -->
-            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <!-- Aircraft Seat Map -->
+            <div class="bg-white rounded-2xl shadow-2xl p-8 mb-6 border border-gray-200 overflow-x-auto">
                 <div class="text-center mb-6">
-                    <h2 class="text-xl font-bold text-gray-900">@Model.SeatMap.SeatClass Class</h2>
-                    <p class="text-sm text-gray-500">@Model.SeatMap.AvailableSeats seats available</p>
+                    <h2 class="text-2xl font-black text-gray-900">@Model.SeatMap.SeatClass Class Cabin</h2>
+                    <p class="text-sm text-gray-500 mt-1">@Model.SeatMap.AvailableSeats seats available out of @Model.SeatMap.TotalSeats</p>
                 </div>
 
-                <!-- Aircraft Layout -->
+                <!-- Aircraft Front (Nose) -->
                 <div class="flex justify-center mb-4">
-                    <div class="text-center">
-                        <div class="text-xs text-gray-500 mb-2">Front of Aircraft</div>
-                        <div class="w-1 h-8 bg-gray-400 mx-auto"></div>
+                    <div class="relative">
+                        <div class="text-xs font-bold text-gray-600 mb-2 uppercase tracking-widest">Front</div>
+                        <div class="flex items-center justify-center">
+                            <div class="w-0 h-0 border-l-[20px] border-l-transparent border-r-[20px] border-r-transparent border-b-[30px] border-b-gray-300"></div>
+                            <div class="w-32 h-8 bg-gradient-to-r from-gray-300 to-gray-200 rounded-t-lg"></div>
+                            <div class="w-0 h-0 border-l-[20px] border-l-transparent border-r-[20px] border-r-transparent border-b-[30px] border-b-gray-300"></div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Seat Grid -->
-                <div class="space-y-2">
-                    @for (int row = 1; row <= Model.SeatMap.TotalRows; row++)
-                    {
-                        var rowSeats = Model.SeatMap.Seats.Where(s => s.Row == row).OrderBy(s => s.Column).ToList();
-                        if (rowSeats.Any())
-                        {
-                            <div class="flex items-center justify-center gap-2">
-                                <!-- Row Number -->
-                                <div class="w-12 text-center font-bold text-gray-700">@row</div>
-                                
-                                <!-- Seats -->
-                                <div class="flex gap-1">
-                                    @foreach (var seat in rowSeats)
-                                    {
-                                        var seatClass = seat.IsAvailable 
-                                            ? (seat.Position == Ticket_Booking.Models.ViewModels.SeatPosition.Window 
-                                                ? "bg-gray-200 border-gray-400 hover:bg-gray-300" 
-                                                : seat.Position == Ticket_Booking.Models.ViewModels.SeatPosition.Aisle 
-                                                    ? "bg-yellow-200 border-yellow-500 hover:bg-yellow-300" 
-                                                    : "bg-green-200 border-green-500 hover:bg-green-300")
-                                            : "bg-red-200 border-red-500 cursor-not-allowed";
-                                        
-                                        var isSelected = seat.SeatNumber.Equals(Model.Ticket.SeatNumber, StringComparison.OrdinalIgnoreCase);
-                                        if (isSelected)
-                                        {
-                                            seatClass = "bg-indigo-200 border-indigo-500 ring-2 ring-indigo-400";
-                                        }
+                <!-- Column Headers -->
+                <div class="flex items-center justify-center mb-2 px-4">
+                    <div class="flex items-center gap-2">
+                        <!-- Left side column letters -->
+                        <div class="flex gap-1">
+                            @{
+                                var firstRowSeats = Model.SeatMap.Seats.Where(s => s.Row == 1).OrderBy(s => s.Column).ToList();
+                                var leftColumnLetters = firstRowSeats.Take(aislePosition).Select(s => s.ColumnLetter).ToList();
+                            }
+                            @foreach (var letter in leftColumnLetters)
+                            {
+                                <div class="w-12 text-center text-xs font-bold text-gray-600">@letter</div>
+                            }
+                        </div>
+                        <!-- Aisle -->
+                        <div class="w-8 text-center text-xs font-bold text-gray-400">AISLE</div>
+                        <!-- Right side column letters -->
+                        <div class="flex gap-1">
+                            @{
+                                var rightColumnLetters = firstRowSeats.Skip(aislePosition).Select(s => s.ColumnLetter).ToList();
+                            }
+                            @foreach (var letter in rightColumnLetters)
+                            {
+                                <div class="w-12 text-center text-xs font-bold text-gray-600">@letter</div>
+                            }
+                        </div>
+                    </div>
+                </div>
 
-                                        <button 
-                                            type="button"
-                                            data-seat="@seat.SeatNumber"
-                                            data-position="@seat.Position"
-                                            data-original-class="seat-btn w-12 h-12 border-2 rounded @seatClass @(seat.IsAvailable && !isSelected ? "cursor-pointer" : "cursor-not-allowed") transition-all @(seat.IsAvailable && !isSelected ? "hover:scale-110" : "")"
-                                            class="seat-btn w-12 h-12 border-2 rounded @seatClass @(seat.IsAvailable && !isSelected ? "cursor-pointer" : "cursor-not-allowed") transition-all @(seat.IsAvailable && !isSelected ? "hover:scale-110" : "")"
-                                            @if (!seat.IsAvailable || isSelected) { <text>disabled</text> }
-                                            title="@seat.SeatNumber - @seat.Position">
-                                            <span class="text-xs font-bold">@seat.ColumnLetter</span>
-                                        </button>
+                <!-- Seat Rows -->
+                <div class="space-y-3">
+                    @foreach (var rowGroup in seatsByRow)
+                    {
+                        var rowSeats = rowGroup.OrderBy(s => s.Column).ToList();
+                        var leftSeats = rowSeats.Take(aislePosition).ToList();
+                        var rightSeats = rowSeats.Skip(aislePosition).ToList();
+                        
+                        <div class="flex items-center justify-center gap-2 px-4">
+                            <!-- Row Number (Left) -->
+                            <div class="w-8 text-center font-black text-lg text-gray-700">@rowGroup.Key</div>
+                            
+                            <!-- Left Side Seats -->
+                            <div class="flex gap-1">
+                                @foreach (var seat in leftSeats)
+                                {
+                                    var seatClass = seat.IsAvailable 
+                                        ? (seat.Position == Ticket_Booking.Models.ViewModels.SeatPosition.Window 
+                                            ? "bg-blue-100 border-blue-400 hover:bg-blue-200 hover:border-blue-500" 
+                                            : seat.Position == Ticket_Booking.Models.ViewModels.SeatPosition.Aisle 
+                                                ? "bg-yellow-100 border-yellow-500 hover:bg-yellow-200 hover:border-yellow-600" 
+                                                : "bg-green-100 border-green-500 hover:bg-green-200 hover:border-green-600")
+                                        : "bg-red-100 border-red-500 cursor-not-allowed opacity-75";
+                                    
+                                    var isSelected = seat.SeatNumber.Equals(Model.Ticket.SeatNumber, StringComparison.OrdinalIgnoreCase);
+                                    if (isSelected)
+                                    {
+                                        seatClass = "bg-indigo-200 border-indigo-600 ring-4 ring-indigo-300 shadow-lg";
                                     }
-                                </div>
-                                
-                                <!-- Row Number (right side) -->
-                                <div class="w-12 text-center font-bold text-gray-700">@row</div>
+
+                                    <button 
+                                        type="button"
+                                        data-seat="@seat.SeatNumber"
+                                        data-position="@seat.Position"
+                                        data-original-class="seat-btn w-12 h-12 border-2 rounded-lg @seatClass @(seat.IsAvailable && !isSelected ? "cursor-pointer" : "cursor-not-allowed") transition-all duration-200 @(seat.IsAvailable && !isSelected ? "hover:scale-110 hover:shadow-md" : "") flex flex-col items-center justify-center"
+                                        class="seat-btn w-12 h-12 border-2 rounded-lg @seatClass @(seat.IsAvailable && !isSelected ? "cursor-pointer" : "cursor-not-allowed") transition-all duration-200 @(seat.IsAvailable && !isSelected ? "hover:scale-110 hover:shadow-md" : "") flex flex-col items-center justify-center"
+                                        @if (!seat.IsAvailable || isSelected) { <text>disabled</text> }
+                                        title="@seat.SeatNumber - @seat.Position">
+                                        <span class="text-xs font-black">@seat.ColumnLetter</span>
+                                        @if (seat.Position == Ticket_Booking.Models.ViewModels.SeatPosition.Window)
+                                        {
+                                            <svg class="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                            </svg>
+                                        }
+                                        else if (seat.Position == Ticket_Booking.Models.ViewModels.SeatPosition.Aisle)
+                                        {
+                                            <svg class="w-3 h-3 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                                            </svg>
+                                        }
+                                    </button>
+                                }
                             </div>
-                        }
+                            
+                            <!-- Aisle -->
+                            <div class="w-8 h-12 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300">
+                                <div class="w-full h-0.5 bg-gray-400"></div>
+                            </div>
+                            
+                            <!-- Right Side Seats -->
+                            <div class="flex gap-1">
+                                @foreach (var seat in rightSeats)
+                                {
+                                    var seatClass = seat.IsAvailable 
+                                        ? (seat.Position == Ticket_Booking.Models.ViewModels.SeatPosition.Window 
+                                            ? "bg-blue-100 border-blue-400 hover:bg-blue-200 hover:border-blue-500" 
+                                            : seat.Position == Ticket_Booking.Models.ViewModels.SeatPosition.Aisle 
+                                                ? "bg-yellow-100 border-yellow-500 hover:bg-yellow-200 hover:border-yellow-600" 
+                                                : "bg-green-100 border-green-500 hover:bg-green-200 hover:border-green-600")
+                                        : "bg-red-100 border-red-500 cursor-not-allowed opacity-75";
+                                    
+                                    var isSelected = seat.SeatNumber.Equals(Model.Ticket.SeatNumber, StringComparison.OrdinalIgnoreCase);
+                                    if (isSelected)
+                                    {
+                                        seatClass = "bg-indigo-200 border-indigo-600 ring-4 ring-indigo-300 shadow-lg";
+                                    }
+
+                                    <button 
+                                        type="button"
+                                        data-seat="@seat.SeatNumber"
+                                        data-position="@seat.Position"
+                                        data-original-class="seat-btn w-12 h-12 border-2 rounded-lg @seatClass @(seat.IsAvailable && !isSelected ? "cursor-pointer" : "cursor-not-allowed") transition-all duration-200 @(seat.IsAvailable && !isSelected ? "hover:scale-110 hover:shadow-md" : "") flex flex-col items-center justify-center"
+                                        class="seat-btn w-12 h-12 border-2 rounded-lg @seatClass @(seat.IsAvailable && !isSelected ? "cursor-pointer" : "cursor-not-allowed") transition-all duration-200 @(seat.IsAvailable && !isSelected ? "hover:scale-110 hover:shadow-md" : "") flex flex-col items-center justify-center"
+                                        @if (!seat.IsAvailable || isSelected) { <text>disabled</text> }
+                                        title="@seat.SeatNumber - @seat.Position">
+                                        <span class="text-xs font-black">@seat.ColumnLetter</span>
+                                        @if (seat.Position == Ticket_Booking.Models.ViewModels.SeatPosition.Window)
+                                        {
+                                            <svg class="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                            </svg>
+                                        }
+                                        else if (seat.Position == Ticket_Booking.Models.ViewModels.SeatPosition.Aisle)
+                                        {
+                                            <svg class="w-3 h-3 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                                            </svg>
+                                        }
+                                    </button>
+                                }
+                            </div>
+                            
+                            <!-- Row Number (Right) -->
+                            <div class="w-8 text-center font-black text-lg text-gray-700">@rowGroup.Key</div>
+                        </div>
                     }
                 </div>
 
-                <!-- Aircraft Layout (back) -->
+                <!-- Aircraft Rear (Tail) -->
                 <div class="flex justify-center mt-4">
-                    <div class="text-center">
-                        <div class="w-1 h-8 bg-gray-400 mx-auto"></div>
-                        <div class="text-xs text-gray-500 mt-2">Back of Aircraft</div>
+                    <div class="relative">
+                        <div class="flex items-center justify-center">
+                            <div class="w-32 h-8 bg-gradient-to-r from-gray-200 to-gray-300 rounded-b-lg"></div>
+                        </div>
+                        <div class="text-xs font-bold text-gray-600 mt-2 uppercase tracking-widest">Rear</div>
                     </div>
                 </div>
             </div>
 
             <!-- Selected Seat Info -->
-            <div id="selectedSeatInfo" class="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-lg mb-6 hidden">
-                <p class="font-semibold text-indigo-800">Selected Seat: <span id="selectedSeatNumber" class="font-mono"></span></p>
+            <div id="selectedSeatInfo" class="bg-gradient-to-r from-indigo-50 to-blue-50 border-2 border-indigo-300 rounded-xl p-6 mb-6 hidden shadow-lg">
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 bg-indigo-600 rounded-xl flex items-center justify-center shadow-md">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold text-gray-600 uppercase tracking-widest mb-1">Selected Seat</p>
+                        <p class="text-3xl font-black text-indigo-700">
+                            <span id="selectedSeatNumber" class="font-mono"></span>
+                        </p>
+                    </div>
+                </div>
             </div>
 
             <!-- Action Buttons -->
@@ -163,6 +299,20 @@
 <script>
     let selectedSeat = '@Model.Ticket.SeatNumber';
     
+    function getSeatClassByPosition(position, isAvailable) {
+        if (!isAvailable) {
+            return 'bg-red-100 border-red-500 cursor-not-allowed opacity-75';
+        }
+        switch(position) {
+            case 'Window':
+                return 'bg-blue-100 border-blue-400 hover:bg-blue-200 hover:border-blue-500';
+            case 'Aisle':
+                return 'bg-yellow-100 border-yellow-500 hover:bg-yellow-200 hover:border-yellow-600';
+            default:
+                return 'bg-green-100 border-green-500 hover:bg-green-200 hover:border-green-600';
+        }
+    }
+    
     document.querySelectorAll('.seat-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const seatNumber = this.getAttribute('data-seat');
@@ -176,16 +326,12 @@
                     if (originalClass) {
                         b.className = originalClass;
                     } else {
-                        // Fallback: check if it's available and restore appropriate color
+                        // Fallback: restore based on position
                         if (!b.disabled) {
                             const position = b.getAttribute('data-position');
-                            if (position === 'Window') {
-                                b.className = b.className.replace('bg-indigo-200 border-indigo-500 ring-2 ring-indigo-400', 'bg-gray-200 border-gray-400');
-                            } else if (position === 'Aisle') {
-                                b.className = b.className.replace('bg-indigo-200 border-indigo-500 ring-2 ring-indigo-400', 'bg-yellow-200 border-yellow-500');
-                            } else {
-                                b.className = b.className.replace('bg-indigo-200 border-indigo-500 ring-2 ring-indigo-400', 'bg-green-200 border-green-500');
-                            }
+                            const isAvailable = !b.disabled;
+                            const baseClass = getSeatClassByPosition(position, isAvailable);
+                            b.className = `seat-btn w-12 h-12 border-2 rounded-lg ${baseClass} cursor-pointer transition-all duration-200 hover:scale-110 hover:shadow-md flex flex-col items-center justify-center`;
                         }
                     }
                 }
@@ -193,7 +339,8 @@
             
             // Set new selection
             selectedSeat = seatNumber;
-            this.className = 'seat-btn w-12 h-12 border-2 rounded bg-indigo-200 border-indigo-500 ring-2 ring-indigo-400 cursor-pointer transition-all hover:scale-110';
+            const position = this.getAttribute('data-position');
+            this.className = 'seat-btn w-12 h-12 border-2 rounded-lg bg-indigo-200 border-indigo-600 ring-4 ring-indigo-300 shadow-lg cursor-pointer transition-all duration-200 hover:scale-110 hover:shadow-md flex flex-col items-center justify-center';
             document.getElementById('selectedSeatInput').value = seatNumber;
             document.getElementById('selectedSeatNumber').textContent = seatNumber;
             document.getElementById('selectedSeatInfo').classList.remove('hidden');
