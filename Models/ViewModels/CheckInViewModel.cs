@@ -7,7 +7,7 @@ namespace Ticket_Booking.Models.ViewModels
     /// </summary>
     public class CheckInViewModel
     {
-        public Ticket Ticket { get; set; } = null!;
+        public Ticket? Ticket { get; set; }
         public bool IsEligible { get; set; }
         public string? EligibilityMessage { get; set; }
         public DateTime? CheckInWindowStart { get; set; }  // 48 hours before departure
