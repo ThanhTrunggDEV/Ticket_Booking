@@ -353,7 +353,8 @@ namespace Ticket_Booking.Controllers
                 TripId = tripId,
                 UserId = userId,
                 SeatClass = seatClass,
-                SeatNumber = "A1",
+                // Seat will be assigned later during check-in or seat selection
+                SeatNumber = string.Empty,
                 BookingDate = DateTime.Now,
                 PaymentStatus = PaymentStatus.Pending,
                 TotalPrice = price,
@@ -465,13 +466,13 @@ namespace Ticket_Booking.Controllers
                 DecreaseSeatAvailability(outboundTrip, seatClass);
                 DecreaseSeatAvailability(returnTrip, seatClass);
 
-                // Create outbound ticket
+                // Create outbound ticket (seat will be assigned later)
                 var outboundTicket = new Ticket
                 {
                     TripId = outboundTripId,
                     UserId = userId,
                     SeatClass = seatClass,
-                    SeatNumber = "A1",
+                    SeatNumber = string.Empty,
                     BookingDate = DateTime.Now,
                     PaymentStatus = PaymentStatus.Pending,
                     TotalPrice = priceBreakdown.OutboundPrice,
@@ -481,13 +482,13 @@ namespace Ticket_Booking.Controllers
                     BookingGroupId = bookingGroupId
                 };
 
-                // Create return ticket
+                // Create return ticket (seat will be assigned later)
                 var returnTicket = new Ticket
                 {
                     TripId = returnTripId,
                     UserId = userId,
                     SeatClass = seatClass,
-                    SeatNumber = "A1",
+                    SeatNumber = string.Empty,
                     BookingDate = DateTime.Now,
                     PaymentStatus = PaymentStatus.Pending,
                     TotalPrice = priceBreakdown.ReturnPrice,
