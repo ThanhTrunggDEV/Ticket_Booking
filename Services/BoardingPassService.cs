@@ -184,16 +184,19 @@ namespace Ticket_Booking.Services
                                 });
 
                             // QR Code (if available)
-                            if (!string.IsNullOrEmpty(ticket.QrCode))
-                            {
-                                column.Item()
-                                    .PaddingTop(10)
-                                    .AlignCenter()
-                                    .Width(150)
-                                    .Height(150)
-                                    .Image($"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={ticket.QrCode}")
-                                    .FitArea();
-                            }
+                            // NOTE: QuestPDF cannot load remote images by URL reliably in all environments.
+                            // For now, we skip rendering the QR image to avoid check-in failures.
+                            // In the future, generate the QR as a local image file and load from disk instead.
+                            // if (!string.IsNullOrEmpty(ticket.QrCode))
+                            // {
+                            //     column.Item()
+                            //         .PaddingTop(10)
+                            //         .AlignCenter()
+                            //         .Width(150)
+                            //         .Height(150)
+                            //         .Image(localQrCodePath)
+                            //         .FitArea();
+                            // }
 
                             // Footer
                             column.Item()
