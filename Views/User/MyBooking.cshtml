@@ -1,4 +1,5 @@
 @model IEnumerable<Ticket_Booking.Models.DomainModels.Ticket>
+@inject Microsoft.Extensions.Localization.IStringLocalizer<Ticket_Booking.Resources.SharedResource> Localizer
 
 @{
     ViewData["Title"] = "My Bookings";
@@ -114,7 +115,7 @@
                                                 }
                                                 else
                                                 {
-                                                    <div class="text-sm font-bold text-gray-400 bg-gray-50 px-2 py-1 rounded inline-block italic">TBD</div>
+                                                    <div class="text-sm font-bold text-gray-400 bg-gray-50 px-2 py-1 rounded inline-block italic">@Localizer["User.SeatNotAssigned"]</div>
                                                 }
                                                 <div class="text-[10px] text-gray-500 mt-1 uppercase">@ticket.SeatClass</div>
                                             </td>
