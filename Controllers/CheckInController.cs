@@ -41,7 +41,8 @@ namespace Ticket_Booking.Controllers
         }
 
         /// <summary>
-        /// Displays check-in form (public access via PNR)
+        /// Displays check-in page (requires PNR and email from query string or session)
+        /// Users should use PNR Lookup page first, then redirect here
         /// </summary>
         /// <param name="pnr">PNR code</param>
         /// <param name="email">Email address</param>
@@ -49,15 +50,21 @@ namespace Ticket_Booking.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(string? pnr, string? email)
         {
-            // If PNR and email provided, validate and get ticket
+            // Try to get PNR and email from query string first
+            if (string.IsNullOrWhiteSpace(pnr) || string.IsNullOrWhiteSpace(email))
+            {
+                // Try to get from session (if redirected from PNR Lookup)
+                pnr = HttpContext.Session.GetString("CheckInPNR");
+                email = HttpContext.Session.GetString("CheckInEmail");
+            }
+
+            // If PNR and email available, validate and get ticket
             if (!string.IsNullOrWhiteSpace(pnr) && !string.IsNullOrWhiteSpace(email))
             {
                 if (!_pnrHelper.IsValidPNRFormat(pnr))
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid PNR format.");
-                    ViewData["pnr"] = pnr;
-                    ViewData["email"] = email;
-                    return View();
+                    TempData["Error"] = "Invalid PNR format.";
+                    return View(new CheckInViewModel { Ticket = null });
                 }
 
                 var ticketRepository = (TicketRepository)_ticketRepository;
@@ -65,56 +72,17 @@ namespace Ticket_Booking.Controllers
 
                 if (ticket == null)
                 {
-                    ModelState.AddModelError(string.Empty, "Ticket not found. Please verify your PNR and email.");
-                    ViewData["pnr"] = pnr;
-                    ViewData["email"] = email;
-                    return View();
+                    TempData["Error"] = "Ticket not found. Please verify your PNR and email.";
+                    return View(new CheckInViewModel { Ticket = null });
                 }
 
                 return await ShowCheckInView(ticket);
             }
 
-            // Show form for PNR/email input
-            return View();
+            // No PNR/email provided - show message to use PNR Lookup
+            return View(new CheckInViewModel { Ticket = null });
         }
 
-        /// <summary>
-        /// Processes PNR lookup for check-in (form submission)
-        /// </summary>
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [ActionName("Index")]
-        public async Task<IActionResult> IndexPost(string pnr, string email)
-        {
-            if (string.IsNullOrWhiteSpace(pnr) || string.IsNullOrWhiteSpace(email))
-            {
-                ModelState.AddModelError(string.Empty, "PNR and email are required.");
-                ViewData["pnr"] = pnr;
-                ViewData["email"] = email;
-                return View();
-            }
-
-            if (!_pnrHelper.IsValidPNRFormat(pnr))
-            {
-                ModelState.AddModelError(string.Empty, "Invalid PNR format. PNR must be 6 alphanumeric characters.");
-                ViewData["pnr"] = pnr;
-                ViewData["email"] = email;
-                return View();
-            }
-
-            var ticketRepository = (TicketRepository)_ticketRepository;
-            var ticket = await ticketRepository.GetByPNRAndEmailAsync(pnr, email);
-
-            if (ticket == null)
-            {
-                ModelState.AddModelError(string.Empty, "Ticket not found. Please verify your PNR and email.");
-                ViewData["pnr"] = pnr;
-                ViewData["email"] = email;
-                return View();
-            }
-
-            return await ShowCheckInView(ticket);
-        }
 
         /// <summary>
         /// Displays user's tickets eligible for check-in (logged-in users)
