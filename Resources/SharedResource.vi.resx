@@ -505,6 +505,21 @@
   <data name="User.BookNow" xml:space="preserve">
     <value>Đặt ngay</value>
   </data>
+  <data name="User.PaymentSuccessTitle" xml:space="preserve">
+    <value>THANH TOÁN THÀNH CÔNG</value>
+  </data>
+  <data name="User.PaymentSuccessSubtitle" xml:space="preserve">
+    <value>Mã đặt chỗ (PNR): {0}</value>
+  </data>
+  <data name="User.YourTrips" xml:space="preserve">
+    <value>Chuyến bay của bạn</value>
+  </data>
+  <data name="User.PaymentSuccessNote" xml:space="preserve">
+    <value>Bạn sẽ nhận được email xác nhận đặt chỗ (nếu đã cấu hình email). Hãy giữ lại mã PNR để tra cứu và check-in online.</value>
+  </data>
+  <data name="User.BookMore" xml:space="preserve">
+    <value>Tiếp tục đặt vé</value>
+  </data>
   <data name="User.BackToSearch" xml:space="preserve">
     <value>Quay lại tìm kiếm</value>
   </data>

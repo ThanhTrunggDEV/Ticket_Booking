@@ -505,6 +505,21 @@
   <data name="User.BookNow" xml:space="preserve">
     <value>Book Now</value>
   </data>
+  <data name="User.PaymentSuccessTitle" xml:space="preserve">
+    <value>PAYMENT SUCCESSFUL</value>
+  </data>
+  <data name="User.PaymentSuccessSubtitle" xml:space="preserve">
+    <value>Booking reference (PNR): {0}</value>
+  </data>
+  <data name="User.YourTrips" xml:space="preserve">
+    <value>Your Trips</value>
+  </data>
+  <data name="User.PaymentSuccessNote" xml:space="preserve">
+    <value>You will receive a confirmation email shortly. Keep your PNR code for PNR lookup and online check-in.</value>
+  </data>
+  <data name="User.BookMore" xml:space="preserve">
+    <value>Book More Flights</value>
+  </data>
   <data name="User.BackToSearch" xml:space="preserve">
     <value>Back to Search</value>
   </data>
