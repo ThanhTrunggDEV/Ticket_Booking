@@ -121,6 +121,12 @@
   <data name="Nav.Logout" xml:space="preserve">
     <value>Logout</value>
   </data>
+  <data name="Nav.PNRLookup" xml:space="preserve">
+    <value>PNR Lookup</value>
+  </data>
+  <data name="Nav.CheckIn" xml:space="preserve">
+    <value>Check-In</value>
+  </data>
   <data name="SignUp.Title" xml:space="preserve">
     <value>Sign Up</value>
   </data>
