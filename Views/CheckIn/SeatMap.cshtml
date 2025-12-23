@@ -296,7 +296,8 @@
 </div>
 
 <script>
-    let selectedSeat = '@Model.Ticket.SeatNumber';
+    let selectedSeat = '@(Model.Ticket?.SeatNumber ?? string.Empty)';
+    console.log('Selected seat:', selectedSeat);
     
     function getSeatClassByPosition(position, isAvailable) {
         if (!isAvailable) {
