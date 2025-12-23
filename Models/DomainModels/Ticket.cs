@@ -19,6 +19,11 @@ namespace Ticket_Booking.Models.DomainModels
         public string? BoardingPassUrl { get; set; }  // Relative path to boarding pass PDF (e.g., boarding-passes/ABC123/boarding-pass-ABC123-20241220120000.pdf)
         public decimal TotalPrice { get; set; }
         
+        // Cancellation fields
+        public bool IsCancelled { get; set; }  // Whether the ticket has been cancelled
+        public DateTime? CancelledAt { get; set; }  // UTC timestamp when cancellation occurred
+        public string? CancellationReason { get; set; }  // Optional reason for cancellation
+        
         // Round-trip booking fields
         public TicketType Type { get; set; } = TicketType.OneWay;  // OneWay or RoundTrip
         public int? OutboundTicketId { get; set; }  // For return ticket: link to outbound ticket
