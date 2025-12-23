@@ -9,6 +9,7 @@ namespace Ticket_Booking.Models.DomainModels
         public int UserId { get; set; }
         public SeatClass SeatClass { get; set; }
         public string SeatNumber { get; set; } = string.Empty;
+        public string PassengerName { get; set; } = string.Empty;  // Passenger name on ticket (can be different from User.FullName)
         public DateTime BookingDate { get; set; }
         public PaymentStatus PaymentStatus { get; set; } 
         public string? QrCode { get; set; }
