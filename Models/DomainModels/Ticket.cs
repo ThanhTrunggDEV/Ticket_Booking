@@ -30,6 +30,11 @@ namespace Ticket_Booking.Models.DomainModels
         public int? ReturnTicketId { get; set; }  // For outbound ticket: link to return ticket
         public int? BookingGroupId { get; set; }  // Groups tickets in same round-trip booking
 
+        // Add-on selections
+        public MealOption MealOption { get; set; } = MealOption.None;
+        public BaggageOption BaggageOption { get; set; } = BaggageOption.None;
+        public decimal AddOnPrice { get; set; }
+
      
         public Trip Trip { get; set; } = null!;
         public User User { get; set; } = null!;

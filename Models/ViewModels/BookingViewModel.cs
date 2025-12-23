@@ -26,6 +26,11 @@ namespace Ticket_Booking.Models.ViewModels
         
         // Passenger information
         public string PassengerName { get; set; } = string.Empty;  // Passenger name for the ticket
+
+        // Add-ons
+        public MealOption MealOption { get; set; } = MealOption.None;
+        public BaggageOption BaggageOption { get; set; } = BaggageOption.None;
+        public decimal AddOnTotal { get; set; }
         
         // Pricing breakdown (for round-trip)
         public decimal? OutboundPrice { get; set; }
