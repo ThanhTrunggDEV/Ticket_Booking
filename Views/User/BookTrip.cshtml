@@ -215,6 +215,106 @@
                             <p class="text-xs text-indigo-600 mt-2 font-medium">This name will appear on the ticket. You can book for yourself or someone else.</p>
                         </div>
                     </div>
+
+                    <!-- Add-ons -->
+                    <div class="mb-8">
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Add-ons</label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Meal selection -->
+                            <div class="bg-white rounded-2xl p-6 border-2 border-gray-100">
+                                <div class="text-xs font-bold text-indigo-700 uppercase tracking-widest mb-3">Meal</div>
+                                <div class="space-y-3">
+                                    <label class="flex items-center justify-between p-3 rounded-xl border-2 border-gray-100 hover:border-indigo-200 cursor-pointer">
+                                        <div>
+                                            <div class="text-sm font-bold text-gray-900">No meal</div>
+                                            <div class="text-xs text-gray-500">Skip meal selection</div>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm font-bold text-indigo-900">@Html.DisplayPrice(0)</span>
+                                            <input type="radio" name="mealOption" value="@((int)MealOption.None)" class="accent-indigo-600" checked onchange="updatePrice()" />
+                                        </div>
+                                    </label>
+                                    <label class="flex items-center justify-between p-3 rounded-xl border-2 border-gray-100 hover:border-indigo-200 cursor-pointer">
+                                        <div>
+                                            <div class="text-sm font-bold text-gray-900">Standard</div>
+                                            <div class="text-xs text-gray-500">Chicken or beef set meal</div>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm font-bold text-indigo-900">@Html.DisplayPrice(10)</span>
+                                            <input type="radio" name="mealOption" value="@((int)MealOption.Standard)" class="accent-indigo-600" onchange="updatePrice()" />
+                                        </div>
+                                    </label>
+                                    <label class="flex items-center justify-between p-3 rounded-xl border-2 border-gray-100 hover:border-indigo-200 cursor-pointer">
+                                        <div>
+                                            <div class="text-sm font-bold text-gray-900">Vegetarian</div>
+                                            <div class="text-xs text-gray-500">Plant-based set meal</div>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm font-bold text-indigo-900">@Html.DisplayPrice(12)</span>
+                                            <input type="radio" name="mealOption" value="@((int)MealOption.Vegetarian)" class="accent-indigo-600" onchange="updatePrice()" />
+                                        </div>
+                                    </label>
+                                    <label class="flex items-center justify-between p-3 rounded-xl border-2 border-gray-100 hover:border-indigo-200 cursor-pointer">
+                                        <div>
+                                            <div class="text-sm font-bold text-gray-900">Special</div>
+                                            <div class="text-xs text-gray-500">Halal / allergy-friendly</div>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm font-bold text-indigo-900">@Html.DisplayPrice(15)</span>
+                                            <input type="radio" name="mealOption" value="@((int)MealOption.Special)" class="accent-indigo-600" onchange="updatePrice()" />
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Baggage selection -->
+                            <div class="bg-white rounded-2xl p-6 border-2 border-gray-100">
+                                <div class="text-xs font-bold text-indigo-700 uppercase tracking-widest mb-3">Checked baggage</div>
+                                <div class="space-y-3">
+                                    <label class="flex items-center justify-between p-3 rounded-xl border-2 border-gray-100 hover:border-indigo-200 cursor-pointer">
+                                        <div>
+                                            <div class="text-sm font-bold text-gray-900">No extra baggage</div>
+                                            <div class="text-xs text-gray-500">Cabin baggage only</div>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm font-bold text-indigo-900">@Html.DisplayPrice(0)</span>
+                                            <input type="radio" name="baggageOption" value="@((int)BaggageOption.None)" class="accent-indigo-600" checked onchange="updatePrice()" />
+                                        </div>
+                                    </label>
+                                    <label class="flex items-center justify-between p-3 rounded-xl border-2 border-gray-100 hover:border-indigo-200 cursor-pointer">
+                                        <div>
+                                            <div class="text-sm font-bold text-gray-900">15kg checked</div>
+                                            <div class="text-xs text-gray-500">Good for short trips</div>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm font-bold text-indigo-900">@Html.DisplayPrice(20)</span>
+                                            <input type="radio" name="baggageOption" value="@((int)BaggageOption.Kg15)" class="accent-indigo-600" onchange="updatePrice()" />
+                                        </div>
+                                    </label>
+                                    <label class="flex items-center justify-between p-3 rounded-xl border-2 border-gray-100 hover:border-indigo-200 cursor-pointer">
+                                        <div>
+                                            <div class="text-sm font-bold text-gray-900">20kg checked</div>
+                                            <div class="text-xs text-gray-500">Most popular</div>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm font-bold text-indigo-900">@Html.DisplayPrice(30)</span>
+                                            <input type="radio" name="baggageOption" value="@((int)BaggageOption.Kg20)" class="accent-indigo-600" onchange="updatePrice()" />
+                                        </div>
+                                    </label>
+                                    <label class="flex items-center justify-between p-3 rounded-xl border-2 border-gray-100 hover:border-indigo-200 cursor-pointer">
+                                        <div>
+                                            <div class="text-sm font-bold text-gray-900">30kg checked</div>
+                                            <div class="text-xs text-gray-500">For long trips</div>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm font-bold text-indigo-900">@Html.DisplayPrice(40)</span>
+                                            <input type="radio" name="baggageOption" value="@((int)BaggageOption.Kg30)" class="accent-indigo-600" onchange="updatePrice()" />
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     
                     <div class="mb-8">
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">@Localizer["BookTrip.SelectClass"]</label>
@@ -261,8 +361,19 @@
                     </div>
 
                     <div class="border-t border-gray-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
-                        <div>
-                            <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">@Localizer["BookTrip.TotalPrice"]</div>
+                        <div class="space-y-1">
+                            <div class="text-xs font-bold text-gray-400 uppercase tracking-widest">Summary</div>
+                            <div class="text-sm font-mono text-gray-600">Base fare: <span id="baseFareDisplay">
+                                @if (Model.TicketType == TicketType.RoundTrip && Model.PriceBreakdown != null)
+                                {
+                                    @Html.DisplayPrice(Model.PriceBreakdown.TotalPrice)
+                                }
+                                else
+                                {
+                                    @Html.DisplayPrice(defaultPrice)
+                                }
+                            </span></div>
+                            <div class="text-sm font-mono text-gray-600">Add-ons: <span id="addOnDisplay">@Html.DisplayPrice(0)</span></div>
                             <div class="text-4xl font-black text-indigo-900" id="totalPrice">
                                 @if (Model.TicketType == TicketType.RoundTrip && Model.PriceBreakdown != null)
                                 {
@@ -291,6 +402,19 @@
     const currentCurrency = '@currentCurrency';
     const exchangeRate = @exchangeRate;
     const outboundTripId = @outboundTrip.Id;
+    const legsCount = '@Model.TicketType' === '@TicketType.RoundTrip' ? 2 : 1;
+    const mealPrices = {
+        "@((int)MealOption.None)": 0,
+        "@((int)MealOption.Standard)": 10,
+        "@((int)MealOption.Vegetarian)": 12,
+        "@((int)MealOption.Special)": 15
+    };
+    const baggagePrices = {
+        "@((int)BaggageOption.None)": 0,
+        "@((int)BaggageOption.Kg15)": 20,
+        "@((int)BaggageOption.Kg20)": 30,
+        "@((int)BaggageOption.Kg30)": 40
+    };
     
     function handleTicketTypeChange(ticketType) {
         const returnSection = document.getElementById('returnFlightSection');
@@ -325,6 +449,10 @@
         const seatClass = document.querySelector('input[name="seatClass"]:checked')?.value;
         const ticketType = document.querySelector('input[name="ticketType"]:checked')?.value;
         const totalPriceElement = document.getElementById('totalPrice');
+        const baseFareElement = document.getElementById('baseFareDisplay');
+        const addOnElement = document.getElementById('addOnDisplay');
+        const addOnPricePerLeg = calculateAddOnPricePerLeg();
+        const legs = ticketType === '@TicketType.RoundTrip' ? 2 : 1;
         
         if (ticketType === '@TicketType.RoundTrip') {
             // For round-trip, price is already calculated and displayed in breakdown
@@ -332,7 +460,10 @@
             @if (Model.PriceBreakdown != null)
             {
                 <text>
-                const totalPrice = @Model.PriceBreakdown.TotalPrice;
+                const basePrice = @Model.PriceBreakdown.TotalPrice;
+                const totalPrice = basePrice + (addOnPricePerLeg * legs);
+                baseFareElement.innerText = formatPrice(basePrice);
+                addOnElement.innerText = formatPrice(addOnPricePerLeg * legs);
                 totalPriceElement.innerText = formatPrice(totalPrice);
                 </text>
             }
@@ -350,8 +481,19 @@
                     price = @outboundTrip.FirstClassPrice;
                     break;
             }
-            totalPriceElement.innerText = formatPrice(price);
+            const totalPrice = price + (addOnPricePerLeg * legs);
+            baseFareElement.innerText = formatPrice(price);
+            addOnElement.innerText = formatPrice(addOnPricePerLeg * legs);
+            totalPriceElement.innerText = formatPrice(totalPrice);
         }
+    }
+
+    function calculateAddOnPricePerLeg() {
+        const mealSelection = document.querySelector('input[name="mealOption"]:checked')?.value ?? "@((int)MealOption.None)";
+        const baggageSelection = document.querySelector('input[name="baggageOption"]:checked')?.value ?? "@((int)BaggageOption.None)";
+        const mealPrice = mealPrices[mealSelection] ?? 0;
+        const baggagePrice = baggagePrices[baggageSelection] ?? 0;
+        return mealPrice + baggagePrice;
     }
     
     function formatPrice(usdPrice) {
@@ -372,4 +514,6 @@
         
         return formattedPrice;
     }
+
+    document.addEventListener('DOMContentLoaded', updatePrice);
 </script>

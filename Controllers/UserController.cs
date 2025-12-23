@@ -217,7 +217,10 @@ namespace Ticket_Booking.Controllers
                 OutboundTrip = outboundTrip,
                 OutboundTripId = tripId,
                 SeatClass = SeatClass.Economy,
-                PassengerName = user?.FullName ?? string.Empty  // Default to user's full name
+                PassengerName = user?.FullName ?? string.Empty,  // Default to user's full name
+                MealOption = MealOption.None,
+                BaggageOption = BaggageOption.None,
+                AddOnTotal = 0
             };
 
             // If round-trip is selected, load available return trips
@@ -271,7 +274,9 @@ namespace Ticket_Booking.Controllers
             SeatClass seatClass, 
             TicketType? ticketType = null,
             int? returnTripId = null,
-            string? passengerName = null)
+            string? passengerName = null,
+            MealOption mealOption = MealOption.None,
+            BaggageOption baggageOption = BaggageOption.None)
         {
             var userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
@@ -302,15 +307,36 @@ namespace Ticket_Booking.Controllers
             
             if (isRoundTrip)
             {
-                return await CreateRoundTripBookingAsync(tripId, returnTripId.Value, seatClass, userId.Value, normalizedPassengerName);
+                return await CreateRoundTripBookingAsync(tripId, returnTripId!.Value, seatClass, userId.Value, normalizedPassengerName, mealOption, baggageOption);
             }
             else
             {
-                return await CreateOneWayBookingAsync(tripId, seatClass, userId.Value, normalizedPassengerName);
+                return await CreateOneWayBookingAsync(tripId, seatClass, userId.Value, normalizedPassengerName, mealOption, baggageOption);
             }
         }
 
-        private async Task<IActionResult> CreateOneWayBookingAsync(int tripId, SeatClass seatClass, int userId, string passengerName)
+        private decimal CalculateAddOnPrice(MealOption mealOption, BaggageOption baggageOption)
+        {
+            decimal mealPrice = mealOption switch
+            {
+                MealOption.Standard => 10m,
+                MealOption.Vegetarian => 12m,
+                MealOption.Special => 15m,
+                _ => 0m
+            };
+
+            decimal baggagePrice = baggageOption switch
+            {
+                BaggageOption.Kg15 => 20m,
+                BaggageOption.Kg20 => 30m,
+                BaggageOption.Kg30 => 40m,
+                _ => 0m
+            };
+
+            return mealPrice + baggagePrice;
+        }
+
+        private async Task<IActionResult> CreateOneWayBookingAsync(int tripId, SeatClass seatClass, int userId, string passengerName, MealOption mealOption, BaggageOption baggageOption)
         {
             var trip = await _tripRepository.GetByIdAsync(tripId);
             if (trip == null)
@@ -369,6 +395,8 @@ namespace Ticket_Booking.Controllers
                 return RedirectToAction("BookTrip", new { tripId });
             }
 
+            var addOnPrice = CalculateAddOnPrice(mealOption, baggageOption);
+
             var ticket = new Ticket
             {
                 TripId = tripId,
@@ -378,11 +406,14 @@ namespace Ticket_Booking.Controllers
                 SeatNumber = string.Empty,
                 BookingDate = DateTime.Now,
                 PaymentStatus = PaymentStatus.Pending,
-                TotalPrice = price,
+                TotalPrice = price + addOnPrice,
                 QrCode = Guid.NewGuid().ToString(),
                 PNR = pnr,
                 Type = TicketType.OneWay,
-                PassengerName = passengerName
+                PassengerName = passengerName,
+                MealOption = mealOption,
+                BaggageOption = baggageOption,
+                AddOnPrice = addOnPrice
             };
 
             await _ticketRepository.AddAsync(ticket);
@@ -395,7 +426,7 @@ namespace Ticket_Booking.Controllers
             try
             {
                 // Convert USD to VND for VNPay (prices in database are in USD)
-                var priceInVnd = await _currencyService.ConvertAmountAsync(price, "USD", "VND");
+                var priceInVnd = await _currencyService.ConvertAmountAsync(ticket.TotalPrice, "USD", "VND");
                 var moneyToPay = (long)Math.Round(priceInVnd); // VNPay expects long (VND)
                 var description = $"Thanh toan ve so {ticket.Id} - {trip.FromCity} to {trip.ToCity}";
 
@@ -431,7 +462,7 @@ namespace Ticket_Booking.Controllers
             }
         }
 
-        private async Task<IActionResult> CreateRoundTripBookingAsync(int outboundTripId, int returnTripId, SeatClass seatClass, int userId, string passengerName)
+        private async Task<IActionResult> CreateRoundTripBookingAsync(int outboundTripId, int returnTripId, SeatClass seatClass, int userId, string passengerName, MealOption mealOption, BaggageOption baggageOption)
         {
             var outboundTrip = await _tripRepository.GetByIdAsync(outboundTripId);
             var returnTrip = await _tripRepository.GetByIdAsync(returnTripId);
@@ -462,7 +493,8 @@ namespace Ticket_Booking.Controllers
             // Calculate round-trip price
             var priceBreakdown = _priceCalculatorService.CalculateRoundTripPrice(
                 outboundTrip, returnTrip, seatClass);
-            var totalPrice = priceBreakdown.TotalPrice;
+            var addOnPricePerLeg = CalculateAddOnPrice(mealOption, baggageOption);
+            var totalPrice = priceBreakdown.TotalPrice + (addOnPricePerLeg * 2);
 
             // Generate booking group ID (use timestamp-based unique ID)
             var bookingGroupId = (int)(DateTime.UtcNow.Ticks % int.MaxValue);
@@ -498,12 +530,15 @@ namespace Ticket_Booking.Controllers
                     SeatNumber = string.Empty,
                     BookingDate = DateTime.Now,
                     PaymentStatus = PaymentStatus.Pending,
-                    TotalPrice = priceBreakdown.OutboundPrice,
+                    TotalPrice = priceBreakdown.OutboundPrice + addOnPricePerLeg,
                     QrCode = Guid.NewGuid().ToString(),
                     PNR = outboundPnr,
                     Type = TicketType.RoundTrip,
                     BookingGroupId = bookingGroupId,
-                    PassengerName = passengerName
+                    PassengerName = passengerName,
+                    MealOption = mealOption,
+                    BaggageOption = baggageOption,
+                    AddOnPrice = addOnPricePerLeg
                 };
 
                 // Create return ticket (seat will be assigned later)
@@ -515,13 +550,16 @@ namespace Ticket_Booking.Controllers
                     SeatNumber = string.Empty,
                     BookingDate = DateTime.Now,
                     PaymentStatus = PaymentStatus.Pending,
-                    TotalPrice = priceBreakdown.ReturnPrice,
+                    TotalPrice = priceBreakdown.ReturnPrice + addOnPricePerLeg,
                     QrCode = Guid.NewGuid().ToString(),
                     PNR = returnPnr,
                     Type = TicketType.RoundTrip,
                     BookingGroupId = bookingGroupId,
                     OutboundTicketId = null, // Will be set after outbound ticket is saved
-                    PassengerName = passengerName
+                    PassengerName = passengerName,
+                    MealOption = mealOption,
+                    BaggageOption = baggageOption,
+                    AddOnPrice = addOnPricePerLeg
                 };
 
                 await _ticketRepository.AddAsync(outboundTicket);
