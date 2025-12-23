@@ -201,7 +201,7 @@
                             </div>
                             <div class="flex-1">
                                 <div class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-1">Passenger</div>
-                                <div class="text-lg font-black text-indigo-900">@Model.User.FullName</div>
+                                <div class="text-lg font-black text-indigo-900">@(!string.IsNullOrWhiteSpace(Model.PassengerName) ? Model.PassengerName : Model.User.FullName)</div>
                             </div>
                         </div>
                     </div>

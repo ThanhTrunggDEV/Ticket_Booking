@@ -134,7 +134,7 @@
                     </div>
                     <div>
                         <div class="text-xs text-slate-400 font-bold uppercase tracking-widest">@Localizer["PNR.Passenger"]</div>
-                        <div class="text-base font-bold text-slate-800">@Model.User.FullName</div>
+                        <div class="text-base font-bold text-slate-800">@(!string.IsNullOrWhiteSpace(Model.PassengerName) ? Model.PassengerName : Model.User.FullName)</div>
                         <div class="text-xs text-slate-500">@Model.User.Email</div>
                     </div>
                 </div>
