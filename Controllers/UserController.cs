@@ -127,19 +127,13 @@ namespace Ticket_Booking.Controllers
                 tickets = await _ticketRepository.FindAsync(t => t.UserId == userId.Value);
             }
             
-            // Group round-trip tickets: only show outbound ticket, but include return info
-            var groupedTickets = tickets
-                .Where(t => t.Type == TicketType.RoundTrip && t.BookingGroupId.HasValue)
-                .GroupBy(t => t.BookingGroupId.Value)
-                .Select(g => g.OrderBy(t => t.Trip?.DepartureTime).First()) // Get outbound ticket (earlier departure)
-                .ToList();
-            
-            // Get one-way tickets and outbound tickets from round-trip bookings
+            // For round-trip bookings, show both outbound and return tickets separately
+            // Get all tickets: one-way tickets and both outbound and return tickets from round-trip bookings
             var displayTickets = tickets
                 .Where(t => t.Type == TicketType.OneWay || 
-                           (t.Type == TicketType.RoundTrip && t.BookingGroupId.HasValue && 
-                            groupedTickets.Any(gt => gt.Id == t.Id)))
+                           t.Type == TicketType.RoundTrip) // Show all tickets including both outbound and return
                 .OrderByDescending(t => t.BookingDate)
+                .ThenBy(t => t.Type == TicketType.RoundTrip && t.OutboundTicketId.HasValue ? 1 : 0) // Show outbound before return
                 .ToList();
             
             return View(displayTickets);
