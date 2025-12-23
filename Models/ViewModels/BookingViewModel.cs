@@ -24,6 +24,9 @@ namespace Ticket_Booking.Models.ViewModels
         public SeatClass? OutboundSeatClass { get; set; }  // For different classes per leg
         public SeatClass? ReturnSeatClass { get; set; }    // For different classes per leg
         
+        // Passenger information
+        public string PassengerName { get; set; } = string.Empty;  // Passenger name for the ticket
+        
         // Pricing breakdown (for round-trip)
         public decimal? OutboundPrice { get; set; }
         public decimal? ReturnPrice { get; set; }
