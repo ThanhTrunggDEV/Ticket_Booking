@@ -62,19 +62,41 @@
                                                 <div class="flex flex-col">
                                                     @if (ticket.Type == Ticket_Booking.Enums.TicketType.RoundTrip)
                                                     {
-                                                        <div class="flex items-center gap-2 mb-1">
-                                                            <span class="text-xs font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded uppercase">Round-Trip</span>
-                                                        </div>
-                                                        <span class="text-sm font-bold text-indigo-900">
-                                                            @(ticket.Trip?.FromCity ?? Localizer["Common.Unknown"].ToString()) 
-                                                            <span class="text-gray-400 mx-1">↔</span> 
-                                                            @(ticket.ReturnTicket?.Trip?.ToCity ?? ticket.Trip?.ToCity ?? Localizer["Common.Unknown"].ToString())
-                                                        </span>
-                                                        @if (ticket.ReturnTicket != null)
+                                                        @if (ticket.OutboundTicketId.HasValue)
                                                         {
-                                                            <span class="text-xs text-gray-500 mt-1">
-                                                                Return: @ticket.ReturnTicket.Trip?.DepartureTime.ToString("dd MMM yyyy, HH:mm")
+                                                            // This is a return ticket
+                                                            <div class="flex items-center gap-2 mb-1">
+                                                                <span class="text-xs font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded uppercase">Round-Trip (Return)</span>
+                                                            </div>
+                                                            <span class="text-sm font-bold text-indigo-900">
+                                                                @(ticket.Trip?.FromCity ?? Localizer["Common.Unknown"].ToString()) 
+                                                                <span class="text-gray-400 mx-1">→</span> 
+                                                                @(ticket.Trip?.ToCity ?? Localizer["Common.Unknown"].ToString())
                                                             </span>
+                                                            @if (ticket.OutboundTicket != null)
+                                                            {
+                                                                <span class="text-xs text-gray-500 mt-1">
+                                                                    Outbound: @ticket.OutboundTicket.Trip?.FromCity → @ticket.OutboundTicket.Trip?.ToCity
+                                                                </span>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            // This is an outbound ticket
+                                                            <div class="flex items-center gap-2 mb-1">
+                                                                <span class="text-xs font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded uppercase">Round-Trip (Outbound)</span>
+                                                            </div>
+                                                            <span class="text-sm font-bold text-indigo-900">
+                                                                @(ticket.Trip?.FromCity ?? Localizer["Common.Unknown"].ToString()) 
+                                                                <span class="text-gray-400 mx-1">→</span> 
+                                                                @(ticket.Trip?.ToCity ?? Localizer["Common.Unknown"].ToString())
+                                                            </span>
+                                                            @if (ticket.ReturnTicket != null)
+                                                            {
+                                                                <span class="text-xs text-gray-500 mt-1">
+                                                                    Return: @ticket.ReturnTicket.Trip?.FromCity → @ticket.ReturnTicket.Trip?.ToCity (@ticket.ReturnTicket.Trip?.DepartureTime.ToString("dd MMM yyyy, HH:mm"))
+                                                                </span>
+                                                            }
                                                         }
                                                     }
                                                     else
@@ -129,15 +151,19 @@
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
-                                                @if (ticket.Type == Ticket_Booking.Enums.TicketType.RoundTrip && ticket.ReturnTicket != null)
+                                                @Html.DisplayPrice(ticket.TotalPrice)
+                                                @if (ticket.Type == Ticket_Booking.Enums.TicketType.RoundTrip)
                                                 {
-                                                    var totalPrice = ticket.TotalPrice + ticket.ReturnTicket.TotalPrice;
-                                                    @Html.DisplayPrice(totalPrice)
-                                                    <div class="text-xs text-gray-500 font-normal">(Round-trip)</div>
-                                                }
-                                                else
-                                                {
-                                                    @Html.DisplayPrice(ticket.TotalPrice)
+                                                    <div class="text-xs text-gray-500 font-normal">
+                                                        @if (ticket.OutboundTicketId.HasValue)
+                                                        {
+                                                            <text>(Return leg)</text>
+                                                        }
+                                                        else if (ticket.ReturnTicket != null)
+                                                        {
+                                                            <text>(Outbound leg)</text>
+                                                        }
+                                                    </div>
                                                 }
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-right">
