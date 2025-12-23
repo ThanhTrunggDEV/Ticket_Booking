@@ -145,6 +145,16 @@
                 <div class="space-y-6">
                     <h3 class="text-lg font-black text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-2">Cabin Configuration</h3>
                     
+                    <!-- Currency Selector -->
+                    <div class="bg-blue-50 rounded-2xl p-4 border-2 border-blue-100">
+                        <label class="block text-xs font-bold text-blue-700 uppercase tracking-wider mb-2">Input Currency</label>
+                        <select id="inputCurrency" class="block w-full md:w-48 px-4 py-2 bg-white border-2 border-blue-200 rounded-xl focus:ring-0 focus:border-blue-500 font-bold text-blue-900">
+                            <option value="USD">USD ($)</option>
+                            <option value="VND">VND (₫)</option>
+                        </select>
+                        <p class="text-xs text-blue-600 mt-2 font-medium">Select the currency you want to use when entering prices. Prices will be converted to USD for storage.</p>
+                    </div>
+                    
                     <!-- Economy -->
                     <div class="bg-zinc-50 rounded-2xl p-6 border-2 border-zinc-100 relative overflow-hidden group hover:border-gray-300 transition-colors">
                         <div class="absolute top-0 right-0 bg-gray-200 text-gray-600 text-xs font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Economy</div>
@@ -157,10 +167,12 @@
                                 <label asp-for="EconomyPrice" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Base Fare</label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <span class="text-gray-400 font-bold">$</span>
+                                        <span id="economyCurrencySymbol" class="text-gray-400 font-bold">$</span>
                                     </div>
-                                    <input asp-for="EconomyPrice" type="number" step="0.01" min="0" class="block w-full pl-8 pr-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-0 focus:border-gray-400 font-bold text-gray-900" placeholder="0.00" required />
+                                    <input id="economyPrice" type="number" step="0.01" min="0" data-price-type="economy" class="block w-full pl-8 pr-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-0 focus:border-gray-400 font-bold text-gray-900" placeholder="0.00" required />
+                                    <input type="hidden" id="economyPriceUSD" name="EconomyPrice" value="@Model.EconomyPrice.ToString("F2")" />
                                 </div>
+                                <p id="economyPriceConverted" class="text-xs text-gray-400 mt-1"></p>
                             </div>
                         </div>
                     </div>
@@ -177,10 +189,12 @@
                                 <label asp-for="BusinessPrice" class="block text-xs font-bold text-indigo-400 uppercase tracking-wider mb-1">Base Fare</label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <span class="text-indigo-300 font-bold">$</span>
+                                        <span id="businessCurrencySymbol" class="text-indigo-300 font-bold">$</span>
                                     </div>
-                                    <input asp-for="BusinessPrice" type="number" step="0.01" min="0" class="block w-full pl-8 pr-3 py-2 bg-white border border-indigo-200 rounded-lg focus:ring-0 focus:border-indigo-400 font-bold text-indigo-900" placeholder="0.00" />
+                                    <input id="businessPrice" type="number" step="0.01" min="0" data-price-type="business" class="block w-full pl-8 pr-3 py-2 bg-white border border-indigo-200 rounded-lg focus:ring-0 focus:border-indigo-400 font-bold text-indigo-900" placeholder="0.00" />
+                                    <input type="hidden" id="businessPriceUSD" name="BusinessPrice" value="@Model.BusinessPrice.ToString("F2")" />
                                 </div>
+                                <p id="businessPriceConverted" class="text-xs text-indigo-400 mt-1"></p>
                             </div>
                         </div>
                     </div>
@@ -197,10 +211,12 @@
                                 <label asp-for="FirstClassPrice" class="block text-xs font-bold text-purple-400 uppercase tracking-wider mb-1">Base Fare</label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <span class="text-purple-300 font-bold">$</span>
+                                        <span id="firstClassCurrencySymbol" class="text-purple-300 font-bold">$</span>
                                     </div>
-                                    <input asp-for="FirstClassPrice" type="number" step="0.01" min="0" class="block w-full pl-8 pr-3 py-2 bg-white border border-purple-200 rounded-lg focus:ring-0 focus:border-purple-400 font-bold text-purple-900" placeholder="0.00" />
+                                    <input id="firstClassPrice" type="number" step="0.01" min="0" data-price-type="firstclass" class="block w-full pl-8 pr-3 py-2 bg-white border border-purple-200 rounded-lg focus:ring-0 focus:border-purple-400 font-bold text-purple-900" placeholder="0.00" />
+                                    <input type="hidden" id="firstClassPriceUSD" name="FirstClassPrice" value="@Model.FirstClassPrice.ToString("F2")" />
                                 </div>
+                                <p id="firstClassPriceConverted" class="text-xs text-purple-400 mt-1"></p>
                             </div>
                         </div>
                     </div>
@@ -259,4 +275,194 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Exchange rate from server
+        @{
+            decimal rate = ViewBag.ExchangeRate != null ? (decimal)ViewBag.ExchangeRate : 25000m;
+        }
+        let exchangeRate = @rate.ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
+        
+        const inputCurrency = document.getElementById('inputCurrency');
+        const economyPrice = document.getElementById('economyPrice');
+        const businessPrice = document.getElementById('businessPrice');
+        const firstClassPrice = document.getElementById('firstClassPrice');
+        const economyPriceUSD = document.getElementById('economyPriceUSD');
+        const businessPriceUSD = document.getElementById('businessPriceUSD');
+        const firstClassPriceUSD = document.getElementById('firstClassPriceUSD');
+        
+        const economySymbol = document.getElementById('economyCurrencySymbol');
+        const businessSymbol = document.getElementById('businessCurrencySymbol');
+        const firstClassSymbol = document.getElementById('firstClassCurrencySymbol');
+        
+        const economyConverted = document.getElementById('economyPriceConverted');
+        const businessConverted = document.getElementById('businessPriceConverted');
+        const firstClassConverted = document.getElementById('firstClassPriceConverted');
+        
+        function updateCurrencySymbols(currency) {
+            if (!economySymbol || !businessSymbol || !firstClassSymbol) {
+                console.error('Currency symbols not found');
+                return;
+            }
+            const symbol = currency === 'VND' ? '₫' : '$';
+            economySymbol.textContent = symbol;
+            businessSymbol.textContent = symbol;
+            firstClassSymbol.textContent = symbol;
+            console.log('Updated currency symbols to:', symbol);
+        }
+        
+        function convertToUSD(amount, fromCurrency) {
+            if (fromCurrency === 'USD') return amount;
+            return amount / exchangeRate;
+        }
+        
+        function convertFromUSD(amount, toCurrency) {
+            if (toCurrency === 'USD') return amount;
+            return amount * exchangeRate;
+        }
+        
+        function updatePriceDisplay(priceInput, priceUSDInput, convertedDisplay, currency) {
+            // Get USD value from hidden input
+            let usdValue = parseFloat(priceUSDInput.value);
+            if (isNaN(usdValue) || usdValue < 0) {
+                usdValue = 0;
+            }
+            
+            console.log('Updating price display:', {
+                priceInput: priceInput.id,
+                usdValue: usdValue,
+                currency: currency
+            });
+            
+            if (currency === 'VND') {
+                const vndValue = convertFromUSD(usdValue, 'VND');
+                priceInput.value = vndValue > 0 ? Math.round(vndValue) : '';
+                priceInput.step = '1';
+                if (usdValue > 0) {
+                    convertedDisplay.textContent = `≈ $${usdValue.toFixed(2)} USD`;
+                } else {
+                    convertedDisplay.textContent = '';
+                }
+            } else {
+                // USD mode
+                priceInput.value = usdValue > 0 ? usdValue.toFixed(2) : '';
+                priceInput.step = '0.01';
+                convertedDisplay.textContent = '';
+            }
+        }
+        
+        function updateAllPrices() {
+            const currency = inputCurrency.value;
+            updateCurrencySymbols(currency);
+            updatePriceDisplay(economyPrice, economyPriceUSD, economyConverted, currency);
+            updatePriceDisplay(businessPrice, businessPriceUSD, businessConverted, currency);
+            updatePriceDisplay(firstClassPrice, firstClassPriceUSD, firstClassConverted, currency);
+        }
+        
+        function syncPriceToUSD(priceInput, priceUSDInput, convertedDisplay, currency) {
+            const inputValue = parseFloat(priceInput.value) || 0;
+            const usdValue = convertToUSD(inputValue, currency);
+            
+            // Debug logging
+            console.log('Syncing price to USD:', {
+                inputValue: inputValue,
+                currency: currency,
+                exchangeRate: exchangeRate,
+                usdValue: usdValue,
+                calculation: currency === 'VND' ? `${inputValue} / ${exchangeRate} = ${usdValue}` : `${inputValue} (USD)`
+            });
+            
+            priceUSDInput.value = usdValue.toFixed(2);
+            
+            if (currency === 'VND') {
+                convertedDisplay.textContent = `≈ $${usdValue.toFixed(2)} USD`;
+            } else {
+                convertedDisplay.textContent = '';
+            }
+        }
+        
+        // Handle currency change
+        let previousCurrency = inputCurrency.value;
+        inputCurrency.addEventListener('change', function() {
+            // Sync current visible values to USD using the PREVIOUS currency before changing
+            syncPriceToUSD(economyPrice, economyPriceUSD, economyConverted, previousCurrency);
+            syncPriceToUSD(businessPrice, businessPriceUSD, businessConverted, previousCurrency);
+            syncPriceToUSD(firstClassPrice, firstClassPriceUSD, firstClassConverted, previousCurrency);
+            
+            // Update previous currency for next change
+            previousCurrency = this.value;
+            
+            // Then update display for new currency
+            updateAllPrices();
+        });
+        
+        // Handle price input changes
+        economyPrice.addEventListener('input', function() {
+            syncPriceToUSD(economyPrice, economyPriceUSD, economyConverted, inputCurrency.value);
+        });
+        
+        businessPrice.addEventListener('input', function() {
+            syncPriceToUSD(businessPrice, businessPriceUSD, businessConverted, inputCurrency.value);
+        });
+        
+        firstClassPrice.addEventListener('input', function() {
+            syncPriceToUSD(firstClassPrice, firstClassPriceUSD, firstClassConverted, inputCurrency.value);
+        });
+        
+        // Initialize on page load
+        function initializePrices() {
+            // Check if all elements exist
+            if (!inputCurrency || !economyPrice || !businessPrice || !firstClassPrice || 
+                !economyPriceUSD || !businessPriceUSD || !firstClassPriceUSD) {
+                console.error('Some elements are missing, retrying...');
+                setTimeout(initializePrices, 100);
+                return;
+            }
+            
+            // Debug: Log values to console
+            console.log('Initializing prices...');
+            console.log('Economy USD:', economyPriceUSD.value);
+            console.log('Business USD:', businessPriceUSD.value);
+            console.log('First Class USD:', firstClassPriceUSD.value);
+            console.log('Exchange Rate:', exchangeRate);
+            console.log('Selected Currency:', inputCurrency.value);
+            
+            // Update currency symbols first (this should happen immediately)
+            const selectedCurrency = inputCurrency.value || 'USD';
+            updateCurrencySymbols(selectedCurrency);
+            
+            // Then update all price displays
+            updateAllPrices();
+        }
+        
+        // Wait for DOM to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(initializePrices, 100);
+            });
+        } else {
+            // DOM already loaded, run immediately
+            setTimeout(initializePrices, 100);
+        }
+        
+        // Ensure prices are synced before form submission
+        document.querySelector('form').addEventListener('submit', function(e) {
+            // Sync all prices to USD before submitting
+            syncPriceToUSD(economyPrice, economyPriceUSD, economyConverted, inputCurrency.value);
+            syncPriceToUSD(businessPrice, businessPriceUSD, businessConverted, inputCurrency.value);
+            syncPriceToUSD(firstClassPrice, firstClassPriceUSD, firstClassConverted, inputCurrency.value);
+            
+            // Disable visible inputs to prevent them from being submitted
+            economyPrice.disabled = true;
+            businessPrice.disabled = true;
+            firstClassPrice.disabled = true;
+            
+            // Debug: Log values being submitted
+            console.log('Form submitting with prices:');
+            console.log('Economy USD:', economyPriceUSD.value, '(visible input:', economyPrice.value, ')');
+            console.log('Business USD:', businessPriceUSD.value, '(visible input:', businessPrice.value, ')');
+            console.log('First Class USD:', firstClassPriceUSD.value, '(visible input:', firstClassPrice.value, ')');
+            console.log('Exchange Rate:', exchangeRate);
+            console.log('Currency:', inputCurrency.value);
+        });
+    </script>
 }
