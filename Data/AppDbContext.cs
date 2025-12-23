@@ -311,6 +311,8 @@ namespace Ticket_Booking.Data
                 entity.Property(e => e.BoardingPassUrl).HasMaxLength(500);
                 entity.Property(e => e.TotalPrice).HasPrecision(10, 2);
                 entity.Property(e => e.PassengerName).HasMaxLength(100);
+                entity.Property(e => e.IsCancelled).HasDefaultValue(false);
+                entity.Property(e => e.CancellationReason).HasMaxLength(500);
                 
                 // Round-trip booking fields
                 entity.Property(e => e.Type).HasDefaultValue(TicketType.OneWay);
