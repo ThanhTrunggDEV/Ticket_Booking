@@ -208,12 +208,16 @@ namespace Ticket_Booking.Controllers
                 return NotFound();
             }
 
+            // Get user info for default passenger name
+            var user = await _userRepository.GetByIdAsync(userId.Value);
+
             var viewModel = new BookingViewModel
             {
                 TicketType = ticketType ?? TicketType.OneWay,
                 OutboundTrip = outboundTrip,
                 OutboundTripId = tripId,
-                SeatClass = SeatClass.Economy
+                SeatClass = SeatClass.Economy,
+                PassengerName = user?.FullName ?? string.Empty  // Default to user's full name
             };
 
             // If round-trip is selected, load available return trips
@@ -266,7 +270,8 @@ namespace Ticket_Booking.Controllers
             int tripId, 
             SeatClass seatClass, 
             TicketType? ticketType = null,
-            int? returnTripId = null)
+            int? returnTripId = null,
+            string? passengerName = null)
         {
             var userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
@@ -274,20 +279,38 @@ namespace Ticket_Booking.Controllers
                 return RedirectToAction("Index", "Login");
             }
 
+            // Validate and normalize passenger name
+            var user = await _userRepository.GetByIdAsync(userId.Value);
+            var normalizedPassengerName = string.IsNullOrWhiteSpace(passengerName) 
+                ? (user?.FullName ?? string.Empty) 
+                : passengerName.Trim();
+            
+            if (string.IsNullOrWhiteSpace(normalizedPassengerName) || normalizedPassengerName.Length < 2)
+            {
+                TempData["Error"] = "Passenger name must be at least 2 characters long.";
+                return RedirectToAction("BookTrip", new { tripId, ticketType });
+            }
+            
+            if (normalizedPassengerName.Length > 100)
+            {
+                TempData["Error"] = "Passenger name cannot exceed 100 characters.";
+                return RedirectToAction("BookTrip", new { tripId, ticketType });
+            }
+
             // Determine if this is a round-trip booking
             var isRoundTrip = ticketType == TicketType.RoundTrip && returnTripId.HasValue && returnTripId.Value > 0;
             
             if (isRoundTrip)
             {
-                return await CreateRoundTripBookingAsync(tripId, returnTripId.Value, seatClass, userId.Value);
+                return await CreateRoundTripBookingAsync(tripId, returnTripId.Value, seatClass, userId.Value, normalizedPassengerName);
             }
             else
             {
-                return await CreateOneWayBookingAsync(tripId, seatClass, userId.Value);
+                return await CreateOneWayBookingAsync(tripId, seatClass, userId.Value, normalizedPassengerName);
             }
         }
 
-        private async Task<IActionResult> CreateOneWayBookingAsync(int tripId, SeatClass seatClass, int userId)
+        private async Task<IActionResult> CreateOneWayBookingAsync(int tripId, SeatClass seatClass, int userId, string passengerName)
         {
             var trip = await _tripRepository.GetByIdAsync(tripId);
             if (trip == null)
@@ -358,7 +381,8 @@ namespace Ticket_Booking.Controllers
                 TotalPrice = price,
                 QrCode = Guid.NewGuid().ToString(),
                 PNR = pnr,
-                Type = TicketType.OneWay
+                Type = TicketType.OneWay,
+                PassengerName = passengerName
             };
 
             await _ticketRepository.AddAsync(ticket);
@@ -407,7 +431,7 @@ namespace Ticket_Booking.Controllers
             }
         }
 
-        private async Task<IActionResult> CreateRoundTripBookingAsync(int outboundTripId, int returnTripId, SeatClass seatClass, int userId)
+        private async Task<IActionResult> CreateRoundTripBookingAsync(int outboundTripId, int returnTripId, SeatClass seatClass, int userId, string passengerName)
         {
             var outboundTrip = await _tripRepository.GetByIdAsync(outboundTripId);
             var returnTrip = await _tripRepository.GetByIdAsync(returnTripId);
@@ -478,7 +502,8 @@ namespace Ticket_Booking.Controllers
                     QrCode = Guid.NewGuid().ToString(),
                     PNR = outboundPnr,
                     Type = TicketType.RoundTrip,
-                    BookingGroupId = bookingGroupId
+                    BookingGroupId = bookingGroupId,
+                    PassengerName = passengerName
                 };
 
                 // Create return ticket (seat will be assigned later)
@@ -495,7 +520,8 @@ namespace Ticket_Booking.Controllers
                     PNR = returnPnr,
                     Type = TicketType.RoundTrip,
                     BookingGroupId = bookingGroupId,
-                    OutboundTicketId = null // Will be set after outbound ticket is saved
+                    OutboundTicketId = null, // Will be set after outbound ticket is saved
+                    PassengerName = passengerName
                 };
 
                 await _ticketRepository.AddAsync(outboundTicket);
