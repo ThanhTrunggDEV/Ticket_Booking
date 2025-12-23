@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Ticket_Booking.Interfaces;
 using Ticket_Booking.Models.DomainModels;
 using Ticket_Booking.Models.ViewModels;
@@ -16,6 +17,7 @@ namespace Ticket_Booking.Controllers
         private readonly IRepository<Payment> _paymentRepository;
         private readonly IPricingService _pricingService;
         private readonly TripRepository _tripRepositoryConcrete;
+        private readonly ICurrencyService _currencyService;
 
         public PartnerController(
             IRepository<Review> reviewRepository,
@@ -24,7 +26,8 @@ namespace Ticket_Booking.Controllers
             IRepository<Company> companyRepository,
             IRepository<Payment> paymentRepository,
             IPricingService pricingService,
-            TripRepository tripRepositoryConcrete)
+            TripRepository tripRepositoryConcrete,
+            ICurrencyService currencyService)
         {
             _tripRepository = tripRepository;
             _ticketRepository = ticketRepository;
@@ -33,6 +36,7 @@ namespace Ticket_Booking.Controllers
             _paymentRepository = paymentRepository;
             _pricingService = pricingService;
             _tripRepositoryConcrete = tripRepositoryConcrete;
+            _currencyService = currencyService;
         }
 
         public async Task<IActionResult> Index()
@@ -218,6 +222,10 @@ namespace Ticket_Booking.Controllers
             var userId = HttpContext.Session.GetInt32("UserId");
             var companies = await _companyRepository.FindAsync(c => c.OwnerId == userId);
 
+            // Get exchange rate for currency conversion
+            var exchangeRate = await _currencyService.GetExchangeRateAsync("USD", "VND");
+            ViewBag.ExchangeRate = exchangeRate;
+
             ViewBag.Companies = companies;
             return View();
         }
@@ -234,6 +242,57 @@ namespace Ticket_Booking.Controllers
             if (company == null || company.OwnerId != userId)
             {
                 return Unauthorized();
+            }
+
+            // Debug: Log received prices
+            var logger = HttpContext.RequestServices.GetRequiredService<ILogger<PartnerController>>();
+            
+            // Check form values directly
+            var formEconomyPrice = Request.Form["EconomyPrice"].ToString();
+            var formBusinessPrice = Request.Form["BusinessPrice"].ToString();
+            var formFirstClassPrice = Request.Form["FirstClassPrice"].ToString();
+            
+            logger.LogWarning("CreateTrip - Form values: Economy={EconomyPrice}, Business={BusinessPrice}, FirstClass={FirstClassPrice}",
+                formEconomyPrice, formBusinessPrice, formFirstClassPrice);
+            logger.LogWarning("CreateTrip - Model binding: Economy={EconomyPrice}, Business={BusinessPrice}, FirstClass={FirstClassPrice}",
+                trip.EconomyPrice, trip.BusinessPrice, trip.FirstClassPrice);
+            
+            // Parse prices directly from form to avoid model binding issues
+            if (decimal.TryParse(formEconomyPrice, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var parsedEconomy))
+            {
+                trip.EconomyPrice = parsedEconomy;
+            }
+            else
+            {
+                logger.LogError("CreateTrip - Failed to parse EconomyPrice from form: {Value}", formEconomyPrice);
+            }
+            
+            if (decimal.TryParse(formBusinessPrice, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var parsedBusiness))
+            {
+                trip.BusinessPrice = parsedBusiness;
+            }
+            else
+            {
+                logger.LogError("CreateTrip - Failed to parse BusinessPrice from form: {Value}", formBusinessPrice);
+            }
+            
+            if (decimal.TryParse(formFirstClassPrice, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var parsedFirstClass))
+            {
+                trip.FirstClassPrice = parsedFirstClass;
+            }
+            else
+            {
+                logger.LogError("CreateTrip - Failed to parse FirstClassPrice from form: {Value}", formFirstClassPrice);
+            }
+            
+            logger.LogWarning("CreateTrip - Final prices after parsing: Economy={EconomyPrice}, Business={BusinessPrice}, FirstClass={FirstClassPrice}",
+                trip.EconomyPrice, trip.BusinessPrice, trip.FirstClassPrice);
+            
+            // Validate prices are reasonable (not x10 or x100)
+            if (trip.EconomyPrice > 10000 || trip.BusinessPrice > 10000 || trip.FirstClassPrice > 10000)
+            {
+                logger.LogError("CreateTrip - Suspiciously high prices detected! Economy={EconomyPrice}, Business={BusinessPrice}, FirstClass={FirstClassPrice}",
+                    trip.EconomyPrice, trip.BusinessPrice, trip.FirstClassPrice);
             }
 
             trip.Status = Ticket_Booking.Enums.TripStatus.Active;
@@ -262,6 +321,11 @@ namespace Ticket_Booking.Controllers
             }
 
             var companies = await _companyRepository.FindAsync(c => c.OwnerId == userId);
+            
+            // Get exchange rate for currency conversion
+            var exchangeRate = await _currencyService.GetExchangeRateAsync("USD", "VND");
+            ViewBag.ExchangeRate = exchangeRate;
+            
             ViewBag.Companies = companies;
 
             return View(trip);
@@ -299,17 +363,93 @@ namespace Ticket_Booking.Controllers
             existingTrip.DepartureTime = trip.DepartureTime;
             existingTrip.ArrivalTime = trip.ArrivalTime;
             
-            existingTrip.EconomyPrice = trip.EconomyPrice;
+            // Debug: Log received prices
+            var logger = HttpContext.RequestServices.GetRequiredService<ILogger<PartnerController>>();
+            
+            // Check form values directly
+            var formEconomyPrice = Request.Form["EconomyPrice"].ToString();
+            var formBusinessPrice = Request.Form["BusinessPrice"].ToString();
+            var formFirstClassPrice = Request.Form["FirstClassPrice"].ToString();
+            
+            logger.LogWarning("EditTrip - Form values: Economy={EconomyPrice}, Business={BusinessPrice}, FirstClass={FirstClassPrice}",
+                formEconomyPrice, formBusinessPrice, formFirstClassPrice);
+            logger.LogWarning("EditTrip - Model binding: Economy={EconomyPrice}, Business={BusinessPrice}, FirstClass={FirstClassPrice}",
+                trip.EconomyPrice, trip.BusinessPrice, trip.FirstClassPrice);
+            logger.LogWarning("EditTrip - Existing prices: Economy={EconomyPrice}, Business={BusinessPrice}, FirstClass={FirstClassPrice}",
+                existingTrip.EconomyPrice, existingTrip.BusinessPrice, existingTrip.FirstClassPrice);
+            
+            // Parse prices directly from form to avoid model binding issues
+            decimal economyPrice = 0;
+            decimal businessPrice = 0;
+            decimal firstClassPrice = 0;
+            
+            if (decimal.TryParse(formEconomyPrice, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var parsedEconomy))
+            {
+                economyPrice = parsedEconomy;
+            }
+            else
+            {
+                logger.LogError("EditTrip - Failed to parse EconomyPrice from form: {Value}", formEconomyPrice);
+                economyPrice = trip.EconomyPrice; // Fallback to model binding
+            }
+            
+            if (decimal.TryParse(formBusinessPrice, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var parsedBusiness))
+            {
+                businessPrice = parsedBusiness;
+            }
+            else
+            {
+                logger.LogError("EditTrip - Failed to parse BusinessPrice from form: {Value}", formBusinessPrice);
+                businessPrice = trip.BusinessPrice; // Fallback to model binding
+            }
+            
+            if (decimal.TryParse(formFirstClassPrice, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var parsedFirstClass))
+            {
+                firstClassPrice = parsedFirstClass;
+            }
+            else
+            {
+                logger.LogError("EditTrip - Failed to parse FirstClassPrice from form: {Value}", formFirstClassPrice);
+                firstClassPrice = trip.FirstClassPrice; // Fallback to model binding
+            }
+            
+            logger.LogWarning("EditTrip - Parsed prices from form: Economy={EconomyPrice}, Business={BusinessPrice}, FirstClass={FirstClassPrice}",
+                economyPrice, businessPrice, firstClassPrice);
+            
+            // Validate prices are reasonable (not x10 or x100)
+            if (economyPrice > 10000 || businessPrice > 10000 || firstClassPrice > 10000)
+            {
+                logger.LogError("EditTrip - Suspiciously high prices detected! Economy={EconomyPrice}, Business={BusinessPrice}, FirstClass={FirstClassPrice}",
+                    economyPrice, businessPrice, firstClassPrice);
+            }
+            
+            // Check if prices have changed
+            bool pricesChanged = existingTrip.EconomyPrice != economyPrice ||
+                                existingTrip.BusinessPrice != businessPrice ||
+                                existingTrip.FirstClassPrice != firstClassPrice;
+            
+            // Use parsed prices from form (already in USD from hidden inputs)
+            existingTrip.EconomyPrice = economyPrice;
             existingTrip.EconomySeats = trip.EconomySeats;
-            existingTrip.BusinessPrice = trip.BusinessPrice;
+            existingTrip.BusinessPrice = businessPrice;
             existingTrip.BusinessSeats = trip.BusinessSeats;
-            existingTrip.FirstClassPrice = trip.FirstClassPrice;
+            existingTrip.FirstClassPrice = firstClassPrice;
             existingTrip.FirstClassSeats = trip.FirstClassSeats;
             
+            logger.LogWarning("EditTrip - After assignment: Economy={EconomyPrice}, Business={BusinessPrice}, FirstClass={FirstClassPrice}",
+                existingTrip.EconomyPrice, existingTrip.BusinessPrice, existingTrip.FirstClassPrice);
+            
             // Update round-trip discount if provided
+            bool discountChanged = false;
             if (trip.RoundTripDiscountPercent >= 0 && trip.RoundTripDiscountPercent <= 50)
             {
+                discountChanged = existingTrip.RoundTripDiscountPercent != trip.RoundTripDiscountPercent;
                 existingTrip.RoundTripDiscountPercent = trip.RoundTripDiscountPercent;
+            }
+            
+            // Update PriceLastUpdated if prices or discount changed
+            if (pricesChanged || discountChanged)
+            {
                 existingTrip.PriceLastUpdated = DateTime.UtcNow;
             }
 
