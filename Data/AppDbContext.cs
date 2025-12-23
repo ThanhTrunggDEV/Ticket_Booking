@@ -172,8 +172,13 @@ namespace Ticket_Booking.Data
                     // Calculate distance (approximate)
                     var distance = route.duration * 8.5m; // ~8.5 km per minute of flight
 
-                    // Price varies by route and class
-                    var basePrice = route.duration * 50000m; // Base price calculation
+                    // Price varies by route and class (in USD)
+                    // Base price: $2-5 per minute of flight, depending on route popularity
+                    var pricePerMinute = random.Next(20, 51) / 10m; // $2.0 - $5.0 per minute
+                    var basePrice = route.duration * pricePerMinute; // Base price in USD
+                    
+                    // Random round-trip discount (0-20%)
+                    var roundTripDiscount = random.Next(0, 21); // 0-20% discount
                     
                     trips.Add(new Trip
                     {
@@ -191,6 +196,8 @@ namespace Ticket_Booking.Data
                         BusinessSeats = random.Next(20, 40), // 20-40 business seats
                         FirstClassPrice = basePrice * 5m,
                         FirstClassSeats = random.Next(8, 16), // 8-16 first class seats
+                        RoundTripDiscountPercent = roundTripDiscount,
+                        PriceLastUpdated = now.AddDays(-random.Next(0, 30)), // Random date within last 30 days
                         Status = TripStatus.Active
                     });
                 }
@@ -211,8 +218,15 @@ namespace Ticket_Booking.Data
                 var departureTime = now.AddHours(hoursOffset);
                 var arrivalTime = departureTime.AddMinutes(route.duration);
                 var distance = route.duration * 8.5m;
-                var basePrice = route.duration * 50000m;
+                
+                // Price varies by route and class (in USD)
+                // Base price: $2-5 per minute of flight, depending on route popularity
+                var pricePerMinute = random.Next(20, 51) / 10m; // $2.0 - $5.0 per minute
+                var basePrice = route.duration * pricePerMinute; // Base price in USD
 
+                // Random round-trip discount (0-20%)
+                var roundTripDiscount = random.Next(0, 21); // 0-20% discount
+                
                 trips.Add(new Trip
                 {
                     CompanyId = company.Id,
@@ -229,6 +243,8 @@ namespace Ticket_Booking.Data
                     BusinessSeats = random.Next(20, 40),
                     FirstClassPrice = basePrice * 5m,
                     FirstClassSeats = random.Next(8, 16),
+                    RoundTripDiscountPercent = roundTripDiscount,
+                    PriceLastUpdated = now.AddDays(-random.Next(0, 30)), // Random date within last 30 days
                     Status = TripStatus.Active
                 });
             }
