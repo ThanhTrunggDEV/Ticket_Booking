@@ -5,6 +5,7 @@ using Ticket_Booking.Models.DomainModels;
 using Ticket_Booking.Models.ViewModels;
 using Ticket_Booking.Repositories;
 using Ticket_Booking.Enums;
+using Ticket_Booking.Services;
 using VNPAY;
 using VNPAY.Models.Enums;
 using System.Threading.Tasks;
@@ -23,6 +24,7 @@ namespace Ticket_Booking.Controllers
         private readonly IPNRHelper _pnrHelper;
         private readonly IPriceCalculatorService _priceCalculatorService;
         private readonly TripRepository _tripRepositoryConcrete;
+        private readonly ICurrencyService _currencyService;
 
         // Stores the last created primary ticket id for payment callback
         private static int _currentTripId;
@@ -35,7 +37,8 @@ namespace Ticket_Booking.Controllers
             IVnpayClient vnpayClient, 
             IPNRHelper pnrHelper,
             IPriceCalculatorService priceCalculatorService,
-            TripRepository tripRepositoryConcrete)
+            TripRepository tripRepositoryConcrete,
+            ICurrencyService currencyService)
         {
             _userRepository = userRepository;
             _ticketRepository = ticketRepository;
@@ -45,6 +48,7 @@ namespace Ticket_Booking.Controllers
             _pnrHelper = pnrHelper;
             _priceCalculatorService = priceCalculatorService;
             _tripRepositoryConcrete = tripRepositoryConcrete;
+            _currencyService = currencyService;
         }
 
         public async Task<IActionResult> Index(string? fromCity, string? toCity, DateTime? date)
@@ -372,8 +376,9 @@ namespace Ticket_Booking.Controllers
 
             try
             {
-                if (price < 5000) price *= 26000;
-                var moneyToPay = price;
+                // Convert USD to VND for VNPay (prices in database are in USD)
+                var priceInVnd = await _currencyService.ConvertAmountAsync(price, "USD", "VND");
+                var moneyToPay = (long)Math.Round(priceInVnd); // VNPay expects long (VND)
                 var description = $"Thanh toan ve so {ticket.Id} - {trip.FromCity} to {trip.ToCity}";
 
                 var paymentUrlInfo = _vnPayClient.CreatePaymentUrl(
@@ -521,8 +526,9 @@ namespace Ticket_Booking.Controllers
                 // Create payment
                 try
                 {
-                    if (totalPrice < 5000) totalPrice *= 26000;
-                    var moneyToPay = totalPrice;
+                    // Convert USD to VND for VNPay (prices in database are in USD)
+                    var priceInVnd = await _currencyService.ConvertAmountAsync(totalPrice, "USD", "VND");
+                    var moneyToPay = (long)Math.Round(priceInVnd); // VNPay expects long (VND)
                     var description = $"Thanh toan ve khứ hồi - {outboundTrip.FromCity} to {outboundTrip.ToCity} (PNR: {outboundPnr})";
 
                     var paymentUrlInfo = _vnPayClient.CreatePaymentUrl(
