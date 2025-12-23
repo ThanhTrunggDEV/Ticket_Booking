@@ -601,6 +601,22 @@ namespace Ticket_Booking.Controllers
             }
         }
 
+        private void IncreaseSeatAvailability(Trip trip, SeatClass seatClass)
+        {
+            switch (seatClass)
+            {
+                case SeatClass.Economy:
+                    trip.EconomySeats++;
+                    break;
+                case SeatClass.Business:
+                    trip.BusinessSeats++;
+                    break;
+                case SeatClass.FirstClass:
+                    trip.FirstClassSeats++;
+                    break;
+            }
+        }
+
         public async Task<IActionResult> PaySuccess()
         {
             // Handle VNPay callback safely – in dev/manual testing there may be no VNPay parameters
@@ -656,6 +672,152 @@ namespace Ticket_Booking.Controllers
             return View("PaymentSuccess", viewModel);
         }
 
+
+        [HttpGet]
+        public async Task<IActionResult> CancelTicket(int id)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            var ticketRepo = _ticketRepository as TicketRepository;
+            Ticket? ticket = null;
+            
+            if (ticketRepo != null)
+            {
+                ticket = await ticketRepo.GetCompleteAsync(id);
+            }
+            else
+            {
+                ticket = await _ticketRepository.GetByIdAsync(id);
+            }
+
+            if (ticket == null)
+            {
+                TempData["Error"] = "Ticket not found.";
+                return RedirectToAction("MyBooking");
+            }
+
+            // Verify ownership
+            if (ticket.UserId != userId.Value)
+            {
+                TempData["Error"] = "You do not have permission to cancel this ticket.";
+                return RedirectToAction("MyBooking");
+            }
+
+            // Check if already cancelled
+            if (ticket.IsCancelled || ticket.PaymentStatus == PaymentStatus.Cancelled)
+            {
+                TempData["Error"] = "This ticket has already been cancelled.";
+                return RedirectToAction("MyBooking");
+            }
+
+            // Check if checked in
+            if (ticket.IsCheckedIn)
+            {
+                TempData["Error"] = "Cannot cancel ticket after check-in. Please contact support.";
+                return RedirectToAction("MyBooking");
+            }
+
+            // Check if flight has departed
+            if (ticket.Trip?.DepartureTime <= DateTime.UtcNow)
+            {
+                TempData["Error"] = "Cannot cancel ticket after flight departure.";
+                return RedirectToAction("MyBooking");
+            }
+
+            // Check if cancellation is allowed (at least 24 hours before departure)
+            var hoursUntilDeparture = ticket.Trip?.DepartureTime != null 
+                ? (ticket.Trip.DepartureTime - DateTime.UtcNow).TotalHours 
+                : 0;
+
+            if (hoursUntilDeparture < 24)
+            {
+                TempData["Error"] = "Cancellation must be made at least 24 hours before departure. Please contact support for assistance.";
+                return RedirectToAction("MyBooking");
+            }
+
+            // Load trip with navigation properties
+            var trip = await _tripRepository.GetByIdAsync(ticket.TripId);
+            if (trip == null)
+            {
+                TempData["Error"] = "Trip not found.";
+                return RedirectToAction("MyBooking");
+            }
+
+            // Use transaction for atomicity
+            using var transaction = ticketRepo != null 
+                ? await ticketRepo.BeginTransactionAsync() 
+                : null;
+
+            try
+            {
+                // Cancel the ticket
+                ticket.IsCancelled = true;
+                ticket.CancelledAt = DateTime.UtcNow;
+                ticket.PaymentStatus = PaymentStatus.Cancelled;
+
+                // Restore seat availability
+                IncreaseSeatAvailability(trip, ticket.SeatClass);
+                await _tripRepository.UpdateAsync(trip);
+
+                // Handle round-trip cancellation
+                if (ticket.Type == TicketType.RoundTrip)
+                {
+                    // If this is outbound ticket, ask about return ticket
+                    if (!ticket.OutboundTicketId.HasValue && ticket.ReturnTicketId.HasValue)
+                    {
+                        // This is outbound - check if return should also be cancelled
+                        var returnTicket = await _ticketRepository.GetByIdAsync(ticket.ReturnTicketId.Value);
+                        if (returnTicket != null && !returnTicket.IsCancelled)
+                        {
+                            // Cancel return ticket as well
+                            returnTicket.IsCancelled = true;
+                            returnTicket.CancelledAt = DateTime.UtcNow;
+                            returnTicket.PaymentStatus = PaymentStatus.Cancelled;
+
+                            var returnTrip = await _tripRepository.GetByIdAsync(returnTicket.TripId);
+                            if (returnTrip != null)
+                            {
+                                IncreaseSeatAvailability(returnTrip, returnTicket.SeatClass);
+                                await _tripRepository.UpdateAsync(returnTrip);
+                            }
+
+                            await _ticketRepository.UpdateAsync(returnTicket);
+                        }
+                    }
+                    // If this is return ticket, only cancel return (outbound already used or separate)
+                    else if (ticket.OutboundTicketId.HasValue)
+                    {
+                        // This is return ticket - only cancel this one
+                        // (outbound might have been used already)
+                    }
+                }
+
+                await _ticketRepository.UpdateAsync(ticket);
+                await _ticketRepository.SaveChangesAsync();
+
+                if (transaction != null)
+                {
+                    await transaction.CommitAsync();
+                }
+
+                TempData["Success"] = "Ticket cancelled successfully. Seat availability has been restored.";
+                return RedirectToAction("MyBooking");
+            }
+            catch (Exception)
+            {
+                if (transaction != null)
+                {
+                    await transaction.RollbackAsync();
+                }
+
+                TempData["Error"] = "An error occurred while cancelling the ticket. Please try again or contact support.";
+                return RedirectToAction("MyBooking");
+            }
+        }
 
         public async Task<IActionResult> Ticket(int id)
         {
