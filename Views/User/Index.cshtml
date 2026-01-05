@@ -23,115 +23,117 @@
             </div>
 
             <!-- Search Box -->
-            <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-8 max-w-4xl mx-auto transform translate-y-8">
-                <form asp-action="Index" method="get" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-                    <!-- From -->
-                    <div class="md:col-span-3">
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">@Localizer["User.From"]</label>
-                        <div class="relative">
-                            <select name="fromCity" class="w-full bg-gray-50 text-gray-900 border-2 border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 appearance-none">
-                                <option value="">@Localizer["User.SelectOrigin"]</option>
-                                @foreach (var city in Model.AvailableCities)
-                                {
-                                    <option value="@city" selected="@(Model.FromCity == city)">@city</option>
-                                }
-                            </select>
-                            <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-gray-500">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Swap Icon (Visual only) -->
-                    <div class="hidden md:flex md:col-span-1 justify-center pb-4">
-                        <div class="p-2 bg-gray-100 rounded-full text-gray-400">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
-                        </div>
-                    </div>
-
-                    <!-- To -->
-                    <div class="md:col-span-3">
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">@Localizer["User.To"]</label>
-                        <div class="relative">
-                            <select name="toCity" class="w-full bg-gray-50 text-gray-900 border-2 border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 appearance-none">
-                                <option value="">@Localizer["User.SelectDestination"]</option>
-                                @foreach (var city in Model.AvailableCities)
-                                {
-                                    <option value="@city" selected="@(Model.ToCity == city)">@city</option>
-                                }
-                            </select>
-                            <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-gray-500">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Trip Type Toggle -->
-                    <div class="md:col-span-2">
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">@Localizer["User.TripType"]</label>
-                        <div class="flex gap-2">
-                            <label class="flex items-center bg-gray-50 border-2 border-gray-100 rounded-xl px-3 py-3 cursor-pointer flex-1 hover:border-indigo-500 transition-colors">
-                                <input type="radio" name="tripType" value="OneWay" @(Model.TripType == "OneWay" ? "checked" : "") class="w-4 h-4 text-indigo-600 cursor-pointer" onchange="toggleReturnDate()" />
-                                <span class="ml-2 text-xs font-bold text-gray-900">@Localizer["User.OneWay"]</span>
+            <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-6xl mx-auto transform translate-y-8">
+                <form asp-action="Index" method="get">
+                    <!-- Trip Type Selection -->
+                    <div class="mb-8 pb-6 border-b border-gray-100">
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">@Localizer["User.TripType"]</label>
+                        <div class="flex gap-3">
+                            <label class="flex items-center gap-3 p-3 px-5 bg-indigo-50 border-2 border-indigo-200 rounded-xl cursor-pointer flex-1 hover:bg-indigo-100 transition-all duration-200 group" id="oneWayLabel">
+                                <input type="radio" name="tripType" value="OneWay" @(Model.TripType == "OneWay" ? "checked" : "") class="w-5 h-5 text-indigo-600 cursor-pointer" onchange="toggleReturnDate()" />
+                                <span class="text-sm font-bold text-gray-900">@Localizer["User.OneWay"]</span>
                             </label>
-                            <label class="flex items-center bg-gray-50 border-2 border-gray-100 rounded-xl px-3 py-3 cursor-pointer flex-1 hover:border-indigo-500 transition-colors">
-                                <input type="radio" name="tripType" value="RoundTrip" @(Model.TripType == "RoundTrip" ? "checked" : "") class="w-4 h-4 text-indigo-600 cursor-pointer" onchange="toggleReturnDate()" />
-                                <span class="ml-2 text-xs font-bold text-gray-900">@Localizer["User.RoundTrip"]</span>
+                            <label class="flex items-center gap-3 p-3 px-5 bg-gray-50 border-2 border-gray-200 rounded-xl cursor-pointer flex-1 hover:border-indigo-300 transition-all duration-200 group" id="roundTripLabel">
+                                <input type="radio" name="tripType" value="RoundTrip" @(Model.TripType == "RoundTrip" ? "checked" : "") class="w-5 h-5 text-indigo-600 cursor-pointer" onchange="toggleReturnDate()" />
+                                <span class="text-sm font-bold text-gray-900">@Localizer["User.RoundTrip"]</span>
                             </label>
                         </div>
                     </div>
 
-                    <!-- Date -->
-                    <div class="md:col-span-2">
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">@Localizer["User.Departure"]</label>
-                        <input type="date" name="date" value="@(Model.Date?.ToString("yyyy-MM-dd"))" class="w-full bg-gray-50 text-gray-900 border-2 border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
-                    </div>
-
-                    <!-- Return Date (Hidden by default for One-Way) -->
-                    <div class="md:col-span-2" id="returnDateContainer" style="display: @(Model.TripType == "RoundTrip" ? "block" : "none");">
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">@Localizer["User.ReturnDate"]</label>
-                        <input type="date" name="returnDate" value="@(Model.ReturnDate?.ToString("yyyy-MM-dd"))" class="w-full bg-gray-50 text-gray-900 border-2 border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
-                    </div>
-
-                    <!-- Search Button -->
-                    <div class="md:col-span-2">
-                        <button type="submit" class="w-full bg-indigo-600 text-white py-3.5 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-indigo-700 transition-all shadow-lg hover:shadow-indigo-500/30 flex items-center justify-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                            @Localizer["User.Search"]
-                        </button>
-                    </div>
-
-                    <!-- Sort Options - New Row -->
-                    <div class="md:col-span-6">
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">@Localizer["User.SortBy"]</label>
-                        <div class="relative">
-                            <select name="sortBy" class="w-full bg-gray-50 text-gray-900 border-2 border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 appearance-none">
-                                <option value="@Ticket_Booking.Enums.SortCriteria.DepartureTimeAsc" selected="@(Model.SortBy == Ticket_Booking.Enums.SortCriteria.DepartureTimeAsc)">@Localizer["User.Sort.EarliestDeparture"]</option>
-                                <option value="@Ticket_Booking.Enums.SortCriteria.DepartureTimeDesc" selected="@(Model.SortBy == Ticket_Booking.Enums.SortCriteria.DepartureTimeDesc)">@Localizer["User.Sort.LatestDeparture"]</option>
-                                <option value="@Ticket_Booking.Enums.SortCriteria.PriceAsc" selected="@(Model.SortBy == Ticket_Booking.Enums.SortCriteria.PriceAsc)">@Localizer["User.Sort.LowestPrice"]</option>
-                                <option value="@Ticket_Booking.Enums.SortCriteria.PriceDesc" selected="@(Model.SortBy == Ticket_Booking.Enums.SortCriteria.PriceDesc)">@Localizer["User.Sort.HighestPrice"]</option>
-                                <option value="@Ticket_Booking.Enums.SortCriteria.DurationAsc" selected="@(Model.SortBy == Ticket_Booking.Enums.SortCriteria.DurationAsc)">@Localizer["User.Sort.ShortestDuration"]</option>
-                                <option value="@Ticket_Booking.Enums.SortCriteria.DurationDesc" selected="@(Model.SortBy == Ticket_Booking.Enums.SortCriteria.DurationDesc)">@Localizer["User.Sort.LongestDuration"]</option>
-                                <option value="@Ticket_Booking.Enums.SortCriteria.DistanceAsc" selected="@(Model.SortBy == Ticket_Booking.Enums.SortCriteria.DistanceAsc)">@Localizer["User.Sort.ShortestDistance"]</option>
-                                <option value="@Ticket_Booking.Enums.SortCriteria.DistanceDesc" selected="@(Model.SortBy == Ticket_Booking.Enums.SortCriteria.DistanceDesc)">@Localizer["User.Sort.LongestDistance"]</option>
-                            </select>
-                            <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-gray-500">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    <!-- Main Search Fields -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+                        <!-- From -->
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">@Localizer["User.From"]</label>
+                            <div class="relative">
+                                <select name="fromCity" class="w-full bg-gray-50 text-gray-900 border-2 border-gray-100 rounded-xl px-4 py-3 font-semibold focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 appearance-none hover:border-indigo-300 transition-colors">
+                                    <option value="">@Localizer["User.SelectOrigin"]</option>
+                                    @foreach (var city in Model.AvailableCities)
+                                    {
+                                        <option value="@city" selected="@(Model.FromCity == city)">@city</option>
+                                    }
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-400">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </div>
                             </div>
+                        </div>
+
+                        <!-- To -->
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">@Localizer["User.To"]</label>
+                            <div class="relative">
+                                <select name="toCity" class="w-full bg-gray-50 text-gray-900 border-2 border-gray-100 rounded-xl px-4 py-3 font-semibold focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 appearance-none hover:border-indigo-300 transition-colors">
+                                    <option value="">@Localizer["User.SelectDestination"]</option>
+                                    @foreach (var city in Model.AvailableCities)
+                                    {
+                                        <option value="@city" selected="@(Model.ToCity == city)">@city</option>
+                                    }
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-400">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Departure Date -->
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">@Localizer["User.Departure"]</label>
+                            <input type="date" name="date" value="@(Model.Date?.ToString("yyyy-MM-dd"))" class="w-full bg-gray-50 text-gray-900 border-2 border-gray-100 rounded-xl px-4 py-3 font-semibold focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 hover:border-indigo-300 transition-colors" />
+                        </div>
+
+                        <!-- Return Date (Hidden by default for One-Way) -->
+                        <div id="returnDateContainer" style="display: @(Model.TripType == "RoundTrip" ? "block" : "none");" class="transition-all duration-300">
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">@Localizer["User.ReturnDate"]</label>
+                            <input type="date" name="returnDate" value="@(Model.ReturnDate?.ToString("yyyy-MM-dd"))" class="w-full bg-gray-50 text-gray-900 border-2 border-gray-100 rounded-xl px-4 py-3 font-semibold focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 hover:border-indigo-300 transition-colors" />
+                        </div>
+
+                        <!-- Search Button -->
+                        <div class="flex items-end">
+                            <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 text-white py-3.5 rounded-xl font-bold uppercase tracking-widest text-xs hover:shadow-lg hover:shadow-indigo-500/40 transition-all duration-200 transform hover:-translate-y-0.5 flex items-center justify-center gap-2 group">
+                                <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                @Localizer["User.Search"]
+                            </button>
                         </div>
                     </div>
 
-                    <!-- Seat Class Selection for Price Sorting -->
-                    <div class="md:col-span-6">
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">@Localizer["User.PriceSeatClass"]</label>
-                        <div class="relative">
-                            <select name="seatClass" class="w-full bg-gray-50 text-gray-900 border-2 border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 appearance-none">
-                                <option value="@Ticket_Booking.Enums.SeatClass.Economy" selected="@(Model.SeatClass == Ticket_Booking.Enums.SeatClass.Economy)">@Localizer["User.Economy"]</option>
-                                <option value="@Ticket_Booking.Enums.SeatClass.Business" selected="@(Model.SeatClass == Ticket_Booking.Enums.SeatClass.Business)">@Localizer["User.Business"]</option>
-                                <option value="@Ticket_Booking.Enums.SeatClass.FirstClass" selected="@(Model.SeatClass == Ticket_Booking.Enums.SeatClass.FirstClass)">@Localizer["User.FirstClass"]</option>
-                            </select>
-                            <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-gray-500">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    <!-- Filter & Sort Options -->
+                    <div class="pt-6 border-t border-gray-100">
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">@Localizer["User.FilterSort"]</label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Sort By -->
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-2">@Localizer["User.SortBy"]</label>
+                                <div class="relative">
+                                    <select name="sortBy" class="w-full bg-gray-50 text-gray-900 border-2 border-gray-100 rounded-xl px-4 py-2.5 font-semibold text-sm focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 appearance-none hover:border-indigo-300 transition-colors">
+                                        <option value="@Ticket_Booking.Enums.SortCriteria.DepartureTimeAsc" selected="@(Model.SortBy == Ticket_Booking.Enums.SortCriteria.DepartureTimeAsc)">@Localizer["User.Sort.EarliestDeparture"]</option>
+                                        <option value="@Ticket_Booking.Enums.SortCriteria.DepartureTimeDesc" selected="@(Model.SortBy == Ticket_Booking.Enums.SortCriteria.DepartureTimeDesc)">@Localizer["User.Sort.LatestDeparture"]</option>
+                                        <option value="@Ticket_Booking.Enums.SortCriteria.PriceAsc" selected="@(Model.SortBy == Ticket_Booking.Enums.SortCriteria.PriceAsc)">@Localizer["User.Sort.LowestPrice"]</option>
+                                        <option value="@Ticket_Booking.Enums.SortCriteria.PriceDesc" selected="@(Model.SortBy == Ticket_Booking.Enums.SortCriteria.PriceDesc)">@Localizer["User.Sort.HighestPrice"]</option>
+                                        <option value="@Ticket_Booking.Enums.SortCriteria.DurationAsc" selected="@(Model.SortBy == Ticket_Booking.Enums.SortCriteria.DurationAsc)">@Localizer["User.Sort.ShortestDuration"]</option>
+                                        <option value="@Ticket_Booking.Enums.SortCriteria.DurationDesc" selected="@(Model.SortBy == Ticket_Booking.Enums.SortCriteria.DurationDesc)">@Localizer["User.Sort.LongestDuration"]</option>
+                                        <option value="@Ticket_Booking.Enums.SortCriteria.DistanceAsc" selected="@(Model.SortBy == Ticket_Booking.Enums.SortCriteria.DistanceAsc)">@Localizer["User.Sort.ShortestDistance"]</option>
+                                        <option value="@Ticket_Booking.Enums.SortCriteria.DistanceDesc" selected="@(Model.SortBy == Ticket_Booking.Enums.SortCriteria.DistanceDesc)">@Localizer["User.Sort.LongestDistance"]</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-400">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Seat Class -->
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-2">@Localizer["User.PriceSeatClass"]</label>
+                                <div class="relative">
+                                    <select name="seatClass" class="w-full bg-gray-50 text-gray-900 border-2 border-gray-100 rounded-xl px-4 py-2.5 font-semibold text-sm focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 appearance-none hover:border-indigo-300 transition-colors">
+                                        <option value="@Ticket_Booking.Enums.SeatClass.Economy" selected="@(Model.SeatClass == Ticket_Booking.Enums.SeatClass.Economy)">@Localizer["User.Economy"]</option>
+                                        <option value="@Ticket_Booking.Enums.SeatClass.Business" selected="@(Model.SeatClass == Ticket_Booking.Enums.SeatClass.Business)">@Localizer["User.Business"]</option>
+                                        <option value="@Ticket_Booking.Enums.SeatClass.FirstClass" selected="@(Model.SeatClass == Ticket_Booking.Enums.SeatClass.FirstClass)">@Localizer["User.FirstClass"]</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-400">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

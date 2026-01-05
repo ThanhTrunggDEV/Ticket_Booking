@@ -184,6 +184,9 @@
   <data name="User.SortBy" xml:space="preserve">
     <value>Sort By</value>
   </data>
+  <data name="User.FilterSort" xml:space="preserve">
+    <value>Filters &amp; Preferences</value>
+  </data>
   <data name="User.TripType" xml:space="preserve">
     <value>Trip Type</value>
   </data>

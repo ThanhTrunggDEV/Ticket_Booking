@@ -183,6 +183,9 @@
   </data>  <data name="User.SortBy" xml:space="preserve">
     <value>Sắp xếp theo</value>
   </data>
+  <data name="User.FilterSort" xml:space="preserve">
+    <value>Bộ lọc &amp; Sở thích</value>
+  </data>
   <data name="User.TripType" xml:space="preserve">
     <value>Loại chuyến bay</value>
   </data>
