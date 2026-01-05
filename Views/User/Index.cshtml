@@ -79,6 +79,41 @@
                             @Localizer["User.Search"]
                         </button>
                     </div>
+
+                    <!-- Sort Options - New Row -->
+                    <div class="md:col-span-6">
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">@Localizer["User.SortBy"]</label>
+                        <div class="relative">
+                            <select name="sortBy" class="w-full bg-gray-50 text-gray-900 border-2 border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 appearance-none">
+                                <option value="@Ticket_Booking.Enums.SortCriteria.DepartureTimeAsc" selected="@(Model.SortBy == Ticket_Booking.Enums.SortCriteria.DepartureTimeAsc)">@Localizer["User.Sort.EarliestDeparture"]</option>
+                                <option value="@Ticket_Booking.Enums.SortCriteria.DepartureTimeDesc" selected="@(Model.SortBy == Ticket_Booking.Enums.SortCriteria.DepartureTimeDesc)">@Localizer["User.Sort.LatestDeparture"]</option>
+                                <option value="@Ticket_Booking.Enums.SortCriteria.PriceAsc" selected="@(Model.SortBy == Ticket_Booking.Enums.SortCriteria.PriceAsc)">@Localizer["User.Sort.LowestPrice"]</option>
+                                <option value="@Ticket_Booking.Enums.SortCriteria.PriceDesc" selected="@(Model.SortBy == Ticket_Booking.Enums.SortCriteria.PriceDesc)">@Localizer["User.Sort.HighestPrice"]</option>
+                                <option value="@Ticket_Booking.Enums.SortCriteria.DurationAsc" selected="@(Model.SortBy == Ticket_Booking.Enums.SortCriteria.DurationAsc)">@Localizer["User.Sort.ShortestDuration"]</option>
+                                <option value="@Ticket_Booking.Enums.SortCriteria.DurationDesc" selected="@(Model.SortBy == Ticket_Booking.Enums.SortCriteria.DurationDesc)">@Localizer["User.Sort.LongestDuration"]</option>
+                                <option value="@Ticket_Booking.Enums.SortCriteria.DistanceAsc" selected="@(Model.SortBy == Ticket_Booking.Enums.SortCriteria.DistanceAsc)">@Localizer["User.Sort.ShortestDistance"]</option>
+                                <option value="@Ticket_Booking.Enums.SortCriteria.DistanceDesc" selected="@(Model.SortBy == Ticket_Booking.Enums.SortCriteria.DistanceDesc)">@Localizer["User.Sort.LongestDistance"]</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-gray-500">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Seat Class Selection for Price Sorting -->
+                    <div class="md:col-span-6">
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">@Localizer["User.PriceSeatClass"]</label>
+                        <div class="relative">
+                            <select name="seatClass" class="w-full bg-gray-50 text-gray-900 border-2 border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 appearance-none">
+                                <option value="@Ticket_Booking.Enums.SeatClass.Economy" selected="@(Model.SeatClass == Ticket_Booking.Enums.SeatClass.Economy)">@Localizer["User.Economy"]</option>
+                                <option value="@Ticket_Booking.Enums.SeatClass.Business" selected="@(Model.SeatClass == Ticket_Booking.Enums.SeatClass.Business)">@Localizer["User.Business"]</option>
+                                <option value="@Ticket_Booking.Enums.SeatClass.FirstClass" selected="@(Model.SeatClass == Ticket_Booking.Enums.SeatClass.FirstClass)">@Localizer["User.FirstClass"]</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-gray-500">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </div>
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>

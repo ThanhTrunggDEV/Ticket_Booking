@@ -180,8 +180,45 @@
   </data>
   <data name="User.Search" xml:space="preserve">
     <value>Tìm kiếm</value>
+  </data>  <data name="User.SortBy" xml:space="preserve">
+    <value>Sắp xếp theo</value>
   </data>
-  <data name="User.AvailableFlights" xml:space="preserve">
+  <data name="User.PriceSeatClass" xml:space="preserve">
+    <value>Hạng vé giá</value>
+  </data>
+  <data name="User.Sort.EarliestDeparture" xml:space="preserve">
+    <value>Khởi hành sớm nhất</value>
+  </data>
+  <data name="User.Sort.LatestDeparture" xml:space="preserve">
+    <value>Khởi hành muộn nhất</value>
+  </data>
+  <data name="User.Sort.LowestPrice" xml:space="preserve">
+    <value>Giá thấp nhất</value>
+  </data>
+  <data name="User.Sort.HighestPrice" xml:space="preserve">
+    <value>Giá cao nhất</value>
+  </data>
+  <data name="User.Sort.ShortestDuration" xml:space="preserve">
+    <value>Thời gian bay ngắn nhất</value>
+  </data>
+  <data name="User.Sort.LongestDuration" xml:space="preserve">
+    <value>Thời gian bay dài nhất</value>
+  </data>
+  <data name="User.Sort.ShortestDistance" xml:space="preserve">
+    <value>Khoảng cách gần nhất</value>
+  </data>
+  <data name="User.Sort.LongestDistance" xml:space="preserve">
+    <value>Khoảng cách xa nhất</value>
+  </data>
+  <data name="User.Economy" xml:space="preserve">
+    <value>Phổ thông</value>
+  </data>
+  <data name="User.Business" xml:space="preserve">
+    <value>Thương gia</value>
+  </data>
+  <data name="User.FirstClass" xml:space="preserve">
+    <value>Hạng nhất</value>
+  </data>  <data name="User.AvailableFlights" xml:space="preserve">
     <value>CHUYẾN BAY CÓ SẴN</value>
   </data>
   <data name="User.Found" xml:space="preserve">

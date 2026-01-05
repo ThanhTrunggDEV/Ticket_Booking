@@ -147,6 +147,51 @@ namespace Ticket_Booking.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Trip>> SearchAndSortTripsAsync(string fromCity, string toCity, DateTime? date = null, SortCriteria sortBy = SortCriteria.DepartureTimeAsc, SeatClass? seatClass = null)
+        {
+            var query = _dbSet
+                .Include(t => t.Company)
+                .Where(t => t.FromCity.Contains(fromCity) && t.ToCity.Contains(toCity));
+
+            if (date.HasValue)
+            {
+                var startOfDay = date.Value.Date;
+                var endOfDay = startOfDay.AddDays(1);
+                query = query.Where(t => t.DepartureTime >= startOfDay && t.DepartureTime < endOfDay);
+            }
+
+            // Load data from database first
+            var trips = await query.ToListAsync();
+
+            // Apply sorting on client side (needed because SQLite doesn't support decimal ORDER BY)
+            IEnumerable<Trip> sortedTrips = sortBy switch
+            {
+                SortCriteria.PriceAsc => seatClass switch
+                {
+                    SeatClass.Economy => trips.OrderBy(t => t.EconomyPrice),
+                    SeatClass.Business => trips.OrderBy(t => t.BusinessPrice),
+                    SeatClass.FirstClass => trips.OrderBy(t => t.FirstClassPrice),
+                    _ => trips.OrderBy(t => t.EconomyPrice) // Default to Economy
+                },
+                SortCriteria.PriceDesc => seatClass switch
+                {
+                    SeatClass.Economy => trips.OrderByDescending(t => t.EconomyPrice),
+                    SeatClass.Business => trips.OrderByDescending(t => t.BusinessPrice),
+                    SeatClass.FirstClass => trips.OrderByDescending(t => t.FirstClassPrice),
+                    _ => trips.OrderByDescending(t => t.EconomyPrice)
+                },
+                SortCriteria.DepartureTimeAsc => trips.OrderBy(t => t.DepartureTime),
+                SortCriteria.DepartureTimeDesc => trips.OrderByDescending(t => t.DepartureTime),
+                SortCriteria.DurationAsc => trips.OrderBy(t => t.EstimatedDuration),
+                SortCriteria.DurationDesc => trips.OrderByDescending(t => t.EstimatedDuration),
+                SortCriteria.DistanceAsc => trips.OrderBy(t => t.Distance),
+                SortCriteria.DistanceDesc => trips.OrderByDescending(t => t.Distance),
+                _ => trips.OrderBy(t => t.DepartureTime)
+            };
+
+            return sortedTrips;
+        }
+
         public async Task<Trip?> GetCompleteAsync(int id)
         {
             return await _dbSet

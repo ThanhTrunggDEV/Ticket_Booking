@@ -51,43 +51,88 @@ namespace Ticket_Booking.Controllers
             _currencyService = currencyService;
         }
 
-        public async Task<IActionResult> Index(string? fromCity, string? toCity, DateTime? date)
+        public async Task<IActionResult> Index(string? fromCity, string? toCity, DateTime? date, SortCriteria sortBy = SortCriteria.DepartureTimeAsc, SeatClass seatClass = SeatClass.Economy)
         {
-            var trips = await _tripRepository.GetAllAsync();
+            IEnumerable<Trip> trips;
             
-            var cities = trips.Select(t => t.FromCity)
-                .Union(trips.Select(t => t.ToCity))
+            // If search criteria provided, use SearchAndSortTripsAsync
+            if (!string.IsNullOrEmpty(fromCity) && !string.IsNullOrEmpty(toCity))
+            {
+                trips = await _tripRepositoryConcrete.SearchAndSortTripsAsync(fromCity, toCity, date, sortBy, seatClass);
+                trips = trips.Where(t => t.DepartureTime > DateTime.Now);
+            }
+            else
+            {
+                // Otherwise get all trips and apply sorting manually
+                trips = await _tripRepository.GetAllAsync();
+                trips = trips.Where(t => t.DepartureTime > DateTime.Now);
+                
+                if (!string.IsNullOrEmpty(fromCity))
+                {
+                    trips = trips.Where(t => t.FromCity == fromCity);
+                }
+
+                if (!string.IsNullOrEmpty(toCity))
+                {
+                    trips = trips.Where(t => t.ToCity == toCity);
+                }
+
+                if (date.HasValue)
+                {
+                    trips = trips.Where(t => t.DepartureTime.Date == date.Value.Date);
+                }
+
+                // Apply sorting
+                trips = ApplySorting(trips, sortBy, seatClass);
+            }
+            
+            var allTrips = await _tripRepository.GetAllAsync();
+            var cities = allTrips.Select(t => t.FromCity)
+                .Union(allTrips.Select(t => t.ToCity))
                 .Distinct()
                 .OrderBy(c => c)
                 .ToList();
-
-            if (!string.IsNullOrEmpty(fromCity))
-            {
-                trips = trips.Where(t => t.FromCity == fromCity);
-            }
-
-            if (!string.IsNullOrEmpty(toCity))
-            {
-                trips = trips.Where(t => t.ToCity == toCity);
-            }
-
-            if (date.HasValue)
-            {
-                trips = trips.Where(t => t.DepartureTime.Date == date.Value.Date);
-            }
-
-            trips = trips.Where(t => t.DepartureTime > DateTime.Now);
 
             var viewModel = new SearchTripViewModel
             {
                 FromCity = fromCity,
                 ToCity = toCity,
                 Date = date,
+                SortBy = sortBy,
+                SeatClass = seatClass,
                 Trips = trips,
                 AvailableCities = cities
             };
 
             return View(viewModel);
+        }
+
+        private IEnumerable<Trip> ApplySorting(IEnumerable<Trip> trips, SortCriteria sortBy, SeatClass seatClass)
+        {
+            return sortBy switch
+            {
+                SortCriteria.PriceAsc => seatClass switch
+                {
+                    SeatClass.Economy => trips.OrderBy(t => t.EconomyPrice),
+                    SeatClass.Business => trips.OrderBy(t => t.BusinessPrice),
+                    SeatClass.FirstClass => trips.OrderBy(t => t.FirstClassPrice),
+                    _ => trips.OrderBy(t => t.EconomyPrice)
+                },
+                SortCriteria.PriceDesc => seatClass switch
+                {
+                    SeatClass.Economy => trips.OrderByDescending(t => t.EconomyPrice),
+                    SeatClass.Business => trips.OrderByDescending(t => t.BusinessPrice),
+                    SeatClass.FirstClass => trips.OrderByDescending(t => t.FirstClassPrice),
+                    _ => trips.OrderByDescending(t => t.EconomyPrice)
+                },
+                SortCriteria.DepartureTimeAsc => trips.OrderBy(t => t.DepartureTime),
+                SortCriteria.DepartureTimeDesc => trips.OrderByDescending(t => t.DepartureTime),
+                SortCriteria.DurationAsc => trips.OrderBy(t => t.EstimatedDuration),
+                SortCriteria.DurationDesc => trips.OrderByDescending(t => t.EstimatedDuration),
+                SortCriteria.DistanceAsc => trips.OrderBy(t => t.Distance),
+                SortCriteria.DistanceDesc => trips.OrderByDescending(t => t.Distance),
+                _ => trips.OrderBy(t => t.DepartureTime)
+            };
         }
 
         public async Task<IActionResult> Profile()

@@ -9,6 +9,7 @@ using Ticket_Booking.Repositories;
 using Ticket_Booking.Resources;
 using Ticket_Booking.Services;
 using Ticket_Booking.Helpers;
+using Ticket_Booking.Interfaces;
 using VNPAY.Extensions;
 
 namespace Ticket_Booking
@@ -91,6 +92,10 @@ namespace Ticket_Booking
                 }
                 client.Timeout = TimeSpan.FromSeconds(5);
             });
+
+            // Register Gemini AI chat client
+            builder.Services.AddHttpClient<GeminiChatService>();
+            builder.Services.AddScoped<IAiChatService, GeminiChatService>();
 
             builder.Services.AddSession(options =>
             {

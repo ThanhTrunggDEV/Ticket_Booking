@@ -1,0 +1,131 @@
+@{
+    ViewData["Title"] = "AI Flight Assistant";
+    Layout = "_Layout";
+}
+
+<div class="min-h-screen bg-zinc-100 font-mono py-8">
+    <div class="max-w-3xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden">
+        <div class="bg-indigo-900 text-white px-6 py-4 flex items-center justify-between">
+            <div>
+                <h1 class="text-xl font-black tracking-tight">AI Flight Assistant</h1>
+                <p class="text-xs text-indigo-200 font-semibold uppercase tracking-widest">
+                    Hỏi & đặt chuyến bay ngay trong chat
+                </p>
+            </div>
+        </div>
+
+        <div id="chatWindow" class="h-96 overflow-y-auto px-6 py-4 space-y-4 bg-zinc-50">
+            <div class="flex items-start space-x-3">
+                <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-black">
+                    AI
+                </div>
+                <div class="bg-white border border-indigo-100 rounded-2xl px-4 py-3 text-sm text-gray-800 shadow-sm">
+                    Xin chào! Mình là trợ lý AI giúp bạn tìm và đặt chuyến bay.
+                    Bạn có thể hỏi kiểu: "Tìm chuyến từ Hà Nội vào Sài Gòn ngày mai".
+                </div>
+            </div>
+        </div>
+
+        <div class="border-t border-zinc-200 bg-white px-4 py-3">
+            <form id="chatForm" class="flex items-center space-x-3">
+                <input type="hidden" id="conversationId" name="conversationId" />
+                <input id="messageInput"
+                       name="message"
+                       class="flex-1 border-2 border-zinc-200 rounded-2xl px-4 py-2 text-sm focus:outline-none focus:border-indigo-500"
+                       placeholder="Nhập câu hỏi về chuyến bay (ví dụ: tìm chuyến, giá vé, gợi ý)..."
+                       autocomplete="off" />
+                <button type="submit"
+                        class="px-4 py-2 bg-indigo-600 text-white rounded-2xl text-xs font-bold uppercase tracking-widest hover:bg-indigo-700 transition">
+                    Gửi
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById('chatForm');
+    const input = document.getElementById('messageInput');
+    const chatWindow = document.getElementById('chatWindow');
+    const conversationIdInput = document.getElementById('conversationId');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const text = input.value.trim();
+        if (!text) return;
+
+        appendUserMessage(text);
+        input.value = '';
+
+        try {
+            console.log('[chat] sending message', { text });
+            const response = await fetch('@Url.Action("Send", "Chat")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                },
+                body: new URLSearchParams({
+                    message: text,
+                    conversationId: conversationIdInput.value || ''
+                })
+            });
+
+            if (!response.ok) {
+                console.error('[chat] send failed', response.status);
+                appendAiMessage('Xin lỗi, hệ thống đang bận. Vui lòng thử lại sau.');
+                return;
+            }
+
+            const data = await response.json();
+            if (data.conversationId) {
+                conversationIdInput.value = data.conversationId;
+            }
+
+            appendAiMessage(data.reply || 'Xin lỗi, mình không hiểu câu hỏi.');
+        } catch (err) {
+            console.error('[chat] fetch error', err);
+            appendAiMessage('Có lỗi kết nối tới server. Vui lòng thử lại.');
+        }
+    });
+
+    function appendUserMessage(text) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'flex items-start justify-end space-x-3 space-x-reverse';
+        wrapper.innerHTML = `
+            <div class="bg-indigo-600 text-white rounded-2xl px-4 py-2 text-sm shadow-sm max-w-xs">
+                ${escapeHtml(text)}
+            </div>
+            <div class="w-8 h-8 rounded-full bg-zinc-300 flex items-center justify-center text-zinc-700 text-xs font-black">
+                U
+            </div>
+        `;
+        chatWindow.appendChild(wrapper);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    function appendAiMessage(text) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'flex items-start space-x-3';
+        wrapper.innerHTML = `
+            <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-black">
+                AI
+            </div>
+            <div class="bg-white border border-indigo-100 rounded-2xl px-4 py-2 text-sm text-gray-800 shadow-sm max-w-xs whitespace-pre-wrap">
+                ${escapeHtml(text)}
+            </div>
+        `;
+        chatWindow.appendChild(wrapper);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    function escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+</script>
+
+

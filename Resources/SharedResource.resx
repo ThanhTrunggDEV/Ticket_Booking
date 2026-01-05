@@ -181,6 +181,45 @@
   <data name="User.Search" xml:space="preserve">
     <value>Search</value>
   </data>
+  <data name="User.SortBy" xml:space="preserve">
+    <value>Sort By</value>
+  </data>
+  <data name="User.PriceSeatClass" xml:space="preserve">
+    <value>Price Class</value>
+  </data>
+  <data name="User.Sort.EarliestDeparture" xml:space="preserve">
+    <value>Earliest Departure</value>
+  </data>
+  <data name="User.Sort.LatestDeparture" xml:space="preserve">
+    <value>Latest Departure</value>
+  </data>
+  <data name="User.Sort.LowestPrice" xml:space="preserve">
+    <value>Lowest Price</value>
+  </data>
+  <data name="User.Sort.HighestPrice" xml:space="preserve">
+    <value>Highest Price</value>
+  </data>
+  <data name="User.Sort.ShortestDuration" xml:space="preserve">
+    <value>Shortest Duration</value>
+  </data>
+  <data name="User.Sort.LongestDuration" xml:space="preserve">
+    <value>Longest Duration</value>
+  </data>
+  <data name="User.Sort.ShortestDistance" xml:space="preserve">
+    <value>Shortest Distance</value>
+  </data>
+  <data name="User.Sort.LongestDistance" xml:space="preserve">
+    <value>Longest Distance</value>
+  </data>
+  <data name="User.Economy" xml:space="preserve">
+    <value>Economy</value>
+  </data>
+  <data name="User.Business" xml:space="preserve">
+    <value>Business</value>
+  </data>
+  <data name="User.FirstClass" xml:space="preserve">
+    <value>First Class</value>
+  </data>
   <data name="User.AvailableFlights" xml:space="preserve">
     <value>AVAILABLE FLIGHTS</value>
   </data>
@@ -797,4 +836,5 @@
     <value>Time</value>
   </data>
 </root>
+
 

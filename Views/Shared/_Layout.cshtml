@@ -184,8 +184,8 @@
             <div class="p-4 bg-zinc-800/90 border-t-2 border-indigo-500/50 relative z-30 shrink-0">
                 <div class="relative flex items-center group/input">
                     <div class="absolute left-3 w-2 h-2 bg-indigo-500 rounded-full transition-all group-focus-within/input:bg-green-400"></div>
-                    <input type="text" placeholder="ENTER COMMAND..." class="w-full bg-zinc-900/80 border border-indigo-500/30 text-indigo-100 text-xs py-3 pl-8 pr-12 rounded-lg focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 focus:shadow-[0_0_20px_rgba(99,102,241,0.2)] transition-all placeholder-indigo-700 font-bold tracking-wider uppercase">
-                    <button class="absolute right-2 p-2 text-indigo-500 hover:text-white transition-colors hover:bg-indigo-600 rounded-md">
+                    <input id="chat-input" type="text" placeholder="ENTER COMMAND..." class="w-full bg-zinc-900/80 border border-indigo-500/30 text-indigo-100 text-xs py-3 pl-8 pr-12 rounded-lg focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 focus:shadow-[0_0_20px_rgba(99,102,241,0.2)] transition-all placeholder-indigo-700 font-bold tracking-wider uppercase" autocomplete="off">
+                    <button id="chat-send" type="button" class="absolute right-2 p-2 text-indigo-500 hover:text-white transition-colors hover:bg-indigo-600 rounded-md">
                         <svg class="w-4 h-4 transform rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
                     </button>
                 </div>
@@ -236,11 +236,12 @@
     </style>
 
     <script>
+        let chatConversationId = '';
+
         function toggleChat() {
             const chatWindow = document.getElementById('chat-window');
             if (chatWindow.classList.contains('hidden')) {
                 chatWindow.classList.remove('hidden');
-                // Small delay to allow display:block to apply before opacity transition
                 setTimeout(() => {
                     chatWindow.classList.remove('scale-95', 'opacity-0');
                     chatWindow.classList.add('scale-100', 'opacity-100');
@@ -253,6 +254,95 @@
                 }, 300);
             }
         }
+
+        async function sendChatMessage(text) {
+            if (!text) return;
+            appendChatMessage('user', text);
+            const input = document.getElementById('chat-input');
+            if (input) input.value = '';
+
+            try {
+                const response = await fetch('@Url.Action("Send", "Chat")', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                    },
+                    body: new URLSearchParams({
+                        message: text,
+                        conversationId: chatConversationId
+                    })
+                });
+
+                if (!response.ok) {
+                    appendChatMessage('ai', 'Xin lỗi, hệ thống đang bận. Vui lòng thử lại sau.');
+                    return;
+                }
+
+                const data = await response.json();
+                if (data.conversationId) {
+                    chatConversationId = data.conversationId;
+                }
+
+                appendChatMessage('ai', data.reply || 'Xin lỗi, mình không hiểu câu hỏi.');
+            } catch (err) {
+                appendChatMessage('ai', 'Có lỗi kết nối tới server. Vui lòng thử lại.');
+            }
+        }
+
+        function appendChatMessage(sender, text) {
+            const container = document.getElementById('chat-messages');
+            const wrapper = document.createElement('div');
+            if (sender === 'user') {
+                wrapper.className = 'flex gap-4 justify-end';
+                wrapper.innerHTML = `
+                    <div class="flex-1 text-right">
+                        <div class="text-[10px] text-indigo-300/80 mb-1 uppercase tracking-wider font-bold">You</div>
+                        <div class="bg-indigo-600/80 border border-indigo-500/50 rounded-tl-xl rounded-bl-xl rounded-br-xl p-3 text-xs text-white leading-relaxed shadow-sm inline-block max-w-[85%] whitespace-pre-wrap">${escapeHtml(text)}</div>
+                    </div>
+                    <div class="w-8 h-8 rounded-lg bg-zinc-700 flex items-center justify-center flex-shrink-0 shadow-lg shadow-indigo-500/30 text-white font-black">U</div>
+                `;
+            } else {
+                wrapper.className = 'flex gap-4';
+                wrapper.innerHTML = `
+                    <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-indigo-500/30">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                    </div>
+                    <div class="flex-1">
+                        <div class="text-[10px] text-indigo-400 mb-1 uppercase tracking-wider font-bold">Co-Pilot</div>
+                        <div class="bg-indigo-900/40 border border-indigo-500/30 rounded-tr-xl rounded-br-xl rounded-bl-xl p-3 text-xs text-indigo-100 leading-relaxed shadow-sm whitespace-pre-wrap">${escapeHtml(text)}</div>
+                    </div>
+                `;
+            }
+            container.appendChild(wrapper);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const input = document.getElementById('chat-input');
+            const sendBtn = document.getElementById('chat-send');
+
+            sendBtn?.addEventListener('click', () => {
+                const text = input?.value?.trim() ?? '';
+                if (!text) return;
+                sendChatMessage(text);
+            });
+
+            input?.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    sendBtn?.click();
+                }
+            });
+        });
     </script>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
