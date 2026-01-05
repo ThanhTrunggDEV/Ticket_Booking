@@ -13,6 +13,7 @@ namespace Ticket_Booking.Models.ViewModels
         public SortCriteria SortBy { get; set; } = SortCriteria.DepartureTimeAsc;
         public SeatClass SeatClass { get; set; } = SeatClass.Economy;
         public IEnumerable<Trip> Trips { get; set; } = new List<Trip>();
+        public IEnumerable<Trip> ReturnTrips { get; set; } = new List<Trip>(); // Return flights for round-trip
         public IEnumerable<string> AvailableCities { get; set; } = new List<string>();
     }
 }

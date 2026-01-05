@@ -232,6 +232,18 @@
   <data name="User.AvailableFlights" xml:space="preserve">
     <value>AVAILABLE FLIGHTS</value>
   </data>
+  <data name="User.OutboundFlights" xml:space="preserve">
+    <value>OUTBOUND FLIGHTS</value>
+  </data>
+  <data name="User.ReturnFlights" xml:space="preserve">
+    <value>RETURN FLIGHTS</value>
+  </data>
+  <data name="User.NoReturnFlightsFound" xml:space="preserve">
+    <value>No Return Flights Found</value>
+  </data>
+  <data name="User.TryDifferentReturnDate" xml:space="preserve">
+    <value>Try selecting a different return date or adjusting your search criteria.</value>
+  </data>
   <data name="User.Found" xml:space="preserve">
     <value>Found</value>
   </data>

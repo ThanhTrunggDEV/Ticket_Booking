@@ -236,6 +236,18 @@
   </data>  <data name="User.AvailableFlights" xml:space="preserve">
     <value>CHUYẾN BAY CÓ SẴN</value>
   </data>
+  <data name="User.OutboundFlights" xml:space="preserve">
+    <value>CHUYẾN BAY ĐI</value>
+  </data>
+  <data name="User.ReturnFlights" xml:space="preserve">
+    <value>CHUYẾN BAY VỀ</value>
+  </data>
+  <data name="User.NoReturnFlightsFound" xml:space="preserve">
+    <value>Không Tìm Thấy Chuyến Bay Về</value>
+  </data>
+  <data name="User.TryDifferentReturnDate" xml:space="preserve">
+    <value>Vui lòng chọn ngày về khác hoặc điều chỉnh tiêu chí tìm kiếm.</value>
+  </data>
   <data name="User.Found" xml:space="preserve">
     <value>Tìm thấy</value>
   </data>

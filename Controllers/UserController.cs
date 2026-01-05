@@ -54,12 +54,21 @@ namespace Ticket_Booking.Controllers
         public async Task<IActionResult> Index(string? fromCity, string? toCity, DateTime? date, DateTime? returnDate, string tripType = "OneWay", SortCriteria sortBy = SortCriteria.DepartureTimeAsc, SeatClass seatClass = SeatClass.Economy)
         {
             IEnumerable<Trip> trips;
+            IEnumerable<Trip> returnTrips = new List<Trip>();
             
             // If search criteria provided, use SearchAndSortTripsAsync
             if (!string.IsNullOrEmpty(fromCity) && !string.IsNullOrEmpty(toCity))
             {
+                // Search outbound flights
                 trips = await _tripRepositoryConcrete.SearchAndSortTripsAsync(fromCity, toCity, date, sortBy, seatClass);
                 trips = trips.Where(t => t.DepartureTime > DateTime.Now);
+                
+                // If round-trip, search return flights
+                if (tripType == "RoundTrip" && returnDate.HasValue)
+                {
+                    returnTrips = await _tripRepositoryConcrete.SearchAndSortTripsAsync(toCity, fromCity, returnDate, sortBy, seatClass);
+                    returnTrips = returnTrips.Where(t => t.DepartureTime > DateTime.Now);
+                }
             }
             else
             {
@@ -84,6 +93,16 @@ namespace Ticket_Booking.Controllers
 
                 // Apply sorting
                 trips = ApplySorting(trips, sortBy, seatClass);
+                
+                // If round-trip, search return flights
+                if (tripType == "RoundTrip" && returnDate.HasValue && !string.IsNullOrEmpty(fromCity) && !string.IsNullOrEmpty(toCity))
+                {
+                    returnTrips = await _tripRepository.GetAllAsync();
+                    returnTrips = returnTrips.Where(t => t.DepartureTime > DateTime.Now);
+                    returnTrips = returnTrips.Where(t => t.FromCity == toCity && t.ToCity == fromCity);
+                    returnTrips = returnTrips.Where(t => t.DepartureTime.Date == returnDate.Value.Date);
+                    returnTrips = ApplySorting(returnTrips, sortBy, seatClass);
+                }
             }
             
             var allTrips = await _tripRepository.GetAllAsync();
@@ -103,6 +122,7 @@ namespace Ticket_Booking.Controllers
                 SortBy = sortBy,
                 SeatClass = seatClass,
                 Trips = trips,
+                ReturnTrips = returnTrips,
                 AvailableCities = cities
             };
 

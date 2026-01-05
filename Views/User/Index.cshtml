@@ -146,74 +146,172 @@
     <div class="max-w-7xl mx-auto px-4 pt-24 pb-16">
         @if (Model.Trips != null && Model.Trips.Any())
         {
-            <div class="flex items-center justify-between mb-8">
-                <h2 class="text-2xl font-black text-indigo-900 tracking-tight">@Localizer["User.AvailableFlights"]</h2>
-                <span class="bg-indigo-100 text-indigo-800 text-xs font-bold px-3 py-1 rounded-full">@Model.Trips.Count() @Localizer["User.Found"]</span>
-            </div>
+            <!-- Outbound Flights Section -->
+            <div class="mb-12">
+                <div class="flex items-center justify-between mb-8">
+                    <h2 class="text-2xl font-black text-indigo-900 tracking-tight">
+                        @if (Model.TripType == "RoundTrip")
+                        {
+                            <span>@Localizer["User.OutboundFlights"]</span>
+                        }
+                        else
+                        {
+                            <span>@Localizer["User.AvailableFlights"]</span>
+                        }
+                    </h2>
+                    <span class="bg-indigo-100 text-indigo-800 text-xs font-bold px-3 py-1 rounded-full">@Model.Trips.Count() @Localizer["User.Found"]</span>
+                </div>
 
-            <div class="grid grid-cols-1 gap-6">
-                @foreach (var trip in Model.Trips)
-                {
-                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all border border-gray-100 group">
-                        <div class="grid grid-cols-1 md:grid-cols-12">
-                            <!-- Flight Info -->
-                            <div class="md:col-span-8 p-6 md:p-8 flex flex-col justify-center">
-                                <div class="flex items-center justify-between mb-6">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600">
-                                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+                <div class="grid grid-cols-1 gap-6">
+                    @foreach (var trip in Model.Trips)
+                    {
+                        <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all border border-gray-100 group">
+                            <div class="grid grid-cols-1 md:grid-cols-12">
+                                <!-- Flight Info -->
+                                <div class="md:col-span-8 p-6 md:p-8 flex flex-col justify-center">
+                                    <div class="flex items-center justify-between mb-6">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600">
+                                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-bold text-gray-900">@trip.Company?.Name</div>
+                                                <div class="text-xs text-gray-500 font-mono">@trip.PlaneName</div>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <div class="text-sm font-bold text-gray-900">@trip.Company?.Name</div>
-                                            <div class="text-xs text-gray-500 font-mono">@trip.PlaneName</div>
+                                        <div class="text-xs font-bold text-gray-400 bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
+                                            @trip.EstimatedDuration mins
                                         </div>
                                     </div>
-                                    <div class="text-xs font-bold text-gray-400 bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
-                                        @trip.EstimatedDuration mins
+
+                                    <div class="flex items-center justify-between relative">
+                                        <!-- From -->
+                                        <div class="text-center w-1/3">
+                                            <div class="text-2xl font-black text-indigo-900">@trip.DepartureTime.ToString("HH:mm")</div>
+                                            <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mt-1">@trip.FromCity</div>
+                                            <div class="text-[10px] text-gray-400 font-mono mt-1">@trip.DepartureTime.ToString("dd MMM")</div>
+                                        </div>
+
+                                        <!-- Path Visual -->
+                                        <div class="flex-1 px-4 relative flex items-center justify-center">
+                                            <div class="w-full h-0.5 bg-gray-200 absolute"></div>
+                                            <div class="w-2 h-2 bg-indigo-500 rounded-full absolute left-0"></div>
+                                            <div class="w-2 h-2 bg-indigo-500 rounded-full absolute right-0"></div>
+                                            <svg class="w-6 h-6 text-indigo-500 relative z-10 bg-white px-1 transform rotate-90" fill="currentColor" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+                                        </div>
+
+                                        <!-- To -->
+                                        <div class="text-center w-1/3">
+                                            <div class="text-2xl font-black text-indigo-900">@trip.ArrivalTime.ToString("HH:mm")</div>
+                                            <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mt-1">@trip.ToCity</div>
+                                            <div class="text-[10px] text-gray-400 font-mono mt-1">@trip.ArrivalTime.ToString("dd MMM")</div>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div class="flex items-center justify-between relative">
-                                    <!-- From -->
-                                    <div class="text-center w-1/3">
-                                        <div class="text-2xl font-black text-indigo-900">@trip.DepartureTime.ToString("HH:mm")</div>
-                                        <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mt-1">@trip.FromCity</div>
-                                        <div class="text-[10px] text-gray-400 font-mono mt-1">@trip.DepartureTime.ToString("dd MMM")</div>
+                                <!-- Price & Action -->
+                                <div class="md:col-span-4 bg-gray-50 p-6 md:p-8 flex flex-col justify-center items-center border-t md:border-t-0 md:border-l border-gray-100">
+                                    <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">@Localizer["User.StartingFrom"]</div>
+                                    <div class="text-3xl font-black text-indigo-600 mb-4">@Html.DisplayPrice(trip.EconomyPrice)</div>
+                                    
+                                    <a href="@Url.Action("BookTrip", "User", new { tripId = trip.Id })" class="w-full bg-indigo-900 text-white py-3 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-indigo-800 transition-all shadow-lg text-center group-hover:scale-105 transform">
+                                        @Localizer["User.SelectFlight"]
+                                    </a>
+                                    <div class="mt-4 text-[10px] text-gray-400 font-bold">
+                                        @trip.EconomySeats @Localizer["User.SeatsLeft"]
                                     </div>
-
-                                    <!-- Path Visual -->
-                                    <div class="flex-1 px-4 relative flex items-center justify-center">
-                                        <div class="w-full h-0.5 bg-gray-200 absolute"></div>
-                                        <div class="w-2 h-2 bg-indigo-500 rounded-full absolute left-0"></div>
-                                        <div class="w-2 h-2 bg-indigo-500 rounded-full absolute right-0"></div>
-                                        <svg class="w-6 h-6 text-indigo-500 relative z-10 bg-white px-1 transform rotate-90" fill="currentColor" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
-                                    </div>
-
-                                    <!-- To -->
-                                    <div class="text-center w-1/3">
-                                        <div class="text-2xl font-black text-indigo-900">@trip.ArrivalTime.ToString("HH:mm")</div>
-                                        <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mt-1">@trip.ToCity</div>
-                                        <div class="text-[10px] text-gray-400 font-mono mt-1">@trip.ArrivalTime.ToString("dd MMM")</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Price & Action -->
-                            <div class="md:col-span-4 bg-gray-50 p-6 md:p-8 flex flex-col justify-center items-center border-t md:border-t-0 md:border-l border-gray-100">
-                                <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">@Localizer["User.StartingFrom"]</div>
-                                <div class="text-3xl font-black text-indigo-600 mb-4">@Html.DisplayPrice(trip.EconomyPrice)</div>
-                                
-                                <a href="@Url.Action("BookTrip", "User", new { tripId = trip.Id })" class="w-full bg-indigo-900 text-white py-3 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-indigo-800 transition-all shadow-lg text-center group-hover:scale-105 transform">
-                                    @Localizer["User.SelectFlight"]
-                                </a>
-                                <div class="mt-4 text-[10px] text-gray-400 font-bold">
-                                    @trip.EconomySeats @Localizer["User.SeatsLeft"]
                                 </div>
                             </div>
                         </div>
-                    </div>
-                }
+                    }
+                </div>
             </div>
+
+            <!-- Return Flights Section (Only for Round-Trip) -->
+            @if (Model.TripType == "RoundTrip" && Model.ReturnTrips != null && Model.ReturnTrips.Any())
+            {
+                <div class="mb-12">
+                    <div class="flex items-center justify-between mb-8">
+                        <h2 class="text-2xl font-black text-purple-900 tracking-tight">@Localizer["User.ReturnFlights"]</h2>
+                        <span class="bg-purple-100 text-purple-800 text-xs font-bold px-3 py-1 rounded-full">@Model.ReturnTrips.Count() @Localizer["User.Found"]</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-6">
+                        @foreach (var trip in Model.ReturnTrips)
+                        {
+                            <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all border border-purple-100 group">
+                                <div class="grid grid-cols-1 md:grid-cols-12">
+                                    <!-- Flight Info -->
+                                    <div class="md:col-span-8 p-6 md:p-8 flex flex-col justify-center">
+                                        <div class="flex items-center justify-between mb-6">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center text-purple-600">
+                                                    <svg class="w-6 h-6 transform rotate-180" fill="currentColor" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+                                                </div>
+                                                <div>
+                                                    <div class="text-sm font-bold text-gray-900">@trip.Company?.Name</div>
+                                                    <div class="text-xs text-gray-500 font-mono">@trip.PlaneName</div>
+                                                </div>
+                                            </div>
+                                            <div class="text-xs font-bold text-gray-400 bg-purple-50 px-3 py-1 rounded-full border border-purple-100">
+                                                @trip.EstimatedDuration mins
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center justify-between relative">
+                                            <!-- From -->
+                                            <div class="text-center w-1/3">
+                                                <div class="text-2xl font-black text-purple-900">@trip.DepartureTime.ToString("HH:mm")</div>
+                                                <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mt-1">@trip.FromCity</div>
+                                                <div class="text-[10px] text-gray-400 font-mono mt-1">@trip.DepartureTime.ToString("dd MMM")</div>
+                                            </div>
+
+                                            <!-- Path Visual -->
+                                            <div class="flex-1 px-4 relative flex items-center justify-center">
+                                                <div class="w-full h-0.5 bg-gray-200 absolute"></div>
+                                                <div class="w-2 h-2 bg-purple-500 rounded-full absolute left-0"></div>
+                                                <div class="w-2 h-2 bg-purple-500 rounded-full absolute right-0"></div>
+                                                <svg class="w-6 h-6 text-purple-500 relative z-10 bg-white px-1 transform -rotate-90" fill="currentColor" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+                                            </div>
+
+                                            <!-- To -->
+                                            <div class="text-center w-1/3">
+                                                <div class="text-2xl font-black text-purple-900">@trip.ArrivalTime.ToString("HH:mm")</div>
+                                                <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mt-1">@trip.ToCity</div>
+                                                <div class="text-[10px] text-gray-400 font-mono mt-1">@trip.ArrivalTime.ToString("dd MMM")</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Price & Action -->
+                                    <div class="md:col-span-4 bg-purple-50 p-6 md:p-8 flex flex-col justify-center items-center border-t md:border-t-0 md:border-l border-purple-100">
+                                        <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">@Localizer["User.StartingFrom"]</div>
+                                        <div class="text-3xl font-black text-purple-600 mb-4">@Html.DisplayPrice(trip.EconomyPrice)</div>
+                                        
+                                        <a href="@Url.Action("BookTrip", "User", new { tripId = trip.Id })" class="w-full bg-purple-900 text-white py-3 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-purple-800 transition-all shadow-lg text-center group-hover:scale-105 transform">
+                                            @Localizer["User.SelectFlight"]
+                                        </a>
+                                        <div class="mt-4 text-[10px] text-gray-400 font-bold">
+                                            @trip.EconomySeats @Localizer["User.SeatsLeft"]
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+            else if (Model.TripType == "RoundTrip" && Model.ReturnDate.HasValue)
+            {
+                <!-- No Return Flights Found Message -->
+                <div class="text-center py-12 bg-yellow-50 rounded-2xl border-2 border-yellow-100">
+                    <div class="inline-block p-4 rounded-full bg-yellow-100 mb-4">
+                        <svg class="w-12 h-12 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    </div>
+                    <h3 class="text-lg font-black text-yellow-900 mb-2">@Localizer["User.NoReturnFlightsFound"]</h3>
+                    <p class="text-gray-600 max-w-md mx-auto text-sm">@Localizer["User.TryDifferentReturnDate"]</p>
+                </div>
+            }
         }
         else
         {
