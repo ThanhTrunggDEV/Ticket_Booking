@@ -66,10 +66,31 @@
                         </div>
                     </div>
 
+                    <!-- Trip Type Toggle -->
+                    <div class="md:col-span-2">
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">@Localizer["User.TripType"]</label>
+                        <div class="flex gap-2">
+                            <label class="flex items-center bg-gray-50 border-2 border-gray-100 rounded-xl px-3 py-3 cursor-pointer flex-1 hover:border-indigo-500 transition-colors">
+                                <input type="radio" name="tripType" value="OneWay" @(Model.TripType == "OneWay" ? "checked" : "") class="w-4 h-4 text-indigo-600 cursor-pointer" onchange="toggleReturnDate()" />
+                                <span class="ml-2 text-xs font-bold text-gray-900">@Localizer["User.OneWay"]</span>
+                            </label>
+                            <label class="flex items-center bg-gray-50 border-2 border-gray-100 rounded-xl px-3 py-3 cursor-pointer flex-1 hover:border-indigo-500 transition-colors">
+                                <input type="radio" name="tripType" value="RoundTrip" @(Model.TripType == "RoundTrip" ? "checked" : "") class="w-4 h-4 text-indigo-600 cursor-pointer" onchange="toggleReturnDate()" />
+                                <span class="ml-2 text-xs font-bold text-gray-900">@Localizer["User.RoundTrip"]</span>
+                            </label>
+                        </div>
+                    </div>
+
                     <!-- Date -->
-                    <div class="md:col-span-3">
+                    <div class="md:col-span-2">
                         <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">@Localizer["User.Departure"]</label>
                         <input type="date" name="date" value="@(Model.Date?.ToString("yyyy-MM-dd"))" class="w-full bg-gray-50 text-gray-900 border-2 border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
+                    </div>
+
+                    <!-- Return Date (Hidden by default for One-Way) -->
+                    <div class="md:col-span-2" id="returnDateContainer" style="display: @(Model.TripType == "RoundTrip" ? "block" : "none");">
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">@Localizer["User.ReturnDate"]</label>
+                        <input type="date" name="returnDate" value="@(Model.ReturnDate?.ToString("yyyy-MM-dd"))" class="w-full bg-gray-50 text-gray-900 border-2 border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
                     </div>
 
                     <!-- Search Button -->
@@ -219,3 +240,20 @@
         animation-delay: 2s;
     }
 </style>
+
+<script>
+    function toggleReturnDate() {
+        const tripType = document.querySelector('input[name="tripType"]:checked').value;
+        const returnDateContainer = document.getElementById('returnDateContainer');
+        const returnDateInput = document.querySelector('input[name="returnDate"]');
+        
+        if (tripType === 'RoundTrip') {
+            returnDateContainer.style.display = 'block';
+            returnDateInput.required = true;
+        } else {
+            returnDateContainer.style.display = 'none';
+            returnDateInput.required = false;
+            returnDateInput.value = '';
+        }
+    }
+</script>

@@ -51,7 +51,7 @@ namespace Ticket_Booking.Controllers
             _currencyService = currencyService;
         }
 
-        public async Task<IActionResult> Index(string? fromCity, string? toCity, DateTime? date, SortCriteria sortBy = SortCriteria.DepartureTimeAsc, SeatClass seatClass = SeatClass.Economy)
+        public async Task<IActionResult> Index(string? fromCity, string? toCity, DateTime? date, DateTime? returnDate, string tripType = "OneWay", SortCriteria sortBy = SortCriteria.DepartureTimeAsc, SeatClass seatClass = SeatClass.Economy)
         {
             IEnumerable<Trip> trips;
             
@@ -98,6 +98,8 @@ namespace Ticket_Booking.Controllers
                 FromCity = fromCity,
                 ToCity = toCity,
                 Date = date,
+                ReturnDate = returnDate,
+                TripType = tripType,
                 SortBy = sortBy,
                 SeatClass = seatClass,
                 Trips = trips,

@@ -184,6 +184,18 @@
   <data name="User.SortBy" xml:space="preserve">
     <value>Sort By</value>
   </data>
+  <data name="User.TripType" xml:space="preserve">
+    <value>Trip Type</value>
+  </data>
+  <data name="User.OneWay" xml:space="preserve">
+    <value>One Way</value>
+  </data>
+  <data name="User.RoundTrip" xml:space="preserve">
+    <value>Round Trip</value>
+  </data>
+  <data name="User.ReturnDate" xml:space="preserve">
+    <value>Return Date</value>
+  </data>
   <data name="User.PriceSeatClass" xml:space="preserve">
     <value>Price Class</value>
   </data>

@@ -183,6 +183,18 @@
   </data>  <data name="User.SortBy" xml:space="preserve">
     <value>Sắp xếp theo</value>
   </data>
+  <data name="User.TripType" xml:space="preserve">
+    <value>Loại chuyến bay</value>
+  </data>
+  <data name="User.OneWay" xml:space="preserve">
+    <value>Một chiều</value>
+  </data>
+  <data name="User.RoundTrip" xml:space="preserve">
+    <value>Hai chiều</value>
+  </data>
+  <data name="User.ReturnDate" xml:space="preserve">
+    <value>Ngày về</value>
+  </data>
   <data name="User.PriceSeatClass" xml:space="preserve">
     <value>Hạng vé giá</value>
   </data>
