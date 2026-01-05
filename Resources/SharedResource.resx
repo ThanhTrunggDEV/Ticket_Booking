@@ -250,6 +250,12 @@
   <data name="User.TryDifferentReturnDate" xml:space="preserve">
     <value>Try selecting a different return date or adjusting your search criteria.</value>
   </data>
+  <data name="User.Airline" xml:space="preserve">
+    <value>Airline</value>
+  </data>
+  <data name="User.AllAirlines" xml:space="preserve">
+    <value>All Airlines</value>
+  </data>
   <data name="User.Found" xml:space="preserve">
     <value>Found</value>
   </data>

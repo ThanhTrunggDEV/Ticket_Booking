@@ -147,7 +147,7 @@ namespace Ticket_Booking.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Trip>> SearchAndSortTripsAsync(string fromCity, string toCity, DateTime? date = null, SortCriteria sortBy = SortCriteria.DepartureTimeAsc, SeatClass? seatClass = null)
+        public async Task<IEnumerable<Trip>> SearchAndSortTripsAsync(string fromCity, string toCity, DateTime? date = null, SortCriteria sortBy = SortCriteria.DepartureTimeAsc, SeatClass? seatClass = null, string? companyName = null)
         {
             var query = _dbSet
                 .Include(t => t.Company)
@@ -158,6 +158,11 @@ namespace Ticket_Booking.Repositories
                 var startOfDay = date.Value.Date;
                 var endOfDay = startOfDay.AddDays(1);
                 query = query.Where(t => t.DepartureTime >= startOfDay && t.DepartureTime < endOfDay);
+            }
+
+            if (!string.IsNullOrEmpty(companyName))
+            {
+                query = query.Where(t => t.Company != null && t.Company.Name == companyName);
             }
 
             // Load data from database first

@@ -248,6 +248,12 @@
   <data name="User.TryDifferentReturnDate" xml:space="preserve">
     <value>Vui lòng chọn ngày về khác hoặc điều chỉnh tiêu chí tìm kiếm.</value>
   </data>
+  <data name="User.Airline" xml:space="preserve">
+    <value>Hãng Bay</value>
+  </data>
+  <data name="User.AllAirlines" xml:space="preserve">
+    <value>Tất Cả Hãng Bay</value>
+  </data>
   <data name="User.Found" xml:space="preserve">
     <value>Tìm thấy</value>
   </data>

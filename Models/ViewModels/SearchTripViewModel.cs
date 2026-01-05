@@ -12,8 +12,10 @@ namespace Ticket_Booking.Models.ViewModels
         public string TripType { get; set; } = "OneWay"; // OneWay or RoundTrip
         public SortCriteria SortBy { get; set; } = SortCriteria.DepartureTimeAsc;
         public SeatClass SeatClass { get; set; } = SeatClass.Economy;
+        public string? CompanyName { get; set; }
         public IEnumerable<Trip> Trips { get; set; } = new List<Trip>();
         public IEnumerable<Trip> ReturnTrips { get; set; } = new List<Trip>(); // Return flights for round-trip
         public IEnumerable<string> AvailableCities { get; set; } = new List<string>();
+        public IEnumerable<string> AvailableCompanies { get; set; } = new List<string>();
     }
 }
