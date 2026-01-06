@@ -283,7 +283,13 @@
                     chatConversationId = data.conversationId;
                 }
 
+                // Display AI reply
                 appendChatMessage('ai', data.reply || 'Xin lỗi, mình không hiểu câu hỏi.');
+                
+                // Display flight list if available
+                if (data.trips && data.trips.length > 0) {
+                    appendFlightList(data.trips);
+                }
             } catch (err) {
                 appendChatMessage('ai', 'Có lỗi kết nối tới server. Vui lòng thử lại.');
             }
@@ -315,6 +321,50 @@
             }
             container.appendChild(wrapper);
             container.scrollTop = container.scrollHeight;
+        }
+
+        function appendFlightList(trips) {
+            const container = document.getElementById('chat-messages');
+            const wrapper = document.createElement('div');
+            wrapper.className = 'flex gap-4';
+            wrapper.innerHTML = `
+                <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-indigo-500/30">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                </div>
+                <div class="flex-1">
+                    <div class="text-[10px] text-indigo-400 mb-2 uppercase tracking-wider font-bold">Available Flights</div>
+                    <div class="bg-indigo-900/40 border border-indigo-500/30 rounded-tr-xl rounded-br-xl rounded-bl-xl p-3 space-y-3">
+                        ${trips.map((trip, index) => `
+                            <div class="bg-zinc-800/50 border border-indigo-500/20 rounded-lg p-3 hover:border-indigo-500/50 transition-colors">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="text-xs font-bold text-indigo-300">${trip.fromCity} → ${trip.toCity}</div>
+                                    <div class="text-[10px] text-indigo-400">ID: ${trip.id}</div>
+                                </div>
+                                <div class="text-[10px] text-indigo-200/80 mb-2">
+                                    <div>✈️ ${trip.companyName}</div>
+                                    <div>🕐 ${trip.departureTime} - ${trip.arrivalTime}</div>
+                                </div>
+                                <div class="text-[10px] text-indigo-300/90 mb-2">
+                                    💰 Economy: $${parseFloat(trip.economyPrice).toFixed(2)} | 
+                                    Business: $${parseFloat(trip.businessPrice).toFixed(2)} | 
+                                    First: $${parseFloat(trip.firstClassPrice).toFixed(2)}
+                                </div>
+                                <button onclick="bookFlight(${trip.id})" 
+                                        class="w-full mt-2 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-bold uppercase tracking-wider rounded transition-colors">
+                                    Book Flight #${index + 1}
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            container.appendChild(wrapper);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function bookFlight(tripId) {
+            // Redirect to booking page
+            window.location.href = '@Url.Action("BookTrip", "User")?tripId=' + tripId;
         }
 
         function escapeHtml(unsafe) {
