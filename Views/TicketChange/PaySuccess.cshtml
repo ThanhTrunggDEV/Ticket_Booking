@@ -1,0 +1,190 @@
+@model Ticket_Booking.Models.ViewModels.TicketChangePaymentSuccessViewModel
+@using Ticket_Booking.Enums
+
+@{
+    ViewData["Title"] = "Đổi Vé Thành Công";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="min-h-screen bg-zinc-100 font-mono relative overflow-hidden py-12">
+    <!-- Background Texture -->
+    <div class="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
+
+    <div class="max-w-4xl mx-auto px-4 relative z-10">
+        <div class="mb-8">
+            <a href="@Url.Action("MyBooking", "User")" class="inline-flex items-center text-indigo-600 font-bold hover:text-indigo-800 transition-colors">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                Quay lại My Bookings
+            </a>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+            <!-- Header -->
+            <div class="bg-green-600 p-8 text-white relative overflow-hidden">
+                <div class="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-white opacity-10 rounded-full blur-2xl"></div>
+                <div class="flex items-center gap-4 mb-2">
+                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <div>
+                        <h1 class="text-3xl font-black tracking-tighter">
+                            Đổi Vé Thành Công!
+                        </h1>
+                        <p class="text-green-100 font-bold uppercase tracking-widest text-xs mt-1">
+                            PNR Mới: @Model.NewTicket.PNR
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-8 md:p-12 space-y-6">
+                <!-- Payment Summary -->
+                <div class="bg-green-50 rounded-2xl p-6 border border-green-200">
+                    <h2 class="text-xs font-bold text-green-700 uppercase tracking-widest mb-4">Tóm Tắt Thanh Toán</h2>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">Phí đổi vé:</span>
+                            <span class="text-sm font-bold text-gray-900">$@Model.ChangeFee.ToString("F2")</span>
+                        </div>
+                        @if (Model.PriceDifference != 0)
+                        {
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600">Chênh lệch giá:</span>
+                                <span class="text-sm font-bold @(Model.PriceDifference > 0 ? "text-red-600" : "text-green-600")">
+                                    @(Model.PriceDifference > 0 ? "+" : "")$@Model.PriceDifference.ToString("F2")
+                                </span>
+                            </div>
+                        }
+                        <div class="border-t border-green-200 pt-3 mt-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-base font-bold text-gray-900">Tổng thanh toán:</span>
+                                <span class="text-lg font-black text-green-700">$@Model.TotalAmountPaid.ToString("F2")</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ticket Comparison -->
+                <div>
+                    <h2 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Thông Tin Đổi Vé</h2>
+                    <div class="space-y-4">
+                        <!-- Original Ticket -->
+                        <div class="bg-red-50 rounded-2xl p-6 border-2 border-red-200">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-10 h-10 rounded-2xl bg-red-600 text-white flex items-center justify-center font-black">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-sm font-bold text-red-700 uppercase tracking-widest">Vé Cũ (Đã Hủy)</h3>
+                                    <p class="text-xs text-red-600 font-mono">PNR: @Model.OriginalTicket.PNR</p>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">Tuyến đường:</span>
+                                    <span class="text-sm font-bold text-gray-900">
+                                        @Model.OriginalTrip.FromCity → @Model.OriginalTrip.ToCity
+                                    </span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">Ngày giờ:</span>
+                                    <span class="text-sm font-mono text-gray-900">
+                                        @Model.OriginalTrip.DepartureTime.ToString("dd/MM/yyyy HH:mm")
+                                    </span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">Hạng ghế:</span>
+                                    <span class="text-sm font-bold text-gray-900">@Model.OriginalTicket.SeatClass</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">Giá vé:</span>
+                                    <span class="text-sm font-bold text-gray-900">$@Model.OriginalTicket.TotalPrice.ToString("F2")</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Arrow -->
+                        <div class="flex justify-center">
+                            <div class="w-12 h-12 rounded-full bg-indigo-600 text-white flex items-center justify-center">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- New Ticket -->
+                        <div class="bg-green-50 rounded-2xl p-6 border-2 border-green-300">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-10 h-10 rounded-2xl bg-green-600 text-white flex items-center justify-center font-black">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-sm font-bold text-green-700 uppercase tracking-widest">Vé Mới</h3>
+                                    <p class="text-xs text-green-600 font-mono">PNR: @Model.NewTicket.PNR</p>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">Tuyến đường:</span>
+                                    <span class="text-sm font-bold text-gray-900">
+                                        @Model.NewTrip.FromCity → @Model.NewTrip.ToCity
+                                    </span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">Ngày giờ:</span>
+                                    <span class="text-sm font-mono text-gray-900">
+                                        @Model.NewTrip.DepartureTime.ToString("dd/MM/yyyy HH:mm")
+                                    </span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">Hạng ghế:</span>
+                                    <span class="text-sm font-bold text-gray-900">@Model.NewTicket.SeatClass</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">Giá vé:</span>
+                                    <span class="text-sm font-bold text-gray-900">$@Model.NewTicket.TotalPrice.ToString("F2")</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.ChangeReason))
+                {
+                    <div class="bg-blue-50 rounded-2xl p-6 border border-blue-200">
+                        <h3 class="text-xs font-bold text-blue-700 uppercase tracking-widest mb-2">Lý Do Đổi Vé</h3>
+                        <p class="text-sm text-gray-700">@Model.ChangeReason</p>
+                    </div>
+                }
+
+                <!-- Actions -->
+                <div class="pt-4 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div class="text-xs text-gray-500">
+                        Vé mới của bạn đã được tạo thành công. Vui lòng kiểm tra email để nhận thông báo xác nhận.
+                    </div>
+                    <div class="flex flex-wrap gap-3">
+                        <a href="@Url.Action("Ticket", "User", new { id = Model.NewTicket.Id })"
+                           class="inline-flex items-center px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-indigo-700 transition-colors">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            Xem Vé Mới
+                        </a>
+                        <a href="@Url.Action("MyBooking", "User")"
+                           class="inline-flex items-center px-5 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-gray-50 transition-colors">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18"/>
+                            </svg>
+                            My Bookings
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

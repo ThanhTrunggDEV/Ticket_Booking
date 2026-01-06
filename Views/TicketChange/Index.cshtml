@@ -1,0 +1,190 @@
+@model Ticket_Booking.Models.ViewModels.TicketChangeViewModel
+@{
+    ViewData["Title"] = "Đổi Vé";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Đổi Vé Máy Bay</h1>
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            @Model.ErrorMessage
+        </div>
+    }
+
+    @if (!Model.IsChangeAllowed)
+    {
+        <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
+            @Model.ChangePolicyMessage
+        </div>
+        <a href="@Url.Action("MyTickets", "User")" class="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            Quay lại danh sách vé
+        </a>
+        return;
+    }
+
+    <!-- Original Ticket Information -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4">Thông Tin Vé Hiện Tại</h2>
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <p class="text-gray-600">Tuyến đường:</p>
+                <p class="font-semibold">@Model.OriginalTrip.FromCity → @Model.OriginalTrip.ToCity</p>
+            </div>
+            <div>
+                <p class="text-gray-600">Hãng hàng không:</p>
+                <p class="font-semibold">@Model.OriginalTrip.Company?.Name</p>
+            </div>
+            <div>
+                <p class="text-gray-600">Ngày giờ khởi hành:</p>
+                <p class="font-semibold">@Model.OriginalTrip.DepartureTime.ToString("dd/MM/yyyy HH:mm")</p>
+            </div>
+            <div>
+                <p class="text-gray-600">Hạng ghế:</p>
+                <p class="font-semibold">@Model.OriginalTicket.SeatClass</p>
+            </div>
+            <div>
+                <p class="text-gray-600">Giá vé:</p>
+                <p class="font-semibold">$@Model.OriginalTicket.TotalPrice.ToString("F2")</p>
+            </div>
+            <div>
+                <p class="text-gray-600">Thời gian còn lại:</p>
+                <p class="font-semibold">@Model.HoursBeforeDeparture giờ</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Fee Information -->
+    <div class="bg-blue-50 rounded-lg p-4 mb-6">
+        <h3 class="font-semibold mb-2">Phí Đổi Vé</h3>
+        <p class="text-gray-700">Phí đổi vé: <span class="font-semibold">$@Model.ChangeFee.ToString("F2")</span></p>
+        <p class="text-sm text-gray-600 mt-2">
+            * Phí đổi vé được tính theo chính sách của hãng hàng không. Nếu vé mới có giá cao hơn, bạn sẽ phải thanh toán thêm phần chênh lệch. 
+            <strong>Lưu ý: Nếu vé mới rẻ hơn, bạn vẫn chỉ cần thanh toán phí đổi vé, không có hoàn lại tiền chênh lệch.</strong>
+        </p>
+    </div>
+
+    <!-- New Trip Selection -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-semibold mb-4">Chọn Chuyến Bay Mới</h2>
+        
+        <form id="changeForm" method="post" action="@Url.Action("ConfirmChange", "TicketChange")">
+            <input type="hidden" name="ticketId" value="@Model.OriginalTicket.Id" />
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 font-semibold mb-2">Chuyến bay mới:</label>
+                <select name="newTripId" id="newTripId" class="w-full border border-gray-300 rounded px-4 py-2" required>
+                    <option value="">-- Chọn chuyến bay --</option>
+                    @if (Model.AvailableTrips != null)
+                    {
+                        @foreach (var trip in Model.AvailableTrips)
+                        {
+                            <option value="@trip.Id" 
+                                    data-price-economy="@trip.EconomyPrice"
+                                    data-price-business="@trip.BusinessPrice"
+                                    data-price-first="@trip.FirstClassPrice">
+                                @trip.DepartureTime.ToString("dd/MM/yyyy HH:mm") - 
+                                @trip.ArrivalTime.ToString("HH:mm") | 
+                                @trip.Company?.Name | 
+                                Economy: $@trip.EconomyPrice.ToString("F2")
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-semibold mb-2">Hạng ghế mới (tùy chọn):</label>
+                <select name="newSeatClass" id="newSeatClass" class="w-full border border-gray-300 rounded px-4 py-2">
+                    <option value="">Giữ nguyên hạng ghế (@Model.OriginalTicket.SeatClass)</option>
+                    <option value="Economy">Economy</option>
+                    <option value="Business">Business</option>
+                    <option value="FirstClass">First Class</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-semibold mb-2">Lý do đổi vé (tùy chọn):</label>
+                <textarea name="changeReason" rows="3" class="w-full border border-gray-300 rounded px-4 py-2" placeholder="Nhập lý do đổi vé..."></textarea>
+            </div>
+
+            <!-- Price Summary -->
+            <div id="priceSummary" class="bg-gray-50 rounded-lg p-4 mb-4 hidden">
+                <h3 class="font-semibold mb-2">Tóm Tắt Thanh Toán</h3>
+                <div class="space-y-2">
+                    <div class="flex justify-between">
+                        <span>Phí đổi vé:</span>
+                        <span id="changeFeeDisplay">$0.00</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Chênh lệch giá:</span>
+                        <span id="priceDiffDisplay">$0.00</span>
+                    </div>
+                    <div class="flex justify-between font-semibold text-lg border-t pt-2">
+                        <span>Tổng cần thanh toán:</span>
+                        <span id="totalDueDisplay">$0.00</span>
+                    </div>
+                    <div class="text-sm text-gray-600 mt-2">
+                        <p>* Nếu vé mới rẻ hơn, bạn vẫn chỉ cần thanh toán phí đổi vé. Không có hoàn lại tiền chênh lệch.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-4">
+                <button type="button" id="calculateBtn" class="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600">
+                    Tính Toán Phí
+                </button>
+                <button type="submit" id="confirmBtn" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed" disabled>
+                    Xác Nhận Đổi Vé
+                </button>
+                <a href="@Url.Action("MyTickets", "User")" class="bg-gray-300 text-gray-700 px-6 py-2 rounded hover:bg-gray-400">
+                    Hủy
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('calculateBtn').addEventListener('click', async function() {
+            const ticketId = @Model.OriginalTicket.Id;
+            const newTripId = document.getElementById('newTripId').value;
+            const newSeatClass = document.getElementById('newSeatClass').value;
+
+            if (!newTripId) {
+                alert('Vui lòng chọn chuyến bay mới');
+                return;
+            }
+
+            try {
+                const response = await fetch('@Url.Action("CalculateChange", "TicketChange")', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `ticketId=${ticketId}&newTripId=${newTripId}&newSeatClass=${newSeatClass || ''}`
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('changeFeeDisplay').textContent = '$' + data.changeFee.toFixed(2);
+                    document.getElementById('priceDiffDisplay').textContent = '$' + data.priceDifference.toFixed(2);
+                    document.getElementById('totalDueDisplay').textContent = '$' + data.totalDue.toFixed(2);
+                    
+                    document.getElementById('priceSummary').classList.remove('hidden');
+                    document.getElementById('confirmBtn').disabled = false;
+                } else {
+                    alert(data.message || 'Có lỗi xảy ra khi tính toán phí');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi tính toán phí');
+            }
+        });
+    </script>
+}
+
