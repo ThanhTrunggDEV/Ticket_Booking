@@ -42,6 +42,9 @@ namespace Ticket_Booking
                 config.CallbackUrl = vnpayConfig["CallbackUrl"]!;
             });
 
+            // Register VNPay client factory for custom callback URLs
+            builder.Services.AddScoped<Ticket_Booking.Services.IVnpayClientFactory, Ticket_Booking.Services.VnpayClientFactory>();
+
             builder.Services.AddDbContext<AppDbContext>(options =>
                    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
