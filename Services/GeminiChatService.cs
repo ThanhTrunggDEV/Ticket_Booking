@@ -167,46 +167,9 @@ namespace Ticket_Booking.Services
 
                 var aiReply = textElement.GetString() ?? string.Empty;
                 
-                // Only append formatted trip list if we have search params (filtered trips)
-                // This ensures we only show relevant trips that match the user's query
-                if (searchParams != null && availableTrips != null && availableTrips.Any())
-                {
-                    // Extract search params using reflection
-                    var fromCity = GetSearchParamValue<string>(searchParams, "FromCity");
-                    var toCity = GetSearchParamValue<string>(searchParams, "ToCity");
-                    var date = GetSearchParamValue<DateTime?>(searchParams, "Date");
-                    
-                    // Double-check filtering: only show trips that actually match the search criteria
-                    // This is a safety measure in case the controller filtering didn't work perfectly
-                    var relevantTrips = availableTrips
-                        .Where(t => 
-                        {
-                            bool fromMatches = string.IsNullOrEmpty(fromCity) || MatchCity(t.FromCity, fromCity);
-                            bool toMatches = string.IsNullOrEmpty(toCity) || MatchCity(t.ToCity, toCity);
-                            bool dateMatches = !date.HasValue || t.DepartureTime.Date == date.Value.Date;
-                            return fromMatches && toMatches && dateMatches;
-                        })
-                        .Take(5)
-                        .ToList();
-                    
-                    // Only append if we have matching trips
-                    if (relevantTrips.Any())
-                    {
-                        aiReply += "\n\n📋 **Các chuyến bay tìm được:**\n";
-                        int index = 1;
-                        foreach (var trip in relevantTrips)
-                        {
-                            aiReply += $"\n{index}. {trip.FromCity} → {trip.ToCity}\n";
-                            aiReply += $"   ⏰ {trip.DepartureTime:dd/MM/yyyy HH:mm} - {trip.ArrivalTime:HH:mm}\n";
-                            aiReply += $"   ✈️ {trip.Company?.Name ?? "Unknown"}\n";
-                            aiReply += $"   💰 Economy: ${trip.EconomyPrice:F2} | Business: ${trip.BusinessPrice:F2} | First: ${trip.FirstClassPrice:F2}\n";
-                            aiReply += $"   🎫 ID: {trip.Id}\n";
-                            index++;
-                        }
-                        aiReply += "\n💡 Bạn có thể nói 'Đặt vé số X' hoặc 'Book chuyến số X' để đặt vé.";
-                    }
-                }
-                // If no search params, don't append trip list - let AI handle it in the response
+                // Don't append trips to AI reply - trips are returned separately in JSON response
+                // from ChatController and displayed with Book buttons in the UI
+                // This keeps the AI response clean and focused on answering the user's question
                     
                 return aiReply;
             }
