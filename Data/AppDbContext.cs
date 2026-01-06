@@ -18,6 +18,7 @@ namespace Ticket_Booking.Data
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Review> Reviews { get; set; }
+        public DbSet<TicketChangeHistory> TicketChangeHistories { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -147,109 +148,190 @@ namespace Ticket_Booking.Data
                 "Airbus A330"
             };
 
-            var trips = new List<Trip>();
-
-            // Create trips for the next 30 days
-            for (int day = 0; day < 30; day++)
-            {
-                var baseDate = now.AddDays(day);
-                
-                // 2-3 flights per day
-                int flightsPerDay = random.Next(2, 4);
-                
-                for (int flight = 0; flight < flightsPerDay; flight++)
+            // Only generate the random bulk data when the table is empty
+            if (!Trips.Any())
                 {
-                    var route = routes[random.Next(routes.Count)];
-                    var company = companies[random.Next(companies.Count)];
-                    var planeName = planeNames[random.Next(planeNames.Count)];
-                    
-                    // Random departure time between 6 AM and 10 PM
-                    var hour = random.Next(6, 23);
-                    var minute = random.Next(0, 60);
-                    var departureTime = new DateTime(baseDate.Year, baseDate.Month, baseDate.Day, hour, minute, 0, DateTimeKind.Utc);
-                    var arrivalTime = departureTime.AddMinutes(route.duration);
+                    var trips = new List<Trip>();
 
-                    // Calculate distance (approximate)
-                    var distance = route.duration * 8.5m; // ~8.5 km per minute of flight
-
-                    // Price varies by route and class (in USD)
-                    // Base price: $2-5 per minute of flight, depending on route popularity
-                    var pricePerMinute = random.Next(20, 51) / 10m; // $2.0 - $5.0 per minute
-                    var basePrice = route.duration * pricePerMinute; // Base price in USD
-                    
-                    // Random round-trip discount (0-20%)
-                    var roundTripDiscount = random.Next(0, 21); // 0-20% discount
-                    
-                    trips.Add(new Trip
+                    // Create trips for the next 30 days
+                    for (int day = 0; day < 30; day++)
                     {
-                        CompanyId = company.Id,
-                        PlaneName = planeName,
-                        FromCity = route.from,
-                        ToCity = route.to,
-                        Distance = distance,
-                        EstimatedDuration = route.duration,
-                        DepartureTime = departureTime,
-                        ArrivalTime = arrivalTime,
-                        EconomyPrice = basePrice,
-                        EconomySeats = random.Next(150, 200), // 150-200 economy seats
-                        BusinessPrice = basePrice * 2.5m,
-                        BusinessSeats = random.Next(20, 40), // 20-40 business seats
-                        FirstClassPrice = basePrice * 5m,
-                        FirstClassSeats = random.Next(8, 16), // 8-16 first class seats
-                        RoundTripDiscountPercent = roundTripDiscount,
-                        PriceLastUpdated = now.AddDays(-random.Next(0, 30)), // Random date within last 30 days
-                        Status = TripStatus.Active
-                    });
-                }
-            }
+                        var baseDate = now.AddDays(day);
+                    
+                        // 2-3 flights per day
+                        int flightsPerDay = random.Next(2, 4);
+                    
+                        for (int flight = 0; flight < flightsPerDay; flight++)
+                        {
+                            var route = routes[random.Next(routes.Count)];
+                            var company = companies[random.Next(companies.Count)];
+                            var planeName = planeNames[random.Next(planeNames.Count)];
+                        
+                            // Random departure time between 6 AM and 10 PM
+                            var hour = random.Next(6, 23);
+                            var minute = random.Next(0, 60);
+                            var departureTime = new DateTime(baseDate.Year, baseDate.Month, baseDate.Day, hour, minute, 0, DateTimeKind.Utc);
+                            var arrivalTime = departureTime.AddMinutes(route.duration);
 
-            // Add some trips in check-in window (24-48 hours from now) for testing
-            var checkInWindowStart = now.AddHours(24);
-            var checkInWindowEnd = now.AddHours(48);
-            
-            for (int i = 0; i < 5; i++)
+                            // Calculate distance (approximate)
+                            var distance = route.duration * 8.5m; // ~8.5 km per minute of flight
+
+                            // Price varies by route and class (in USD)
+                            // Base price: $2-5 per minute of flight, depending on route popularity
+                            var pricePerMinute = random.Next(20, 51) / 10m; // $2.0 - $5.0 per minute
+                            var basePrice = route.duration * pricePerMinute; // Base price in USD
+                        
+                            // Random round-trip discount (0-20%)
+                            var roundTripDiscount = random.Next(0, 21); // 0-20% discount
+                        
+                            trips.Add(new Trip
+                            {
+                                CompanyId = company.Id,
+                                PlaneName = planeName,
+                                FromCity = route.from,
+                                ToCity = route.to,
+                                Distance = distance,
+                                EstimatedDuration = route.duration,
+                                DepartureTime = departureTime,
+                                ArrivalTime = arrivalTime,
+                                EconomyPrice = basePrice,
+                                EconomySeats = random.Next(150, 200), // 150-200 economy seats
+                                BusinessPrice = basePrice * 2.5m,
+                                BusinessSeats = random.Next(20, 40), // 20-40 business seats
+                                FirstClassPrice = basePrice * 5m,
+                                FirstClassSeats = random.Next(8, 16), // 8-16 first class seats
+                                RoundTripDiscountPercent = roundTripDiscount,
+                                PriceLastUpdated = now.AddDays(-random.Next(0, 30)), // Random date within last 30 days
+                                Status = TripStatus.Active
+                            });
+                        }
+                    }
+
+                    // Add some trips in check-in window (24-48 hours from now) for testing
+                    for (int i = 0; i < 5; i++)
+                    {
+                        var route = routes[random.Next(routes.Count)];
+                        var company = companies[random.Next(companies.Count)];
+                        var planeName = planeNames[random.Next(planeNames.Count)];
+                    
+                        // Random time within check-in window
+                        var hoursOffset = random.Next(24, 48);
+                        var departureTime = now.AddHours(hoursOffset);
+                        var arrivalTime = departureTime.AddMinutes(route.duration);
+                        var distance = route.duration * 8.5m;
+                    
+                        // Price varies by route and class (in USD)
+                        // Base price: $2-5 per minute of flight, depending on route popularity
+                        var pricePerMinute = random.Next(20, 51) / 10m; // $2.0 - $5.0 per minute
+                        var basePrice = route.duration * pricePerMinute; // Base price in USD
+
+                        // Random round-trip discount (0-20%)
+                        var roundTripDiscount = random.Next(0, 21); // 0-20% discount
+                    
+                        trips.Add(new Trip
+                        {
+                            CompanyId = company.Id,
+                            PlaneName = planeName,
+                            FromCity = route.from,
+                            ToCity = route.to,
+                            Distance = distance,
+                            EstimatedDuration = route.duration,
+                            DepartureTime = departureTime,
+                            ArrivalTime = arrivalTime,
+                            EconomyPrice = basePrice,
+                            EconomySeats = random.Next(150, 200),
+                            BusinessPrice = basePrice * 2.5m,
+                            BusinessSeats = random.Next(20, 40),
+                            FirstClassPrice = basePrice * 5m,
+                            FirstClassSeats = random.Next(8, 16),
+                            RoundTripDiscountPercent = roundTripDiscount,
+                            PriceLastUpdated = now.AddDays(-random.Next(0, 30)),
+                            Status = TripStatus.Active
+                        });
+                    }
+
+                    Trips.AddRange(trips);
+                    SaveChanges();
+                }
+
+            // Always ensure deterministic round-trip test data exists
+            SeedFixedRoundTrips(companies);
+        }
+
+        private void SeedFixedRoundTrips(List<Company> companies)
+        {
+            if (!companies.Any())
+                return;
+
+            var random = new Random();
+            var planeNames = new List<string>
             {
-                var route = routes[random.Next(routes.Count)];
+                "Boeing 787 Dreamliner",
+                "Airbus A350",
+                "Boeing 737 MAX",
+                "Airbus A321",
+                "Boeing 777",
+                "Airbus A330"
+            };
+
+            var fixedTrips = new List<(string from, string to, DateTime departureUtc, int durationMinutes, decimal pricePerMinute)>
+            {
+                // Ha Noi ↔ Ho Chi Minh City
+                ("Ha Noi", "Ho Chi Minh City", new DateTime(2026, 1, 10, 8, 0, 0, DateTimeKind.Utc), 125, 3.4m),
+                ("Ho Chi Minh City", "Ha Noi", new DateTime(2026, 1, 15, 17, 30, 0, DateTimeKind.Utc), 125, 3.4m),
+
+                // Ha Noi ↔ Da Nang
+                ("Ha Noi", "Da Nang", new DateTime(2026, 1, 9, 9, 15, 0, DateTimeKind.Utc), 95, 3.2m),
+                ("Da Nang", "Ha Noi", new DateTime(2026, 1, 14, 19, 10, 0, DateTimeKind.Utc), 95, 3.2m),
+
+                // Ho Chi Minh City ↔ Dalat
+                ("Ho Chi Minh City", "Dalat", new DateTime(2026, 1, 12, 7, 45, 0, DateTimeKind.Utc), 60, 2.8m),
+                ("Dalat", "Ho Chi Minh City", new DateTime(2026, 1, 18, 16, 20, 0, DateTimeKind.Utc), 60, 2.8m),
+
+                // Da Nang ↔ Nha Trang
+                ("Da Nang", "Nha Trang", new DateTime(2026, 1, 11, 10, 30, 0, DateTimeKind.Utc), 65, 2.9m),
+                ("Nha Trang", "Da Nang", new DateTime(2026, 1, 16, 13, 5, 0, DateTimeKind.Utc), 65, 2.9m)
+            };
+
+            foreach (var tripInfo in fixedTrips)
+            {
+                bool exists = Trips.Any(t =>
+                    t.FromCity == tripInfo.from &&
+                    t.ToCity == tripInfo.to &&
+                    t.DepartureTime == tripInfo.departureUtc);
+
+                if (exists)
+                    continue;
+
                 var company = companies[random.Next(companies.Count)];
                 var planeName = planeNames[random.Next(planeNames.Count)];
-                
-                // Random time within check-in window
-                var hoursOffset = random.Next(24, 48);
-                var departureTime = now.AddHours(hoursOffset);
-                var arrivalTime = departureTime.AddMinutes(route.duration);
-                var distance = route.duration * 8.5m;
-                
-                // Price varies by route and class (in USD)
-                // Base price: $2-5 per minute of flight, depending on route popularity
-                var pricePerMinute = random.Next(20, 51) / 10m; // $2.0 - $5.0 per minute
-                var basePrice = route.duration * pricePerMinute; // Base price in USD
+                var arrival = tripInfo.departureUtc.AddMinutes(tripInfo.durationMinutes);
+                var distance = tripInfo.durationMinutes * 8.5m;
+                var basePrice = tripInfo.durationMinutes * tripInfo.pricePerMinute;
+                var roundTripDiscount = random.Next(10, 21); // 10-20%
 
-                // Random round-trip discount (0-20%)
-                var roundTripDiscount = random.Next(0, 21); // 0-20% discount
-                
-                trips.Add(new Trip
+                Trips.Add(new Trip
                 {
                     CompanyId = company.Id,
                     PlaneName = planeName,
-                    FromCity = route.from,
-                    ToCity = route.to,
+                    FromCity = tripInfo.from,
+                    ToCity = tripInfo.to,
                     Distance = distance,
-                    EstimatedDuration = route.duration,
-                    DepartureTime = departureTime,
-                    ArrivalTime = arrivalTime,
+                    EstimatedDuration = tripInfo.durationMinutes,
+                    DepartureTime = tripInfo.departureUtc,
+                    ArrivalTime = arrival,
                     EconomyPrice = basePrice,
-                    EconomySeats = random.Next(150, 200),
-                    BusinessPrice = basePrice * 2.5m,
-                    BusinessSeats = random.Next(20, 40),
-                    FirstClassPrice = basePrice * 5m,
-                    FirstClassSeats = random.Next(8, 16),
+                    EconomySeats = 180,
+                    BusinessPrice = basePrice * 2.4m,
+                    BusinessSeats = 30,
+                    FirstClassPrice = basePrice * 4.8m,
+                    FirstClassSeats = 12,
                     RoundTripDiscountPercent = roundTripDiscount,
-                    PriceLastUpdated = now.AddDays(-random.Next(0, 30)), // Random date within last 30 days
+                    PriceLastUpdated = DateTime.UtcNow,
                     Status = TripStatus.Active
                 });
             }
 
-            Trips.AddRange(trips);
             SaveChanges();
         }
 
@@ -399,6 +481,26 @@ namespace Ticket_Booking.Data
                 entity.HasOne(e => e.Company)
                     .WithMany(c => c.Reviews)
                     .HasForeignKey(e => e.CompanyId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<TicketChangeHistory>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.ChangeFee).HasPrecision(10, 2);
+                entity.Property(e => e.PriceDifference).HasPrecision(10, 2);
+                entity.Property(e => e.TotalAmountPaid).HasPrecision(10, 2);
+                entity.Property(e => e.ChangeReason).HasMaxLength(500);
+                entity.Property(e => e.Status).HasMaxLength(50);
+                
+                entity.HasOne(e => e.OriginalTicket)
+                    .WithMany()
+                    .HasForeignKey(e => e.OriginalTicketId)
+                    .OnDelete(DeleteBehavior.Restrict);
+                
+                entity.HasOne(e => e.NewTicket)
+                    .WithMany()
+                    .HasForeignKey(e => e.NewTicketId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
         }
