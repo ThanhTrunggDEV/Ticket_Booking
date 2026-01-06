@@ -742,6 +742,16 @@ namespace Ticket_Booking.Controllers
 
         public async Task<IActionResult> PaySuccess()
         {
+            // Check if this is a ticket change payment
+            var ticketChangeIdStr = HttpContext.Session.GetString("CurrentTicketChangeId");
+            if (!string.IsNullOrEmpty(ticketChangeIdStr))
+            {
+                // Clear the session flag
+                HttpContext.Session.Remove("CurrentTicketChangeId");
+                // Redirect to ticket change PaySuccess
+                return RedirectToAction("PaySuccess", "TicketChange");
+            }
+
             // Handle VNPay callback safely – in dev/manual testing there may be no VNPay parameters
             try
             {
