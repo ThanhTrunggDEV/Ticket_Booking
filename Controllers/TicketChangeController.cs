@@ -11,6 +11,7 @@ using Ticket_Booking.Data;
 using Ticket_Booking.Helpers;
 using VNPAY;
 using VNPAY.Models.Enums;
+using Microsoft.Extensions.Configuration;
 
 namespace Ticket_Booking.Controllers
 {
@@ -22,8 +23,9 @@ namespace Ticket_Booking.Controllers
         private readonly AppDbContext _context;
         private readonly IPNRHelper _pnrHelper;
         private readonly TicketRepository _ticketRepositoryForPNR;
-        private readonly IVnpayClient _vnPayClient;
+        private readonly IVnpayClientFactory _vnPayClientFactory;
         private readonly ICurrencyService _currencyService;
+        private readonly IConfiguration _configuration;
 
         public TicketChangeController(
             IRepository<Ticket> ticketRepository,
@@ -32,8 +34,9 @@ namespace Ticket_Booking.Controllers
             AppDbContext context,
             IPNRHelper pnrHelper,
             TicketRepository ticketRepositoryForPNR,
-            IVnpayClient vnPayClient,
-            ICurrencyService currencyService)
+            IVnpayClientFactory vnPayClientFactory,
+            ICurrencyService currencyService,
+            IConfiguration configuration)
         {
             _ticketRepository = ticketRepository;
             _tripRepository = tripRepository;
@@ -41,8 +44,9 @@ namespace Ticket_Booking.Controllers
             _context = context;
             _pnrHelper = pnrHelper;
             _ticketRepositoryForPNR = ticketRepositoryForPNR;
-            _vnPayClient = vnPayClient;
+            _vnPayClientFactory = vnPayClientFactory;
             _currencyService = currencyService;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -286,15 +290,23 @@ namespace Ticket_Booking.Controllers
 
             try
             {
-                // Store ticketId in session for callback
+                // Store ticketId in session for callback (since VNPay doesn't return custom data)
                 HttpContext.Session.SetString("CurrentTicketChangeId", ticketId.ToString());
+
+                // Get ticket change callback URL from config
+                var ticketChangeCallbackUrl = _configuration["VNPAY:TicketChangeCallbackUrl"] 
+                    ?? _configuration["VNPAY:CallbackUrl"] 
+                    ?? $"{Request.Scheme}://{Request.Host}/TicketChange/PaySuccess";
+
+                // Create VNPay client with ticket change callback URL
+                var vnPayClient = _vnPayClientFactory.CreateClient(ticketChangeCallbackUrl);
 
                 // Convert USD to VND for VNPay (amount is in USD)
                 var priceInVnd = await _currencyService.ConvertAmountAsync(amount, "USD", "VND");
                 var moneyToPay = (long)Math.Round(priceInVnd); // VNPay expects long (VND)
                 var description = $"Thanh toan phi doi ve so {ticketId} - PNR: {ticket.PNR}";
 
-                var paymentUrlInfo = _vnPayClient.CreatePaymentUrl(
+                var paymentUrlInfo = vnPayClient.CreatePaymentUrl(
                     (double)moneyToPay,
                     description,
                     BankCode.ANY
@@ -324,9 +336,15 @@ namespace Ticket_Booking.Controllers
             // Handle VNPay callback safely
             try
             {
-                var paymentResult = _vnPayClient.GetPaymentResult(this.Request);
+                // Get ticket change callback URL from config to create matching client
+                var ticketChangeCallbackUrl = _configuration["VNPAY:TicketChangeCallbackUrl"] 
+                    ?? _configuration["VNPAY:CallbackUrl"] 
+                    ?? $"{Request.Scheme}://{Request.Host}/TicketChange/PaySuccess";
                 
-                // Get ticketId from session
+                var vnPayClient = _vnPayClientFactory.CreateClient(ticketChangeCallbackUrl);
+                var paymentResult = vnPayClient.GetPaymentResult(this.Request);
+                
+                // Get ticketId from session (stored when creating payment URL)
                 var ticketIdStr = HttpContext.Session.GetString("CurrentTicketChangeId");
                 if (string.IsNullOrEmpty(ticketIdStr) || !int.TryParse(ticketIdStr, out int ticketId))
                 {
@@ -529,11 +547,15 @@ namespace Ticket_Booking.Controllers
                 await _ticketRepository.AddAsync(newTicket);
                 await _context.SaveChangesAsync(); // Save to get newTicket.Id
 
-                // Cancel original ticket
-                ticket.IsCancelled = true;
-                ticket.CancelledAt = DateTime.UtcNow;
-                ticket.CancellationReason = changeReason ?? "Ticket changed by user.";
-                await _ticketRepository.UpdateAsync(ticket);
+                // Cancel original ticket - ensure it's tracked by context
+                var ticketToCancel = await _context.Tickets.FindAsync(ticket.Id);
+                if (ticketToCancel != null)
+                {
+                    ticketToCancel.IsCancelled = true;
+                    ticketToCancel.CancelledAt = DateTime.UtcNow;
+                    ticketToCancel.CancellationReason = changeReason ?? "Ticket changed by user.";
+                    _context.Tickets.Update(ticketToCancel);
+                }
 
                 // Create change history record
                 var changeHistory = new TicketChangeHistory
