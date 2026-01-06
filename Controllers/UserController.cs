@@ -214,9 +214,10 @@ namespace Ticket_Booking.Controllers
             
             // For round-trip bookings, show both outbound and return tickets separately
             // Get all tickets: one-way tickets and both outbound and return tickets from round-trip bookings
+            // Exclude cancelled tickets
             var displayTickets = tickets
-                .Where(t => t.Type == TicketType.OneWay || 
-                           t.Type == TicketType.RoundTrip) // Show all tickets including both outbound and return
+                .Where(t => (t.Type == TicketType.OneWay || t.Type == TicketType.RoundTrip) && 
+                           !t.IsCancelled) // Exclude cancelled tickets
                 .OrderByDescending(t => t.BookingDate)
                 .ThenBy(t => t.Type == TicketType.RoundTrip && t.OutboundTicketId.HasValue ? 1 : 0) // Show outbound before return
                 .ToList();
@@ -742,17 +743,8 @@ namespace Ticket_Booking.Controllers
 
         public async Task<IActionResult> PaySuccess()
         {
-            // Check if this is a ticket change payment
-            var ticketChangeIdStr = HttpContext.Session.GetString("CurrentTicketChangeId");
-            if (!string.IsNullOrEmpty(ticketChangeIdStr))
-            {
-                // Clear the session flag
-                HttpContext.Session.Remove("CurrentTicketChangeId");
-                // Redirect to ticket change PaySuccess
-                return RedirectToAction("PaySuccess", "TicketChange");
-            }
-
             // Handle VNPay callback safely – in dev/manual testing there may be no VNPay parameters
+            // Note: Ticket change payments use separate callback URL (TicketChange/PaySuccess)
             try
             {
                 var paymentResult = _vnPayClient.GetPaymentResult(this.Request);
