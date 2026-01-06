@@ -247,6 +247,50 @@ namespace Ticket_Booking.Migrations
                     b.ToTable("Tickets");
                 });
 
+            modelBuilder.Entity("Ticket_Booking.Models.DomainModels.TicketChangeHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("ChangeDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("ChangeFee")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ChangeReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("NewTicketId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("OriginalTicketId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("PriceDifference")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Status")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("TotalAmountPaid")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NewTicketId");
+
+                    b.HasIndex("OriginalTicketId");
+
+                    b.ToTable("TicketChangeHistories");
+                });
+
             modelBuilder.Entity("Ticket_Booking.Models.DomainModels.Trip", b =>
                 {
                     b.Property<int>("Id")
@@ -431,6 +475,25 @@ namespace Ticket_Booking.Migrations
                     b.Navigation("Trip");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Ticket_Booking.Models.DomainModels.TicketChangeHistory", b =>
+                {
+                    b.HasOne("Ticket_Booking.Models.DomainModels.Ticket", "NewTicket")
+                        .WithMany()
+                        .HasForeignKey("NewTicketId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Ticket_Booking.Models.DomainModels.Ticket", "OriginalTicket")
+                        .WithMany()
+                        .HasForeignKey("OriginalTicketId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("NewTicket");
+
+                    b.Navigation("OriginalTicket");
                 });
 
             modelBuilder.Entity("Ticket_Booking.Models.DomainModels.Trip", b =>
