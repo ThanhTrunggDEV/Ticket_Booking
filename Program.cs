@@ -68,6 +68,9 @@ namespace Ticket_Booking
             builder.Services.AddScoped<IPricingService, PricingService>();
             builder.Services.AddScoped<IPriceCalculatorService, PriceCalculatorService>();
 
+            // Register Ticket Change Service
+            builder.Services.AddScoped<ITicketChangeService, TicketChangeService>();
+
             // Register PNR Helper
             builder.Services.AddScoped<IPNRHelper, PNRHelper>();
 
