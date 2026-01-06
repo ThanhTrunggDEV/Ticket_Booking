@@ -81,7 +81,13 @@
                 conversationIdInput.value = data.conversationId;
             }
 
+            // Display AI reply
             appendAiMessage(data.reply || 'Xin lỗi, mình không hiểu câu hỏi.');
+            
+            // Display trips if available
+            if (data.trips && data.trips.length > 0) {
+                appendTrips(data.trips);
+            }
         } catch (err) {
             console.error('[chat] fetch error', err);
             appendAiMessage('Có lỗi kết nối tới server. Vui lòng thử lại.');
@@ -112,6 +118,52 @@
             </div>
             <div class="bg-white border border-indigo-100 rounded-2xl px-4 py-2 text-sm text-gray-800 shadow-sm max-w-xs whitespace-pre-wrap">
                 ${escapeHtml(text)}
+            </div>
+        `;
+        chatWindow.appendChild(wrapper);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    function appendTrips(trips) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'flex items-start space-x-3 mt-2';
+        wrapper.innerHTML = `
+            <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-black flex-shrink-0">
+                AI
+            </div>
+            <div class="flex-1 bg-white border border-indigo-100 rounded-2xl p-4 shadow-sm max-w-2xl">
+                <h3 class="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
+                    <span>📋</span>
+                    <span>Các chuyến bay tìm được (${trips.length})</span>
+                </h3>
+                <div class="space-y-3 max-h-96 overflow-y-auto">
+                    ${trips.map((trip, index) => `
+                        <div class="border border-zinc-200 rounded-xl p-3 hover:border-indigo-400 hover:shadow-md transition-all bg-gradient-to-r from-white to-zinc-50">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                                <div class="flex-1">
+                                    <div class="text-sm font-bold text-gray-900 mb-1">
+                                        ${escapeHtml(trip.fromCity)} → ${escapeHtml(trip.toCity)}
+                                    </div>
+                                    <div class="text-xs text-gray-600 space-y-0.5">
+                                        <div>⏰ ${escapeHtml(trip.departureTime)} - ${escapeHtml(trip.arrivalTime)}</div>
+                                        <div>✈️ ${escapeHtml(trip.companyName)}</div>
+                                    </div>
+                                </div>
+                                <a href="/User/BookTrip?tripId=${trip.id}" 
+                                   class="px-4 py-2 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 transition-colors whitespace-nowrap flex-shrink-0 text-center">
+                                    Book Now
+                                </a>
+                            </div>
+                            <div class="mt-2 pt-2 border-t border-zinc-100">
+                                <div class="text-xs text-gray-600 flex flex-wrap gap-x-3 gap-y-1">
+                                    <span>💰 Economy: <strong>$${parseFloat(trip.economyPrice).toFixed(2)}</strong></span>
+                                    <span>Business: <strong>$${parseFloat(trip.businessPrice).toFixed(2)}</strong></span>
+                                    <span>First: <strong>$${parseFloat(trip.firstClassPrice).toFixed(2)}</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
             </div>
         `;
         chatWindow.appendChild(wrapper);
