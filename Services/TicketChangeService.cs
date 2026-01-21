@@ -4,9 +4,7 @@ using Ticket_Booking.Repositories;
 
 namespace Ticket_Booking.Services
 {
-    /// <summary>
-    /// Service for handling ticket change operations including fee calculation
-    /// </summary>
+
     public interface ITicketChangeService
     {
         Task<(bool allowed, string? message, decimal changeFee)> CheckChangeEligibilityAsync(Ticket ticket);
@@ -26,9 +24,6 @@ namespace Ticket_Booking.Services
             _tripRepository = tripRepository;
         }
 
-        /// <summary>
-        /// Checks if a ticket can be changed based on airline policies
-        /// </summary>
         public async Task<(bool allowed, string? message, decimal changeFee)> CheckChangeEligibilityAsync(Ticket ticket)
         {
             // Check if ticket is cancelled
@@ -71,10 +66,7 @@ namespace Ticket_Booking.Services
             return (true, null, changeFee);
         }
 
-        /// <summary>
-        /// Calculates change fee based on airline policy and seat class
-        /// Reference: Vietnamese airline change fee policies
-        /// </summary>
+
         public async Task<decimal> CalculateChangeFeeAsync(Ticket ticket)
         {
             var trip = await _tripRepository.GetByIdAsync(ticket.TripId);
@@ -92,19 +84,14 @@ namespace Ticket_Booking.Services
                 switch (seatClass)
                 {
                     case SeatClass.Economy:
-                        // Economy Flexible: Free (but we'll charge a small fee for processing)
-                        // Economy Standard: ~$15 (360,000 VND)
-                        // Economy Saver: ~$20 (500,000 VND)
-                        // Economy Super Saver: Not allowed (handled in eligibility check)
+
                         changeFee = 15m;  // Default for Economy Standard
                         break;
                     case SeatClass.Business:
-                        // Business Flexible: Free
-                        // Business Standard: ~$15 (360,000 VND)
+                        
                         changeFee = 15m;
                         break;
                     case SeatClass.FirstClass:
-                        // First Class: Usually free or minimal fee
                         changeFee = 0m;
                         break;
                 }
