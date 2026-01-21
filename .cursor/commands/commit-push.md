@@ -1,1 +1,0 @@
-Commit all changes with short message follow the convention. and remember to exclude md file. nhớ commit từng file một
